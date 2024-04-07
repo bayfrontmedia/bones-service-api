@@ -1,4 +1,4 @@
-# API service > Initial setup
+# API service: Initial setup
 
 - [Configuration](#configuration)
 - [Add to container](#add-to-container)
@@ -40,8 +40,11 @@ The API `version` is added to the information returned by the `php bones about:b
 
 ## Add to container
 
-With a configuration completed, the `ApiService` class needs to be added to the Bones [service container](https://github.com/bayfrontmedia/bones/blob/master/docs/usage/container.md).
+With the configuration completed, the `ApiService` class needs to be added to the Bones [service container](https://github.com/bayfrontmedia/bones/blob/master/docs/usage/container.md).
+This is typically done in the `resources/bootstrap.php` file.
 You may also wish to create an alias.
+
+For more information, see [Bones bootstrap documentation](https://github.com/bayfrontmedia/bones/blob/master/docs/usage/bootstrap.md).
 
 To ensure it only gets instantiated when needed, the container can `set` the class:
 
@@ -59,7 +62,7 @@ $container->set('Bayfront\BonesService\Api\ApiService', function (Container $con
 $container->setAlias('apiService', 'Bayfront\BonesService\Api\ApiService');
 ```
 
-However, by always instantiating the class during bootstrapping,
+However, by allowing the container to `make` the class during bootstrapping,
 the API service is available to be used in console commands:
 
 ```php

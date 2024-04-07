@@ -1,4 +1,4 @@
-# API service > Events
+# API service: Events
 
 The following [events](https://github.com/bayfrontmedia/bones/blob/master/docs/services/events.md) are added by this service:
 

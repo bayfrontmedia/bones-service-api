@@ -1,4 +1,4 @@
-# API service > ApiService class
+# API service: ApiService class
 
 The `ApiService` class contains the following Bones services:
 

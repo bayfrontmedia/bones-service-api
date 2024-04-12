@@ -97,7 +97,7 @@ class ApiService extends Service
 
         $body = json_decode(Request::getBody(), true);
 
-        if (!$body) {
+        if (!$body || !is_array($body)) {
 
             if ($required === true) {
                 throw new BadRequestException('Unable to get body: Invalid or missing JSON body');

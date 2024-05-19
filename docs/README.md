@@ -40,3 +40,13 @@ The following exceptions exist in the `Bayfront\BonesService\Api\Exceptions\Http
 | TooManyRequestsException  | `429`       |
 
 These all extend `Bayfront\Bones\Exceptions\HttpException`, so they can be filtered as necessary.
+
+For example, if exceptions are being logged from a `bones.exception` event subscription, 
+all `HttpException`'s thrown can be omitted from the normal exception handler by adding 
+the following condition:
+
+```php
+if ($e instanceof HttpException) {
+  // Log as normal
+}
+```

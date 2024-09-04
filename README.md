@@ -22,7 +22,7 @@ This project is open source and available under the [MIT License](LICENSE).
 ## Requirements
 
 * PHP >= 8.0
-* Bones >= 4.2
+* Bones >= 5.0
 
 ## Installation
 

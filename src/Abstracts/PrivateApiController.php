@@ -58,8 +58,14 @@ abstract class PrivateApiController extends ApiController
 
             $authenticator = new UserKeyAuthenticator($this->apiService->rbacService);
 
+            if (is_string(Request::getReferer())) {
+                $referer = Request::getReferer();
+            } else {
+                $referer = '';
+            }
+
             try {
-                return $authenticator->authenticate(Request::getHeader('X-API-Key'), Request::getIp(), Request::getReferer());
+                return $authenticator->authenticate(Request::getHeader('X-API-Key'), Request::getIp(), $referer);
             } catch (InvalidUserKeyException|UserDoesNotExistException) {
                 $this->apiService->throwException(403, 'Invalid credentials');
             } catch (ExpiredUserKeyException) {

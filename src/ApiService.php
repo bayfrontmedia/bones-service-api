@@ -6,6 +6,7 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Abstracts\Service;
 use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Services\Filters\FilterService;
+use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\BonesService\Api\Events\ApiServiceEvents;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -20,9 +21,11 @@ use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Exceptions\Http\UnauthorizedException;
 use Bayfront\BonesService\Api\Filters\ApiServiceFilters;
 use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
+use Bayfront\BonesService\Rbac\RbacService;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
+use Bayfront\RouteIt\Router;
 use Throwable;
 
 class ApiService extends Service
@@ -30,6 +33,7 @@ class ApiService extends Service
 
     public EventService $events;
     public FilterService $filters;
+    public RbacService $rbacService;
     public Response $response;
     protected array $config;
 
@@ -39,15 +43,17 @@ class ApiService extends Service
      *
      * @param EventService $events
      * @param FilterService $filters
+     * @param RbacService $rbacService
      * @param Response $response
      * @param array $config
-     * @throws ApiExceptionInterface
+     * @throws ApiServiceException
      */
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, array $config)
+    public function __construct(EventService $events, FilterService $filters, RbacService $rbacService, Response $response, array $config)
     {
         $this->events = $events;
         $this->filters = $filters;
+        $this->rbacService = $rbacService;
         $this->response = $response;
         $this->config = $config;
 
@@ -67,6 +73,12 @@ class ApiService extends Service
             $this->filters->addSubscriptions(new ApiServiceFilters($this));
         } catch (ServiceException $e) {
             throw new ApiServiceException('Unable to start ApiService: ' . $e->getMessage(), $e->getCode(), $e->getPrevious());
+        }
+
+        // Check for other required services
+
+        if (!App::has('Bayfront\RouteIt\Router')) {
+            throw new ApiServiceException('Unable to start ApiService: Missing service dependency');
         }
 
         $this->events->doEvent('api.start', $this);
@@ -177,6 +189,20 @@ class ApiService extends Service
 
         throw new ApiServiceException($message, 0, $previous);
 
+    }
+
+    /**
+     * Add default API service routes.
+     *
+     * @param Router $router
+     * @return void
+     */
+    public function addRoutes(Router $router): void
+    {
+        $router->get('/', 'Bayfront\BonesService\Api\Controllers\Public\Home:index')
+            ->post('/auth/login', 'Bayfront\BonesService\Api\Controllers\Public\Auth:login')
+            ->post('/auth/token', 'Bayfront\BonesService\Api\Controllers\Public\Auth:token')
+            ->get('/permissions', 'Bayfront\BonesService\Api\Controllers\Private\Permissions:list');
     }
 
 }

@@ -13,18 +13,9 @@ abstract class ApiController extends Controller implements ApiControllerInterfac
 
     public function __construct(ApiService $apiService)
     {
-
         $this->apiService = $apiService;
         parent::__construct($this->apiService->events); // Fires the bones.controller event
-
         $this->apiService->events->doEvent('api.controller', $this);
-
-        if ($this->isPrivate()) {
-            $this->apiService->events->doEvent('api.controller.private', $this);
-        } else {
-            $this->apiService->events->doEvent('api.controller.public', $this);
-        }
-
     }
 
 }

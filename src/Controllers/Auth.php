@@ -1,9 +1,10 @@
 <?php
 
-namespace Bayfront\BonesService\Api\Controllers\Public;
+namespace Bayfront\BonesService\Api\Controllers;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\BonesService\Api\Abstracts\PublicApiController;
+use Bayfront\BonesService\Api\Abstracts\ApiController;
+use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Rbac\Authenticators\PasswordAuthenticator;
 use Bayfront\BonesService\Rbac\Authenticators\TokenAuthenticator;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\InvalidPasswordException;
@@ -16,8 +17,19 @@ use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserNotVerifiedExceptio
 use Bayfront\BonesService\Rbac\Models\UserMeta;
 use Bayfront\BonesService\Rbac\User;
 
-class Auth extends PublicApiController
+class Auth extends ApiController
 {
+
+    public function __construct(ApiService $apiService)
+    {
+        parent::__construct($apiService);
+
+        /*
+         * TODO:
+         * Auth rate limit
+         */
+
+    }
 
     private function respondWithTokens(User $user): void
     {

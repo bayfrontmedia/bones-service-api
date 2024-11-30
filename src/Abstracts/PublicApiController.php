@@ -10,6 +10,12 @@ class PublicApiController extends ApiController
     public function __construct(ApiService $apiService)
     {
         parent::__construct($apiService);
+
+        /*
+         * TODO:
+         * Rate limit
+         */
+
         $this->apiService->events->doEvent('api.controller.public', $this);
     }
 

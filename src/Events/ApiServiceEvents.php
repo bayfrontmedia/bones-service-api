@@ -11,6 +11,14 @@ use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotAcceptableException;
 use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
+use Bayfront\BonesService\Rbac\Models\TenantInvitations;
+use Bayfront\BonesService\Rbac\Models\UserKeys;
+use Bayfront\BonesService\Rbac\Models\UserMeta;
+use Bayfront\BonesService\Rbac\Models\Users;
+use Bayfront\CronScheduler\Cron;
+use Bayfront\CronScheduler\LabelExistsException;
+use Bayfront\CronScheduler\SyntaxException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
@@ -20,10 +28,12 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 {
 
     protected ApiService $apiService;
+    protected Cron $scheduler;
 
-    public function __construct(ApiService $apiService)
+    public function __construct(ApiService $apiService, Cron $scheduler)
     {
         $this->apiService = $apiService;
+        $this->scheduler = $scheduler;
     }
 
     /**
@@ -36,7 +46,8 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
             new EventSubscription('api.controller', [$this, 'checkHttps'], 5),
             new EventSubscription('api.controller', [$this, 'checkIpWhitelist'], 5),
             new EventSubscription('api.response', [$this, 'setRequiredHeaders'], 5),
-            new EventSubscription('bones.exception', [$this, 'setStatusCode'], 5)
+            new EventSubscription('bones.exception', [$this, 'setStatusCode'], 5),
+            new EventSubscription('app.cli', [$this, 'scheduleApiJobs'], 10)
         ];
     }
 
@@ -124,6 +135,57 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
         if ($e instanceof ApiExceptionInterface) {
             $response->setStatusCode($e->getHttpStatusCode());
+        }
+
+    }
+
+    /**
+     * Run API scheduled jobs.
+     * @return void
+     * @throws LabelExistsException
+     * @throws SyntaxException
+     */
+    public function scheduleApiJobs(): void
+    {
+
+        $this->scheduler->call('delete-expired-mfas', function() {
+
+            $users = new Users($this->apiService->rbacService);
+            $users->deleteExpiredMfas();
+
+        })->everyMinutes(15);
+
+        $this->scheduler->call('delete-expired-tokens', function() {
+
+            $userMeta = new UserMeta($this->apiService->rbacService);
+            $userMeta->deleteExpiredTokens();
+
+        })->everyMinutes(15);
+
+        $this->scheduler->call('delete-expired-invitations', function() {
+
+            $tenantInvitations = new TenantInvitations($this->apiService->rbacService);
+            $tenantInvitations->pruneQuietly(time());
+
+        })->everyHours(12);
+
+        $this->scheduler->call('delete-expired-keys', function() {
+
+            $userKeys = new UserKeys($this->apiService->rbacService);
+            $userKeys->pruneQuietly(time());
+
+        })->everyHours(12);
+
+        if ($this->apiService->rbacService->getConfig('user.require_verification') === true
+            && (int)$this->apiService->getConfig('unverified_user_expiration', 0) > 0) {
+
+            $this->scheduler->call('delete-unverified-users', function() {
+
+                $users = new Users($this->apiService->rbacService);
+                $users->deleteUnverified(time() - (int)$this->apiService->getConfig('unverified_user_expiration'));
+
+            })->everyHours(12);
+
         }
 
     }

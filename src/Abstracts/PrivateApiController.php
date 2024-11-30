@@ -29,7 +29,8 @@ abstract class PrivateApiController extends ApiController
         $this->user = $this->authenticateUser();
 
         /*
-         * TODO: Rate limit
+         * TODO:
+         * Rate limit
          */
 
         $this->apiService->events->doEvent('api.controller.private', $this);

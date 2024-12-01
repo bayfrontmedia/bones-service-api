@@ -21,7 +21,7 @@ use Bayfront\HttpRequest\Request;
 abstract class PrivateApiController extends ApiController
 {
 
-    protected User $user;
+    public User $user;
 
     public function __construct(ApiService $apiService)
     {

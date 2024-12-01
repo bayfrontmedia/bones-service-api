@@ -7,6 +7,7 @@ use Bayfront\Bones\Abstracts\Controller;
 use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
+use Bayfront\Bones\Application\Utilities\Helpers;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
@@ -19,6 +20,7 @@ use Bayfront\BonesService\Api\Exceptions\Http\PaymentRequiredException;
 use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Exceptions\Http\UnauthorizedException;
 use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
+use Bayfront\BonesService\Api\Traits\Auditable;
 use Bayfront\BonesService\Rbac\RbacService;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -196,6 +198,7 @@ abstract class ApiController extends Controller
      * Send API response.
      *
      * - Filters response using the api.response filter
+     * - Triggers the api.auditable event if needed
      * - Triggers the api.response event
      * - Sends $data as json_encoded string
      *
@@ -220,6 +223,18 @@ abstract class ApiController extends Controller
 
         } catch (InvalidStatusCodeException) {
             $this->abort(500, 'Unable to respond: Invalid status code (' . $status_code . ')');
+        }
+
+        if (in_array(Auditable::class, Helpers::classUses($this))) {
+
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+
+            /** @var Auditable $this */
+
+            if (in_array(Arr::get($backtrace, '1.function'), $this->getAuditableFunctions())) {
+                $this->events->doEvent('api.auditable', $this, Arr::get($backtrace, '1.class', ''), Arr::get($backtrace, '1.function', ''));
+            }
+
         }
 
         $this->events->doEvent('api.response', $this);

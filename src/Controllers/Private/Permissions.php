@@ -6,6 +6,7 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Interfaces\ApiControllerInterface;
+use Bayfront\BonesService\Api\Traits\Auditable;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidFieldException;
@@ -17,12 +18,28 @@ use Bayfront\BonesService\Rbac\Models\PermissionsModel;
 class Permissions extends PrivateApiController implements ApiControllerInterface
 {
 
+    use Auditable;
+
     protected PermissionsModel $permissionsModel;
 
     public function __construct(ApiService $apiService, PermissionsModel $permissionsModel)
     {
         parent::__construct($apiService);
         $this->permissionsModel = $permissionsModel;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAuditableFunctions(): array
+    {
+        return [
+            'create',
+            'list',
+            'read',
+            'update',
+            'delete'
+        ];
     }
 
     /**

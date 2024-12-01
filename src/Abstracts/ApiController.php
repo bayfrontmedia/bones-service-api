@@ -134,38 +134,6 @@ abstract class ApiController extends Controller
     }
 
     /**
-     * Aborts with appropriate API exception based on status code.
-     *
-     * @param int $status_code
-     * @param string $message
-     * @param Throwable|null $previous
-     * @return void
-     * @throws ApiExceptionInterface
-     */
-    protected function abort(int $status_code, string $message = '', Throwable $previous = null): void
-    {
-
-        $exceptions = [
-            400 => BadRequestException::class,
-            401 => UnauthorizedException::class,
-            402 => PaymentRequiredException::class,
-            403 => ForbiddenException::class,
-            404 => NotFoundException::class,
-            405 => MethodNotAllowedException::class,
-            406 => NotAcceptableException::class,
-            409 => ConflictException::class,
-            429 => TooManyRequestsException::class
-        ];
-
-        if (isset($exceptions[$status_code])) {
-            throw new $exceptions[$status_code]($message, 0, $previous);
-        }
-
-        throw new ApiServiceException($message, 0, $previous);
-
-    }
-
-    /**
      * Get JSON-encoded request body.
      *
      * @param array $allowed (Allowed fields)
@@ -183,17 +151,17 @@ abstract class ApiController extends Controller
             if (empty($required)) {
                 return [];
             } else {
-                throw new BadRequestException('Unable to get body: Invalid or missing JSON body');
+                $this->abort(400, 'Unable to get body: Invalid or missing JSON body');
             }
 
         }
 
         if (!empty($allowed) && !empty(Arr::except($body, $allowed))) {
-            throw new BadRequestException('Unable to get body: Invalid fields');
+            $this->abort(400, 'Unable to get body: Invalid fields');
         }
 
         if (!empty($required) && Arr::isMissing($body, $required)) {
-            throw new BadRequestException('Unable to get body: Missing required fields');
+            $this->abort(400, 'Unable to get body: Missing required fields');
         }
 
         return $body;
@@ -227,12 +195,44 @@ abstract class ApiController extends Controller
             }
 
         } catch (InvalidStatusCodeException) {
-            throw new ApiServiceException('Unable to respond: Invalid status code (' . $status_code . ')');
+            $this->abort(500, 'Unable to respond: Invalid status code (' . $status_code . ')');
         }
 
         $this->events->doEvent('api.response', $this);
 
         $this->response->send();
+
+    }
+
+    /**
+     * Aborts with appropriate API exception based on status code.
+     *
+     * @param int $status_code
+     * @param string $message
+     * @param Throwable|null $previous
+     * @return void
+     * @throws ApiExceptionInterface
+     */
+    protected function abort(int $status_code, string $message = '', Throwable $previous = null): void
+    {
+
+        $exceptions = [
+            400 => BadRequestException::class,
+            401 => UnauthorizedException::class,
+            402 => PaymentRequiredException::class,
+            403 => ForbiddenException::class,
+            404 => NotFoundException::class,
+            405 => MethodNotAllowedException::class,
+            406 => NotAcceptableException::class,
+            409 => ConflictException::class,
+            429 => TooManyRequestsException::class
+        ];
+
+        if (isset($exceptions[$status_code])) {
+            throw new $exceptions[$status_code]($message, 0, $previous);
+        }
+
+        throw new ApiServiceException($message, 0, $previous);
 
     }
 

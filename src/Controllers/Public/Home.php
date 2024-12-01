@@ -19,8 +19,8 @@ class Home extends PublicApiController
     {
         $this->respond(200, [
             'status' => 'OK',
+            'apiVersion' => $this->apiService->getConfig('version', ''),
             'clientIp' => Request::getIp(),
-            'apiVersion' => $this->apiService->getConfig('version'),
             'date' => date('Y-m-d H:i:s')
         ], [
             'Cache-Control' => 'no-cache, no-store, max-age=0, must-revalidate'

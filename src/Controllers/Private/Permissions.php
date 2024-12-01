@@ -5,6 +5,7 @@ namespace Bayfront\BonesService\Api\Controllers\Private;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\ApiService;
+use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Interfaces\ApiControllerInterface;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
@@ -32,10 +33,17 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
     public function create(): void
     {
 
+        // Check permissions
+        if (!$this->user->isAdmin()) {
+            $this->abort(403, 'Unable to create resource: Insufficient permissions');
+        }
+
+        // Require headers
         $this->requireHeaders([
             'Content-Type' => 'application/json',
         ]);
 
+        // Function
         try {
             $permission = $this->permissionsModel->create($this->getBody());
         } catch (AlreadyExistsException $e) {
@@ -46,7 +54,11 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
             $this->abort(500, 'Unable to create resource: Unexpected error', $e);
         }
 
-        $this->respond(201, $permission->read());
+        // Schema
+        $schema = $permission->read();
+
+        // Response
+        $this->respond(201, $schema);
 
     }
 
@@ -56,8 +68,16 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
     public function list(): void
     {
 
+        // Check permissions
+        if (!$this->user->isAdmin()) {
+            $this->abort(403, 'Unable to create resource: Insufficient permissions');
+        }
+
+        // Require headers
+
+        // Function
         try {
-            $permissions = $this->permissionsModel->list(new QueryParser(Request::getQuery()));
+            $collection = $this->permissionsModel->list(new QueryParser(Request::getQuery()));
         } catch (InvalidRequestException $e) {
             $this->abort(400, 'Unable to list resource: Invalid request', $e);
         } catch (UnexpectedException $e) {
@@ -65,33 +85,38 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
         }
 
         try {
-            $pagination = $permissions->getPagination();
-            $aggregate = $permissions->getAggregate();
+            $pagination = $collection->getPagination();
+            $aggregate = $collection->getAggregate();
         } catch (InvalidRequestException $e) {
             $this->abort(400, 'Unable to list resource: Invalid request', $e);
         }
 
         if (empty($pagination) && empty($aggregate)) {
-            $this->respond(200, $permissions->list());
+
+            // Schema
+            $schema = $collection->list();
+
         } else {
 
-            $response = [
-                'data' => $permissions->list()
+            // Schema
+            $schema = [
+                'data' => $collection->list()
             ];
 
             if (!empty($pagination)) {
-                $response['pagination'] = $pagination;
+                $schema['pagination'] = $pagination;
             }
 
             if (!empty($aggregate)) {
-                $response['aggregate'] = $aggregate;
+                $schema['aggregate'] = $aggregate;
             }
 
-            $this->respond(200, $response, [
-                'Cache-Control' => 'max-age=3600'
-            ]);
-
         }
+
+        // Response
+        $this->respond(200, $schema, [
+            'Cache-Control' => 'max-age=3600'
+        ]);
 
     }
 
@@ -101,15 +126,25 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
     public function read(array $params): void
     {
 
+        // Check permissions
+        if (!$this->user->isAdmin()) {
+            $this->abort(403, 'Unable to create resource: Insufficient permissions');
+        }
+
+        // Require headers
+
+        // Function
         try {
-            $permission = $this->permissionsModel->read(Arr::get($params, 'id', ''));
+            // Schema
+            $schema = $this->permissionsModel->read(Arr::get($params, 'id', ''));
         } catch (DoesNotExistException $e) {
             $this->abort(404, 'Unable to read resource: Resource does not exist', $e);
         } catch (UnexpectedException $e) {
             $this->abort(500, 'Unable to read resource: Unexpected error', $e);
         }
 
-        $this->respond(200, $permission, [
+        // Response
+        $this->respond(200, $schema, [
             'Cache-Control' => 'max-age=3600'
         ]);
 
@@ -121,12 +156,21 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
     public function update(array $params): void
     {
 
+        // Check permissions
+        if (!$this->user->isAdmin()) {
+            $this->abort(403, 'Unable to create resource: Insufficient permissions');
+        }
+
+        // Require headers
         $this->requireHeaders([
             'Content-Type' => 'application/json',
         ]);
 
+        // Function
         try {
-            $permission = $this->permissionsModel->update(Arr::get($params, 'id'), $this->getBody());
+            // Schema
+            $resource = $this->permissionsModel->update(Arr::get($params, 'id'), $this->getBody());
+            $schema = $resource->read();
         } catch (AlreadyExistsException $e) {
             $this->abort(409, 'Unable to update resource: Existing conflict', $e);
         } catch (DoesNotExistException $e) {
@@ -137,7 +181,8 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
             $this->abort(500, 'Unable to update resource: Unexpected error', $e);
         }
 
-        $this->respond(200, $permission->read());
+        // Response
+        $this->respond(200, $schema);
 
     }
 
@@ -147,12 +192,21 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
     public function delete(array $params): void
     {
 
+        // Check permissions
+        if (!$this->user->isAdmin()) {
+            $this->abort(403, 'Unable to create resource: Insufficient permissions');
+        }
+
+        // Require headers
+
+        // Function
         try {
             $this->permissionsModel->delete(Arr::get($params, 'id'));
         } catch (UnexpectedException $e) {
             $this->abort(500, 'Unable to delete resource: Unexpected error', $e);
         }
 
+        // Response
         $this->respond(204);
 
     }

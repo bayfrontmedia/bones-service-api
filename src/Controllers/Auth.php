@@ -5,6 +5,9 @@ namespace Bayfront\BonesService\Api\Controllers;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\ApiController;
 use Bayfront\BonesService\Api\ApiService;
+use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Authenticators\PasswordAuthenticator;
 use Bayfront\BonesService\Rbac\Authenticators\TokenAuthenticator;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\InvalidPasswordException;
@@ -16,6 +19,7 @@ use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDoesNotExistExcepti
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserNotVerifiedException;
 use Bayfront\BonesService\Rbac\Models\UserMeta;
 use Bayfront\BonesService\Rbac\User;
+use Bayfront\HttpRequest\Request;
 
 class Auth extends ApiController
 {
@@ -24,26 +28,44 @@ class Auth extends ApiController
     {
         parent::__construct($apiService);
 
-        /*
-         * TODO:
-         * Auth rate limit
-         */
+        // Rate limit
+
+        if ((int)$this->apiService->getConfig('rate_limit.auth', 0) > 0) {
+            $this->rateLimitOrAbort('auth-' . Request::getIp(), (int)$this->apiService->getConfig('rate_limit.auth'));
+        }
 
     }
 
+    /**
+     * @param User $user
+     * @return void
+     * @throws ApiServiceException
+     */
     private function respondWithTokens(User $user): void
     {
 
         $userMeta = new UserMeta($this->apiService->rbacService);
 
-        $this->apiService->respond(201, [
-            'access' => $userMeta->createToken($user->getId(), $userMeta::TOKEN_TYPE_ACCESS),
-            'refresh' => $userMeta->createToken($user->getId(), $userMeta::TOKEN_TYPE_REFRESH),
-            'expires' => '123'
-        ]);
+        try {
+
+            $this->apiService->respond(201, [
+                'access' => $userMeta->createToken($user->getId(), $userMeta::TOKEN_TYPE_ACCESS),
+                'refresh' => $userMeta->createToken($user->getId(), $userMeta::TOKEN_TYPE_REFRESH),
+                'expires' => '123'
+            ]);
+
+        } catch (DoesNotExistException|UnexpectedException $e) {
+            $this->apiService->throwException(500, $e->getMessage());
+        }
 
     }
 
+    /**
+     * Authenticate with email and password.
+     *
+     * @return void
+     * @throws ApiServiceException
+     */
     public function login(): void
     {
 
@@ -67,6 +89,12 @@ class Auth extends ApiController
 
     }
 
+    /**
+     * Authenticate with refresh token.
+     *
+     * @return void
+     * @throws ApiServiceException
+     */
     public function token(): void
     {
 

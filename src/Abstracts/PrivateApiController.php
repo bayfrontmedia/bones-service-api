@@ -28,10 +28,11 @@ abstract class PrivateApiController extends ApiController
         parent::__construct($apiService);
         $this->user = $this->authenticateUser();
 
-        /*
-         * TODO:
-         * Rate limit
-         */
+        // Rate limit
+
+        if ((int)$this->apiService->getConfig('rate_limit.private', 0) > 0) {
+            $this->rateLimitOrAbort('private-' . $this->user->getId(), (int)$this->apiService->getConfig('rate_limit.private'));
+        }
 
         $this->apiService->events->doEvent('api.controller.private', $this);
 

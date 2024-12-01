@@ -2,7 +2,9 @@
 
 namespace Bayfront\BonesService\Api\Abstracts;
 
+use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\BonesService\Api\ApiService;
+use Bayfront\HttpRequest\Request;
 
 class PublicApiController extends ApiController
 {
@@ -11,10 +13,11 @@ class PublicApiController extends ApiController
     {
         parent::__construct($apiService);
 
-        /*
-         * TODO:
-         * Rate limit
-         */
+        // Rate limit
+
+        if ((int)$this->apiService->getConfig('rate_limit.public', 0) > 0) {
+            $this->rateLimitOrAbort('public-' . Request::getIp(), (int)$this->apiService->getConfig('rate_limit.public'));
+        }
 
         $this->apiService->events->doEvent('api.controller.public', $this);
     }

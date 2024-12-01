@@ -41,6 +41,10 @@ class ApiService extends Service
      * The container will resolve any dependencies.
      * EventService is required by the abstract service.
      *
+     * TODO:
+     * Move most of these methods to ApiController.
+     * Ensure they all use ->throwException
+     *
      * @param EventService $events
      * @param FilterService $filters
      * @param RbacService $rbacService

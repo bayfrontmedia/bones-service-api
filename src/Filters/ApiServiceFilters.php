@@ -63,6 +63,7 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
             $data[$meta_field] = array_merge((array)Arr::get($data, $meta_field, []), $this->apiService->filters->doFilter('api.response.meta', [
                 'version' => $this->apiService->getConfig('version', ''),
                 'clientIp' => Request::getIp(),
+                'date' => date('c'),
                 'elapsed' => App::getElapsedTime()
             ]));
 

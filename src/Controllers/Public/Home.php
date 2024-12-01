@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Public;
 
+use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\BonesService\Api\Abstracts\PublicApiController;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\HttpRequest\Request;
@@ -22,9 +23,10 @@ class Home extends PublicApiController
         $schema = [
             'data' => [
                 'status' => 'OK',
-                'apiVersion' => $this->apiService->getConfig('version', ''),
+                'version' => $this->apiService->getConfig('version', ''),
                 'clientIp' => Request::getIp(),
-                'date' => date('Y-m-d H:i:s')
+                'date' => date('c'),
+                'elapsed' => App::getElapsedTime()
             ]
         ];
 

@@ -230,7 +230,7 @@ abstract class ApiController extends Controller
             throw new ApiServiceException('Unable to respond: Invalid status code (' . $status_code . ')');
         }
 
-        $this->events->doEvent('api.response', $this, $this->response);
+        $this->events->doEvent('api.response', $this);
 
         $this->response->send();
 

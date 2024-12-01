@@ -129,17 +129,16 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
      * Set required response headers.
      *
      * @param ApiController $apiController
-     * @param Response $response
      * @return void
      */
-    public function setRequiredHeaders(ApiController $apiController, Response $response): void
+    public function setRequiredHeaders(ApiController $apiController): void
     {
 
         if ($apiController->set_required_headers === false) {
             return;
         }
 
-        $response->setHeaders($this->apiService->getConfig('response.headers', []));
+        $apiController->response->setHeaders($this->apiService->getConfig('response.headers', []));
     }
 
     /**

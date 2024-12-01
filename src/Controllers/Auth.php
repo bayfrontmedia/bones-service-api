@@ -16,7 +16,7 @@ use Bayfront\BonesService\Rbac\Exceptions\Authentication\UnexpectedAuthenticatio
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDisabledException;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDoesNotExistException;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserNotVerifiedException;
-use Bayfront\BonesService\Rbac\Models\UserMeta;
+use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\User;
 use Bayfront\HttpRequest\Request;
 
@@ -43,13 +43,13 @@ class Auth extends ApiController
     private function respondWithTokens(User $user): void
     {
 
-        $userMeta = new UserMeta($this->rbacService);
+        $userMetaModel = new UserMetaModel($this->rbacService);
 
         try {
 
             $this->respond(201, [
-                'access' => $userMeta->createToken($user->getId(), $userMeta::TOKEN_TYPE_ACCESS),
-                'refresh' => $userMeta->createToken($user->getId(), $userMeta::TOKEN_TYPE_REFRESH),
+                'access' => $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_ACCESS),
+                'refresh' => $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_REFRESH),
                 'expires' => '123'
             ]);
 

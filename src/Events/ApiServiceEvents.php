@@ -11,10 +11,10 @@ use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotAcceptableException;
 use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
-use Bayfront\BonesService\Rbac\Models\TenantInvitations;
-use Bayfront\BonesService\Rbac\Models\UserKeys;
-use Bayfront\BonesService\Rbac\Models\UserMeta;
-use Bayfront\BonesService\Rbac\Models\Users;
+use Bayfront\BonesService\Rbac\Models\TenantInvitationsModel;
+use Bayfront\BonesService\Rbac\Models\UserKeysModel;
+use Bayfront\BonesService\Rbac\Models\UserMetaModel;
+use Bayfront\BonesService\Rbac\Models\UsersModel;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\LabelExistsException;
 use Bayfront\CronScheduler\SyntaxException;
@@ -149,29 +149,29 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
         $this->scheduler->call('delete-expired-mfas', function () {
 
-            $users = new Users($this->apiService->rbacService);
-            $users->deleteExpiredMfas();
+            $usersModel = new UsersModel($this->apiService->rbacService);
+            $usersModel->deleteExpiredMfas();
 
         })->everyMinutes(15);
 
         $this->scheduler->call('delete-expired-tokens', function () {
 
-            $userMeta = new UserMeta($this->apiService->rbacService);
-            $userMeta->deleteExpiredTokens();
+            $userMetaModel = new UserMetaModel($this->apiService->rbacService);
+            $userMetaModel->deleteExpiredTokens();
 
         })->everyMinutes(15);
 
         $this->scheduler->call('delete-expired-invitations', function () {
 
-            $tenantInvitations = new TenantInvitations($this->apiService->rbacService);
-            $tenantInvitations->pruneQuietly(time());
+            $tenantInvitationsModel = new TenantInvitationsModel($this->apiService->rbacService);
+            $tenantInvitationsModel->pruneQuietly(time());
 
         })->everyHours(12);
 
         $this->scheduler->call('delete-expired-keys', function () {
 
-            $userKeys = new UserKeys($this->apiService->rbacService);
-            $userKeys->pruneQuietly(time());
+            $userKeysModel = new UserKeysModel($this->apiService->rbacService);
+            $userKeysModel->pruneQuietly(time());
 
         })->everyHours(12);
 
@@ -180,8 +180,8 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
             $this->scheduler->call('delete-unverified-users', function () {
 
-                $users = new Users($this->apiService->rbacService);
-                $users->deleteUnverified(time() - (int)$this->apiService->getConfig('unverified_user_expiration'));
+                $usersModel = new UsersModel($this->apiService->rbacService);
+                $usersModel->deleteUnverified(time() - (int)$this->apiService->getConfig('unverified_user_expiration'));
 
             })->everyHours(12);
 

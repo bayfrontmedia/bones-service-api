@@ -87,7 +87,9 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
                 $response['aggregate'] = $aggregate;
             }
 
-            $this->respond(200, $response);
+            $this->respond(200, $response, [
+                'Cache-Control' => 'max-age=3600'
+            ]);
 
         }
 
@@ -107,7 +109,9 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
             $this->abort(500, 'Unable to read resource: Unexpected error', $e);
         }
 
-        $this->respond(200, $permission);
+        $this->respond(200, $permission, [
+            'Cache-Control' => 'max-age=3600'
+        ]);
 
     }
 

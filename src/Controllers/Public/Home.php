@@ -22,6 +22,8 @@ class Home extends PublicApiController
             'clientIp' => Request::getIp(),
             'apiVersion' => $this->apiService->getConfig('version'),
             'date' => date('Y-m-d H:i:s')
+        ], [
+            'Cache-Control' => 'no-cache, no-store, max-age=0, must-revalidate'
         ]);
     }
 

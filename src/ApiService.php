@@ -7,6 +7,9 @@ use Bayfront\Bones\Abstracts\Service;
 use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Exceptions\ServiceException;
+use Bayfront\BonesService\Api\Controllers\Auth;
+use Bayfront\BonesService\Api\Controllers\Private\Permissions;
+use Bayfront\BonesService\Api\Controllers\Public\Home;
 use Bayfront\BonesService\Api\Events\ApiServiceEvents;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Filters\ApiServiceFilters;
@@ -87,14 +90,14 @@ class ApiService extends Service
      */
     public function addRoutes(Router $router): void
     {
-        $router->get('/', 'Bayfront\BonesService\Api\Controllers\Public\Home:index')
-            ->post('/auth/login', 'Bayfront\BonesService\Api\Controllers\Auth:login')
-            ->post('/auth/token', 'Bayfront\BonesService\Api\Controllers\Auth:token')
-            ->post('/permissions', 'Bayfront\BonesService\Api\Controllers\Private\Permissions:create')
-            ->get('/permissions', 'Bayfront\BonesService\Api\Controllers\Private\Permissions:list')
-            ->get('/permissions/{*:id}', 'Bayfront\BonesService\Api\Controllers\Private\Permissions:read')
-            ->patch('/permissions/{*:id}', 'Bayfront\BonesService\Api\Controllers\Private\Permissions:update')
-            ->delete('/permissions/{*:id}', 'Bayfront\BonesService\Api\Controllers\Private\Permissions:delete');
+        $router->get('/', [Home::class, 'index'])
+            ->post('/auth/login', [Auth::class, 'login'])
+            ->post('/auth/token', [Auth::class, 'token'])
+            ->post('/permissions', [Permissions::class, 'create'])
+            ->get('/permissions',  [Permissions::class, 'list'])
+            ->get('/permissions/{*:id}',  [Permissions::class, 'read'])
+            ->patch('/permissions/{*:id}',  [Permissions::class, 'update'])
+            ->delete('/permissions/{*:id}',  [Permissions::class, 'delete']);
     }
 
 }

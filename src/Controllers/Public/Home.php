@@ -22,11 +22,7 @@ class Home extends PublicApiController
         // Schema
         $schema = [
             'data' => [
-                'status' => 'OK',
-                'version' => $this->apiService->getConfig('version', ''),
-                'clientIp' => Request::getIp(),
-                'date' => date('c'),
-                'elapsed' => App::getElapsedTime()
+                'status' => 'OK'
             ]
         ];
 

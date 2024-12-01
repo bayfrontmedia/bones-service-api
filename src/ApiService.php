@@ -9,24 +9,11 @@ use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\BonesService\Api\Events\ApiServiceEvents;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
-use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
-use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
-use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
-use Bayfront\BonesService\Api\Exceptions\Http\MethodNotAllowedException;
-use Bayfront\BonesService\Api\Exceptions\Http\NotAcceptableException;
-use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
-use Bayfront\BonesService\Api\Exceptions\Http\PaymentRequiredException;
-use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
-use Bayfront\BonesService\Api\Exceptions\Http\UnauthorizedException;
 use Bayfront\BonesService\Api\Filters\ApiServiceFilters;
-use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
 use Bayfront\BonesService\Rbac\RbacService;
 use Bayfront\CronScheduler\Cron;
-use Bayfront\HttpRequest\Request;
-use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 use Bayfront\RouteIt\Router;
-use Throwable;
 
 class ApiService extends Service
 {
@@ -40,10 +27,6 @@ class ApiService extends Service
     /**
      * The container will resolve any dependencies.
      * EventService is required by the abstract service.
-     *
-     * TODO:
-     * Move most of these methods to ApiController.
-     * Ensure they all use ->throwException
      *
      * @param EventService $events
      * @param FilterService $filters
@@ -94,100 +77,6 @@ class ApiService extends Service
     public function getConfig(string $key = '', mixed $default = null): mixed
     {
         return Arr::get($this->config, $key, $default);
-    }
-
-    /**
-     * Get JSON-encoded request body.
-     *
-     * @param bool $required (Throws BadRequestException if required and not existing)
-     * @return array
-     * @throws ApiExceptionInterface
-     */
-    public function getBody(bool $required = false): array
-    {
-
-        $body = json_decode(Request::getBody(), true);
-
-        if (!$body || !is_array($body)) {
-
-            if ($required === true) {
-                throw new BadRequestException('Unable to get body: Invalid or missing JSON body');
-            } else {
-                return [];
-            }
-
-        }
-
-        return $body;
-
-    }
-
-    /**
-     * Send API response.
-     *
-     * - Filters response using the api.response filter
-     * - Triggers the api.response event
-     * - Sends $data as json_encoded string
-     *
-     * @param int $status_code (HTTP status code to send)
-     * @param array $data (Data to send)
-     * @param array $headers (Key/value pairs of header values to send)
-     * @return void
-     * @throws ApiServiceException
-     */
-    public function respond(int $status_code = 200, array $data = [], array $headers = []): void
-    {
-
-        $data = (array)$this->filters->doFilter('api.response', $data);
-
-        try {
-
-            $this->response->setStatusCode($status_code)->setHeaders($headers);
-
-            if (!empty($data)) { // Only setBody if one exists
-                $this->response->setBody(json_encode($data));
-            }
-
-        } catch (InvalidStatusCodeException) {
-            throw new ApiServiceException('Unable to respond: Invalid status code (' . $status_code . ')');
-        }
-
-        $this->events->doEvent('api.response', $this->response);
-
-        $this->response->send();
-
-    }
-
-    /**
-     * Throws appropriate API exception based on status code.
-     *
-     * @param int $status_code
-     * @param string $message
-     * @param Throwable|null $previous
-     * @return no-return
-     * @throws ApiExceptionInterface
-     */
-    public function throwException(int $status_code, string $message = '', Throwable $previous = null): void
-    {
-
-        $exceptions = [
-            400 => BadRequestException::class,
-            401 => UnauthorizedException::class,
-            402 => PaymentRequiredException::class,
-            403 => ForbiddenException::class,
-            404 => NotFoundException::class,
-            405 => MethodNotAllowedException::class,
-            406 => NotAcceptableException::class,
-            409 => ConflictException::class,
-            429 => TooManyRequestsException::class
-        ];
-
-        if (isset($exceptions[$status_code])) {
-            throw new $exceptions[$status_code]($message, 0, $previous);
-        }
-
-        throw new ApiServiceException($message, 0, $previous);
-
     }
 
     /**

@@ -9,7 +9,7 @@ class Home extends PublicApiController
 
     public function index(): void
     {
-        $this->apiService->respond(200, [
+        $this->respond(200, [
             'status' => 'ok'
         ]);
     }

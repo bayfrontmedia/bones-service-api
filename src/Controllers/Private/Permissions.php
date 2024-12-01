@@ -3,7 +3,7 @@
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
 use Bayfront\BonesService\Api\Abstracts\PrivateApiController;
-use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
 
 class Permissions extends PrivateApiController
 {
@@ -12,11 +12,11 @@ class Permissions extends PrivateApiController
      * List permissions.
      *
      * @return void
-     * @throws ApiServiceException
+     * @throws ApiExceptionInterface
      */
     public function list(): void
     {
-        $this->apiService->respond(200, $this->user->read());
+        $this->respond(200, $this->user->read());
     }
 
 }

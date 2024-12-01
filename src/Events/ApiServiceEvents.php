@@ -11,7 +11,6 @@ use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotAcceptableException;
 use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
-use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\TenantInvitations;
 use Bayfront\BonesService\Rbac\Models\UserKeys;
 use Bayfront\BonesService\Rbac\Models\UserMeta;
@@ -148,28 +147,28 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     public function scheduleApiJobs(): void
     {
 
-        $this->scheduler->call('delete-expired-mfas', function() {
+        $this->scheduler->call('delete-expired-mfas', function () {
 
             $users = new Users($this->apiService->rbacService);
             $users->deleteExpiredMfas();
 
         })->everyMinutes(15);
 
-        $this->scheduler->call('delete-expired-tokens', function() {
+        $this->scheduler->call('delete-expired-tokens', function () {
 
             $userMeta = new UserMeta($this->apiService->rbacService);
             $userMeta->deleteExpiredTokens();
 
         })->everyMinutes(15);
 
-        $this->scheduler->call('delete-expired-invitations', function() {
+        $this->scheduler->call('delete-expired-invitations', function () {
 
             $tenantInvitations = new TenantInvitations($this->apiService->rbacService);
             $tenantInvitations->pruneQuietly(time());
 
         })->everyHours(12);
 
-        $this->scheduler->call('delete-expired-keys', function() {
+        $this->scheduler->call('delete-expired-keys', function () {
 
             $userKeys = new UserKeys($this->apiService->rbacService);
             $userKeys->pruneQuietly(time());
@@ -179,7 +178,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
         if ($this->apiService->rbacService->getConfig('user.require_verification') === true
             && (int)$this->apiService->getConfig('unverified_user_expiration', 0) > 0) {
 
-            $this->scheduler->call('delete-unverified-users', function() {
+            $this->scheduler->call('delete-unverified-users', function () {
 
                 $users = new Users($this->apiService->rbacService);
                 $users->deleteUnverified(time() - (int)$this->apiService->getConfig('unverified_user_expiration'));

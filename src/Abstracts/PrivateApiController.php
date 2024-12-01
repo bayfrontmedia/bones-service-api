@@ -31,10 +31,10 @@ abstract class PrivateApiController extends ApiController
         // Rate limit
 
         if ((int)$this->apiService->getConfig('rate_limit.private', 0) > 0) {
-            $this->rateLimitOrAbort('private-' . $this->user->getId(), (int)$this->apiService->getConfig('rate_limit.private'));
+            $this->enforceRateLimit(md5('private-' . $this->user->getId()), (int)$this->apiService->getConfig('rate_limit.private'));
         }
 
-        $this->apiService->events->doEvent('api.controller.private', $this);
+        $this->events->doEvent('api.controller.private', $this);
 
     }
 
@@ -42,23 +42,23 @@ abstract class PrivateApiController extends ApiController
     {
         if (Request::hasHeader('Bearer')) {
 
-            $authenticator = new TokenAuthenticator($this->apiService->rbacService);
+            $authenticator = new TokenAuthenticator($this->rbacService);
 
             try {
                 return $authenticator->authenticate(Request::getHeader('Bearer'), $authenticator::TOKEN_TYPE_ACCESS);
             } catch (InvalidTokenException|TokenDoesNotExistException|UserDoesNotExistException) {
-                $this->apiService->throwException(403, 'Invalid credentials');
+                $this->abort(403, 'Invalid credentials');
             } catch (UserDisabledException) {
-                $this->apiService->throwException(403, 'User is disabled');
+                $this->abort(403, 'User is disabled');
             } catch (UserNotVerifiedException) {
-                $this->apiService->throwException(403, 'User is not verified');
+                $this->abort(403, 'User is not verified');
             } catch (UnexpectedAuthenticationException $e) {
-                $this->apiService->throwException(500, $e->getMessage());
+                $this->abort(500, $e->getMessage());
             }
 
         } else if (Request::hasHeader('X-API-Key')) {
 
-            $authenticator = new UserKeyAuthenticator($this->apiService->rbacService);
+            $authenticator = new UserKeyAuthenticator($this->rbacService);
 
             if (is_string(Request::getReferer())) {
                 $referer = Request::getReferer();
@@ -69,24 +69,24 @@ abstract class PrivateApiController extends ApiController
             try {
                 return $authenticator->authenticate(Request::getHeader('X-API-Key'), Request::getIp(), $referer);
             } catch (InvalidUserKeyException|UserDoesNotExistException) {
-                $this->apiService->throwException(403, 'Invalid credentials');
+                $this->abort(403, 'Invalid credentials');
             } catch (ExpiredUserKeyException) {
-                $this->apiService->throwException(403, 'API key is expired');
+                $this->abort(403, 'API key is expired');
             } catch (InvalidDomainException) {
-                $this->apiService->throwException(403, 'Domain not allowed');
+                $this->abort(403, 'Domain not allowed');
             } catch (InvalidIpException) {
-                $this->apiService->throwException(403, 'IP not allowed');
+                $this->abort(403, 'IP not allowed');
             } catch (UserDisabledException) {
-                $this->apiService->throwException(403, 'User is disabled');
+                $this->abort(403, 'User is disabled');
             } catch (UserNotVerifiedException) {
-                $this->apiService->throwException(403, 'User is not verified');
+                $this->abort(403, 'User is not verified');
             } catch (UnexpectedAuthenticationException $e) {
-                $this->apiService->throwException(500, $e->getMessage());
+                $this->abort(500, $e->getMessage());
             }
 
         }
 
-        $this->apiService->throwException(403, 'Missing credentials');
+        $this->abort(403, 'Missing credentials');
 
     }
 

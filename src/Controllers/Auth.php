@@ -2,10 +2,9 @@
 
 namespace Bayfront\BonesService\Api\Controllers;
 
-use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\ApiController;
 use Bayfront\BonesService\Api\ApiService;
-use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Authenticators\PasswordAuthenticator;
@@ -31,7 +30,7 @@ class Auth extends ApiController
         // Rate limit
 
         if ((int)$this->apiService->getConfig('rate_limit.auth', 0) > 0) {
-            $this->rateLimitOrAbort('auth-' . Request::getIp(), (int)$this->apiService->getConfig('rate_limit.auth'));
+            $this->enforceRateLimit(md5('auth-' . Request::getIp()), (int)$this->apiService->getConfig('rate_limit.auth'));
         }
 
     }
@@ -39,23 +38,23 @@ class Auth extends ApiController
     /**
      * @param User $user
      * @return void
-     * @throws ApiServiceException
+     * @throws ApiExceptionInterface
      */
     private function respondWithTokens(User $user): void
     {
 
-        $userMeta = new UserMeta($this->apiService->rbacService);
+        $userMeta = new UserMeta($this->rbacService);
 
         try {
 
-            $this->apiService->respond(201, [
+            $this->respond(201, [
                 'access' => $userMeta->createToken($user->getId(), $userMeta::TOKEN_TYPE_ACCESS),
                 'refresh' => $userMeta->createToken($user->getId(), $userMeta::TOKEN_TYPE_REFRESH),
                 'expires' => '123'
             ]);
 
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->apiService->throwException(500, $e->getMessage());
+            $this->abort(500, $e->getMessage());
         }
 
     }
@@ -64,25 +63,31 @@ class Auth extends ApiController
      * Authenticate with email and password.
      *
      * @return void
-     * @throws ApiServiceException
+     * @throws ApiExceptionInterface
      */
     public function login(): void
     {
 
-        $body = $this->apiService->getBody(true);
+        $body = $this->getBody([
+            'email',
+            'password'
+        ], [
+            'email',
+            'password'
+        ]);
 
-        $authenticator = new PasswordAuthenticator($this->apiService->rbacService);
+        $authenticator = new PasswordAuthenticator($this->rbacService);
 
         try {
-            $user = $authenticator->authenticate(Arr::get($body, 'email', ''), Arr::get($body, 'password', ''));
+            $user = $authenticator->authenticate($body['email'], $body['password']);
         } catch (InvalidPasswordException|UserDoesNotExistException) {
-            $this->apiService->throwException(401, 'Invalid credentials');
+            $this->abort(401, 'Invalid credentials');
         } catch (UserDisabledException) {
-            $this->apiService->throwException(401, 'User is disabled');
+            $this->abort(401, 'User is disabled');
         } catch (UserNotVerifiedException) {
-            $this->apiService->throwException(401, 'User is unverified');
+            $this->abort(401, 'User is unverified');
         } catch (UnexpectedAuthenticationException $e) {
-            $this->apiService->throwException(500, $e->getMessage());
+            $this->abort(500, $e->getMessage());
         }
 
         $this->respondWithTokens($user);
@@ -93,25 +98,29 @@ class Auth extends ApiController
      * Authenticate with refresh token.
      *
      * @return void
-     * @throws ApiServiceException
+     * @throws ApiExceptionInterface
      */
     public function token(): void
     {
 
-        $body = $this->apiService->getBody(true);
+        $body = $this->getBody([
+            'refresh_token'
+        ], [
+            'refresh_token'
+        ]);
 
-        $authenticator = new TokenAuthenticator($this->apiService->rbacService);
+        $authenticator = new TokenAuthenticator($this->rbacService);
 
         try {
-            $user = $authenticator->authenticate(Arr::get($body, 'refresh_token', ''), $authenticator::TOKEN_TYPE_REFRESH);
+            $user = $authenticator->authenticate($body['refresh_token'], $authenticator::TOKEN_TYPE_REFRESH);
         } catch (InvalidTokenException|TokenDoesNotExistException|UserDoesNotExistException) {
-            $this->apiService->throwException(401, 'Invalid refresh token');
+            $this->abort(401, 'Invalid refresh token');
         } catch (UserDisabledException) {
-            $this->apiService->throwException(401, 'User is disabled');
+            $this->abort(401, 'User is disabled');
         } catch (UserNotVerifiedException) {
-            $this->apiService->throwException(401, 'User is unverified');
+            $this->abort(401, 'User is unverified');
         } catch (UnexpectedAuthenticationException $e) {
-            $this->apiService->throwException(500, $e->getMessage());
+            $this->abort(500, $e->getMessage());
         }
 
         $this->respondWithTokens($user);

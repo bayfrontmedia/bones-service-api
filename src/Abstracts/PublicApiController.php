@@ -5,7 +5,7 @@ namespace Bayfront\BonesService\Api\Abstracts;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\HttpRequest\Request;
 
-class PublicApiController extends ApiController
+abstract class PublicApiController extends ApiController
 {
 
     public function __construct(ApiService $apiService)

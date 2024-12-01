@@ -6,6 +6,7 @@ use Bayfront\Bones\Abstracts\EventSubscriber;
 use Bayfront\Bones\Application\Services\Events\EventSubscription;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Interfaces\EventSubscriberInterface;
+use Bayfront\BonesService\Api\Abstracts\ApiController;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
@@ -53,11 +54,16 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     /**
      * Check for required request headers.
      *
+     * @param ApiController $apiController
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws BadRequestException
      */
-    public function checkRequiredHeaders(): void
+    public function checkRequiredHeaders(ApiController $apiController): void
     {
+
+        if ($apiController->check_required_headers === false) {
+            return;
+        }
 
         $required_headers = $this->apiService->getConfig('request.headers', []);
 
@@ -74,11 +80,16 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     /**
      * Check request is made over HTTPS.
      *
+     * @param ApiController $apiController
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws NotAcceptableException
      */
-    public function checkHttps(): void
+    public function checkHttps(ApiController $apiController): void
     {
+
+        if ($apiController->check_https === false) {
+            return;
+        }
 
         if (!Request::isHttps() && in_array(App::environment(), $this->apiService->getConfig('request.https_env', []))) {
             throw new NotAcceptableException('All requests must be made over HTTPS');
@@ -89,11 +100,16 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     /**
      * Restrict access by IP.
      *
+     * @param ApiController $apiController
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws ForbiddenException
      */
-    public function checkIpWhitelist(): void
+    public function checkIpWhitelist(ApiController $apiController): void
     {
+
+        if ($apiController->check_ip_whitelist === false) {
+            return;
+        }
 
         $whitelist = $this->apiService->getConfig('request.ip_whitelist', []);
 
@@ -112,12 +128,17 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     /**
      * Set required response headers.
      *
+     * @param ApiController $apiController
      * @param Response $response
      * @return void
      */
-
-    public function setRequiredHeaders(Response $response): void
+    public function setRequiredHeaders(ApiController $apiController, Response $response): void
     {
+
+        if ($apiController->set_required_headers === false) {
+            return;
+        }
+
         $response->setHeaders($this->apiService->getConfig('response.headers', []));
     }
 

@@ -18,7 +18,6 @@ use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
 use Bayfront\BonesService\Api\Exceptions\Http\PaymentRequiredException;
 use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Exceptions\Http\UnauthorizedException;
-use Bayfront\BonesService\Api\Interfaces\ApiControllerInterface;
 use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
 use Bayfront\BonesService\Rbac\RbacService;
 use Bayfront\HttpRequest\Request;
@@ -51,6 +50,14 @@ abstract class ApiController extends Controller
         $this->events->doEvent('api.controller', $this);
     }
 
+    /*
+     * Override global API configuration
+     */
+    public bool $check_required_headers = true;
+    public bool $check_https = true;
+    public bool $check_ip_whitelist = true;
+    public bool $set_required_headers = true;
+
     /**
      * Enforce rate limit and set X-RateLimit headers.
      * On error, aborts with 429 HTTP status.
@@ -70,7 +77,7 @@ abstract class ApiController extends Controller
                 'id' => $id,
                 'settings' => [
                     'capacity' => $limit,
-                    'leak' => 1 // TODO: This is not calculating correctly
+                    'leak' => $limit // TODO: $limit for burstable, 1 for hard limit - test which is best
                 ]
             ]);
 
@@ -102,6 +109,27 @@ abstract class ApiController extends Controller
             'X-RateLimit-Remaining' => floor($bucket->getCapacityRemaining()),
             'X-RateLimit-Reset' => round($bucket->getSecondsUntilEmpty())
         ]);
+
+    }
+
+    /**
+     * Require headers.
+     * On error, aborts with 400 HTTP status.
+     *
+     * @param array $headers
+     * @return void
+     * @throws ApiExceptionInterface
+     */
+    protected function requireHeaders(array $headers): void
+    {
+
+        foreach ($headers as $k => $v) {
+
+            if (Request::getHeader($k) !== $v) {
+                $this->abort(400, 'Required header missing or invalid: ' . $k);
+            }
+
+        }
 
     }
 
@@ -202,7 +230,7 @@ abstract class ApiController extends Controller
             throw new ApiServiceException('Unable to respond: Invalid status code (' . $status_code . ')');
         }
 
-        $this->events->doEvent('api.response', $this->response);
+        $this->events->doEvent('api.response', $this, $this->response);
 
         $this->response->send();
 

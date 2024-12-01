@@ -32,6 +32,10 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
     public function create(): void
     {
 
+        $this->requireHeaders([
+            'Content-Type' => 'application/json',
+        ]);
+
         try {
             $permission = $this->permissionsModel->create($this->getBody());
         } catch (AlreadyExistsException $e) {
@@ -60,7 +64,32 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
             $this->abort(500, 'Unable to list resource: Unexpected error', $e);
         }
 
-        $this->respond(200, $permissions->list());
+        try {
+            $pagination = $permissions->getPagination();
+            $aggregate = $permissions->getAggregate();
+        } catch (InvalidRequestException $e) {
+            $this->abort(400, 'Unable to list resource: Invalid request', $e);
+        }
+
+        if (empty($pagination) && empty($aggregate)) {
+            $this->respond(200, $permissions->list());
+        } else {
+
+            $response = [
+                'data' => $permissions->list()
+            ];
+
+            if (!empty($pagination)) {
+                $response['pagination'] = $pagination;
+            }
+
+            if (!empty($aggregate)) {
+                $response['aggregate'] = $aggregate;
+            }
+
+            $this->respond(200, $response);
+
+        }
 
     }
 
@@ -87,6 +116,10 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
      */
     public function update(array $params): void
     {
+
+        $this->requireHeaders([
+            'Content-Type' => 'application/json',
+        ]);
 
         try {
             $permission = $this->permissionsModel->update(Arr::get($params, 'id'), $this->getBody());

@@ -17,12 +17,18 @@ class Home extends PublicApiController
 
     public function index(): void
     {
-        $this->respond(200, [
-            'status' => 'OK',
-            'apiVersion' => $this->apiService->getConfig('version', ''),
-            'clientIp' => Request::getIp(),
-            'date' => date('Y-m-d H:i:s')
-        ], [
+
+        // Schema
+        $schema = [
+            'data' => [
+                'status' => 'OK',
+                'apiVersion' => $this->apiService->getConfig('version', ''),
+                'clientIp' => Request::getIp(),
+                'date' => date('Y-m-d H:i:s')
+            ]
+        ];
+
+        $this->respond(200, $schema, [
             'Cache-Control' => 'no-cache, no-store, max-age=0, must-revalidate'
         ]);
     }

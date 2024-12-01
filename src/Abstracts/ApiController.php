@@ -157,14 +157,38 @@ abstract class ApiController extends Controller
         }
 
         if (!empty($allowed) && !empty(Arr::except($body, $allowed))) {
-            $this->abort(400, 'Unable to get body: Invalid fields');
+            $this->abort(400, 'Unable to get body: Invalid field(s)');
         }
 
         if (!empty($required) && Arr::isMissing($body, $required)) {
-            $this->abort(400, 'Unable to get body: Missing required fields');
+            $this->abort(400, 'Unable to get body: Missing required field(s)');
         }
 
         return $body;
+
+    }
+
+    /**
+     * Get URL query parameters.
+     *
+     * @param array $allowed (Allowed keys)
+     * @param array $required (Required keys)
+     * @return array
+     */
+    protected function getQuery(array $allowed = [], array $required = []): array
+    {
+
+        $query = Request::getQuery();
+
+        if (!empty($allowed) && !empty(Arr::except($query, $allowed))) {
+            $this->abort(400, 'Unable to get query: Invalid key(s)');
+        }
+
+        if (!empty($required) && Arr::isMissing($query, $required)) {
+            $this->abort(400, 'Unable to get query: Missing required key(s)');
+        }
+
+        return $query;
 
     }
 

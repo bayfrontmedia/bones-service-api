@@ -5,7 +5,6 @@ namespace Bayfront\BonesService\Api\Controllers\Private;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\ApiService;
-use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Interfaces\ApiControllerInterface;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
@@ -14,7 +13,6 @@ use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
 use Bayfront\BonesService\Rbac\Models\PermissionsModel;
-use Bayfront\HttpRequest\Request;
 
 class Permissions extends PrivateApiController implements ApiControllerInterface
 {
@@ -55,7 +53,9 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
         }
 
         // Schema
-        $schema = $permission->read();
+        $schema = [
+            'data' => $permission->read()
+        ];
 
         // Response
         $this->respond(201, $schema);
@@ -77,7 +77,7 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
 
         // Function
         try {
-            $collection = $this->permissionsModel->list(new QueryParser(Request::getQuery()));
+            $collection = $this->permissionsModel->list(new QueryParser($this->getQuery()));
         } catch (InvalidRequestException $e) {
             $this->abort(400, 'Unable to list resource: Invalid request', $e);
         } catch (UnexpectedException $e) {
@@ -135,13 +135,17 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
 
         // Function
         try {
-            // Schema
-            $schema = $this->permissionsModel->read(Arr::get($params, 'id', ''));
+            $resource = $this->permissionsModel->read(Arr::get($params, 'id', ''));
         } catch (DoesNotExistException $e) {
             $this->abort(404, 'Unable to read resource: Resource does not exist', $e);
         } catch (UnexpectedException $e) {
             $this->abort(500, 'Unable to read resource: Unexpected error', $e);
         }
+
+        // Schema
+        $schema = [
+            'data' => $resource
+        ];
 
         // Response
         $this->respond(200, $schema, [
@@ -168,9 +172,7 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
 
         // Function
         try {
-            // Schema
             $resource = $this->permissionsModel->update(Arr::get($params, 'id'), $this->getBody());
-            $schema = $resource->read();
         } catch (AlreadyExistsException $e) {
             $this->abort(409, 'Unable to update resource: Existing conflict', $e);
         } catch (DoesNotExistException $e) {
@@ -180,6 +182,11 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
         } catch (UnexpectedException $e) {
             $this->abort(500, 'Unable to update resource: Unexpected error', $e);
         }
+
+        // Schema
+        $schema = [
+            'data' => $resource->read()
+        ];
 
         // Response
         $this->respond(200, $schema);

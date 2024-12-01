@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Filters;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Abstracts\FilterSubscriber;
 use Bayfront\Bones\Application\Services\Filters\FilterSubscription;
 use Bayfront\Bones\Application\Utilities\App;
@@ -47,7 +48,7 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
     }
 
     /**
-     * Add metadata to API response when in debug mode.
+     * Add metadata to API response when requested in request query.
      *
      * @param array $data
      * @return array
@@ -55,16 +56,15 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
     public function addMetadata(array $data): array
     {
 
-        if (App::isDebug()) {
+        $meta_field = $this->apiService->getConfig('request.meta_field', 'meta');
 
-            $data = array_merge($data, [
-                'meta' => [
-                    'bonesVersion' => App::getBonesVersion(),
-                    'apiVersion' => $this->apiService->getConfig('version', ''),
-                    'clientIp' => Request::getIp(),
-                    'elapsed' => App::getElapsedTime()
-                ]
-            ]);
+        if (Request::getQuery($meta_field) == 'true') {
+
+            $data[$meta_field] = array_merge((array)Arr::get($data, $meta_field, []), $this->apiService->filters->doFilter('api.response.meta', [
+                'version' => $this->apiService->getConfig('version', ''),
+                'clientIp' => Request::getIp(),
+                'elapsed' => App::getElapsedTime()
+            ]));
 
         }
 

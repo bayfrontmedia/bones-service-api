@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Controllers;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\ApiController;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
@@ -47,11 +48,19 @@ class Auth extends ApiController
 
         try {
 
-            $this->respond(201, [
-                'access' => $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_ACCESS),
-                'refresh' => $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_REFRESH),
-                'expires' => '123'
-            ]);
+            $access_token = $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_ACCESS);
+            $jwt = $userMetaModel->readToken($access_token);
+
+            // Schema
+            $schema = [
+                'data' => [
+                    'access' => $access_token,
+                    'refresh' => $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_REFRESH),
+                    'expires' => Arr::get($jwt, 'exp')
+                ]
+            ];
+
+            $this->respond(201, $schema);
 
         } catch (DoesNotExistException|UnexpectedException $e) {
             $this->abort(500, $e->getMessage());
@@ -67,6 +76,11 @@ class Auth extends ApiController
      */
     public function login(): void
     {
+
+        // Require headers
+        $this->requireHeaders([
+            'Content-Type' => 'application/json',
+        ]);
 
         $body = $this->getBody([
             'email',
@@ -102,6 +116,11 @@ class Auth extends ApiController
      */
     public function token(): void
     {
+
+        // Require headers
+        $this->requireHeaders([
+            'Content-Type' => 'application/json',
+        ]);
 
         $body = $this->getBody([
             'refresh_token'

@@ -90,7 +90,11 @@ class ApiService extends Service
         $router->get('/', 'Bayfront\BonesService\Api\Controllers\Public\Home:index')
             ->post('/auth/login', 'Bayfront\BonesService\Api\Controllers\Auth:login')
             ->post('/auth/token', 'Bayfront\BonesService\Api\Controllers\Auth:token')
-            ->get('/permissions', 'Bayfront\BonesService\Api\Controllers\Private\Permissions:list');
+            ->post('/permissions', 'Bayfront\BonesService\Api\Controllers\Private\Permissions:create')
+            ->get('/permissions', 'Bayfront\BonesService\Api\Controllers\Private\Permissions:list')
+            ->get('/permissions/{*:id}', 'Bayfront\BonesService\Api\Controllers\Private\Permissions:read')
+            ->patch('/permissions/{*:id}', 'Bayfront\BonesService\Api\Controllers\Private\Permissions:update')
+            ->delete('/permissions/{*:id}', 'Bayfront\BonesService\Api\Controllers\Private\Permissions:delete');
     }
 
 }

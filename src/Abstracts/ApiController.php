@@ -30,7 +30,7 @@ use Bayfront\LeakyBucket\BucketException;
 use Exception;
 use Throwable;
 
-abstract class ApiController extends Controller implements ApiControllerInterface
+abstract class ApiController extends Controller
 {
 
     public ApiService $apiService;
@@ -151,7 +151,13 @@ abstract class ApiController extends Controller implements ApiControllerInterfac
         $body = json_decode(Request::getBody(), true);
 
         if (!$body || !is_array($body)) {
-            throw new BadRequestException('Unable to get body: Invalid or missing JSON body');
+
+            if (empty($required)) {
+                return [];
+            } else {
+                throw new BadRequestException('Unable to get body: Invalid or missing JSON body');
+            }
+
         }
 
         if (!empty($allowed) && !empty(Arr::except($body, $allowed))) {

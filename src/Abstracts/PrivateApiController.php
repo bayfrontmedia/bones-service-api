@@ -31,7 +31,7 @@ abstract class PrivateApiController extends ApiController
     public function __construct(ApiService $apiService)
     {
         parent::__construct($apiService);
-        $this->user = $this->authenticateUser();
+        $this->user = $this->identifyUser();
 
         // Rate limit
 
@@ -44,13 +44,15 @@ abstract class PrivateApiController extends ApiController
     }
 
     /**
+     * Identify user using an enabled identification method.
+     *
      * @return User
      * @throws ApiExceptionInterface
      */
-    private function authenticateUser(): User
+    private function identifyUser(): User
     {
 
-        if ($this->apiService->getConfig('auth.token') === true && Request::hasHeader('Bearer')) {
+        if ($this->apiService->getConfig('identity.token') === true && Request::hasHeader('Bearer')) {
 
             $authenticator = new TokenAuthenticator($this->rbacService);
 
@@ -66,7 +68,7 @@ abstract class PrivateApiController extends ApiController
                 $this->abort(500, $e->getMessage());
             }
 
-        } else if ($this->apiService->getConfig('auth.key') === true && Request::hasHeader('X-API-Key')) {
+        } else if ($this->apiService->getConfig('identity.key') === true && Request::hasHeader('X-API-Key')) {
 
             $authenticator = new UserKeyAuthenticator($this->rbacService);
 

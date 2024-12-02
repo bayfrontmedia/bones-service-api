@@ -92,7 +92,7 @@ class ApiService extends Service
     {
         $router->get('/', [Home::class, 'index'])
             ->post('/auth/login', [Auth::class, 'login'])
-            ->post('/auth/token', [Auth::class, 'token'])
+            ->post('/auth/refresh', [Auth::class, 'refresh'])
             ->post('/permissions', [Permissions::class, 'create'])
             ->get('/permissions',  [Permissions::class, 'list'])
             ->get('/permissions/{*:id}',  [Permissions::class, 'read'])

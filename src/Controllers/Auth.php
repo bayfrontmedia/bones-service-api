@@ -114,7 +114,7 @@ class Auth extends ApiController
      * @return void
      * @throws ApiExceptionInterface
      */
-    public function token(): void
+    public function refresh(): void
     {
 
         // Require headers

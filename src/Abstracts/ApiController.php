@@ -169,32 +169,22 @@ abstract class ApiController extends Controller
      * Get JSON-encoded request body.
      * On error, aborts with 400 HTTP status.
      *
-     * @param array $allowed (Allowed fields)
      * @param array $required (Required fields)
      * @return array
-     * @throws ApiExceptionInterface
      */
-    protected function getBody(array $allowed = [], array $required = []): array
+    protected function getBody(array $required = []): array
     {
 
         $body = json_decode(Request::getBody(), true);
 
         if (!$body || !is_array($body)) {
+            $this->abort(400, 'Unable to get body: Invalid or missing JSON');
+        }
 
-            if (empty($required)) {
-                return [];
-            } else {
-                $this->abort(400, 'Unable to get body: Invalid or missing JSON body');
+        foreach ($required as $field) {
+            if (!isset($body[$field])) {
+                $this->abort(400, 'Unable to get body: Missing field (' . $field . ')');
             }
-
-        }
-
-        if (!empty($allowed) && !empty(Arr::except($body, $allowed))) {
-            $this->abort(400, 'Unable to get body: Invalid field(s)');
-        }
-
-        if (!empty($required) && Arr::isMissing($body, $required)) {
-            $this->abort(400, 'Unable to get body: Missing required field(s)');
         }
 
         return $body;

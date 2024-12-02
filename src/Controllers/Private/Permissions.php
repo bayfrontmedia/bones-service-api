@@ -96,6 +96,11 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
 
         // Validate body
 
+        /*
+         * TODO:
+         * Should check that no body exists?
+         */
+
         // Function
         try {
             $collection = $this->permissionsModel->list(new QueryParser($this->getQuery()));

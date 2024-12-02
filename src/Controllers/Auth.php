@@ -82,8 +82,10 @@ class Auth extends ApiController
             'Content-Type' => 'application/json',
         ]);
 
-        // TODO: Validations
-        $body = $this->getBody();
+        $body = $this->getBody([
+            'email',
+            'password'
+        ]);
 
         $authenticator = new PasswordAuthenticator($this->rbacService);
 
@@ -117,8 +119,9 @@ class Auth extends ApiController
             'Content-Type' => 'application/json',
         ]);
 
-        // TODO: Validations
-        $body = $this->getBody();
+        $body = $this->getBody([
+            'refresh_token'
+        ]);
 
         $authenticator = new TokenAuthenticator($this->rbacService);
 

@@ -78,8 +78,8 @@ abstract class ApiController extends Controller
             $bucket = App::make('Bayfront\LeakyBucket\Bucket', [
                 'id' => $id,
                 'settings' => [
-                    'capacity' => $limit,
-                    'leak' => $limit // TODO: $limit for burstable, 1 for hard limit - test which is best
+                    'capacity' => $limit, // Total bucket capacity
+                    'leak' => $limit // Number of drops to leak per minute
                 ]
             ]);
 
@@ -137,6 +137,7 @@ abstract class ApiController extends Controller
 
     /**
      * Get JSON-encoded request body.
+     * On error, aborts with 400 HTTP status.
      *
      * @param array $allowed (Allowed fields)
      * @param array $required (Required fields)
@@ -172,6 +173,7 @@ abstract class ApiController extends Controller
 
     /**
      * Get URL query parameters.
+     * On error, aborts with 400 HTTP status.
      *
      * @param array $allowed (Allowed keys)
      * @param array $required (Required keys)

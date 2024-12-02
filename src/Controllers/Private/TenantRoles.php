@@ -6,40 +6,36 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Interfaces\ApiControllerInterface;
-use Bayfront\BonesService\Api\Traits\Auditable;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidFieldException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
-use Bayfront\BonesService\Rbac\Models\PermissionsModel;
+use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
 
-class Permissions extends PrivateApiController implements ApiControllerInterface
+/**
+ * TODO:
+ * All tenant-scoped controllers need to check
+ * if user is not admin, user must belong to tenant and tenant must be enabled.
+ *
+ * $this->requirePermissions($user, [], $tenant = '')
+ *
+ *
+ * If user is not admin, do not allow tenant ID to be defined in body
+ * of create() and update()
+ *
+ * Possibly update getBody to getBody($validations)
+ */
+class TenantRoles extends PrivateApiController implements ApiControllerInterface
 {
 
-    use Auditable;
+    protected TenantRolesModel $tenantRolesModel;
 
-    protected PermissionsModel $permissionsModel;
-
-    public function __construct(ApiService $apiService, PermissionsModel $permissionsModel)
+    public function __construct(ApiService $apiService, TenantRolesModel $tenantRolesModel)
     {
         parent::__construct($apiService);
-        $this->permissionsModel = $permissionsModel;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAuditableFunctions(): array
-    {
-        return [
-            'create',
-            'list',
-            'read',
-            'update',
-            'delete'
-        ];
+        $this->tenantRolesModel = $tenantRolesModel;
     }
 
     /**
@@ -49,8 +45,17 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
     {
 
         // Check permissions
-        if (!$this->user->isAdmin()) {
-            $this->abort(403, 'Unable to create resource: Insufficient permissions');
+        try {
+
+            if (!$this->user->canDoAll(Arr::get($params, 'tenant_id', ''), [
+                'roles.create',
+                'roles.read'
+            ])) {
+                $this->abort(403, 'Unable to create resource: Insufficient permissions');
+            }
+
+        } catch (UnexpectedException $e) {
+            $this->abort(500, 'Unable to create resource: Unexpected error', $e);
         }
 
         // Require headers
@@ -62,7 +67,7 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
 
         // Function
         try {
-            $resource = $this->permissionsModel->create($this->getBody());
+            $resource = $this->tenantRolesModel->create($this->getBody());
         } catch (AlreadyExistsException $e) {
             $this->abort(409, 'Unable to create resource: Existing conflict', $e);
         } catch (DoesNotExistException|InvalidFieldException $e) {
@@ -88,8 +93,16 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
     {
 
         // Check permissions
-        if (!$this->user->isAdmin()) {
-            $this->abort(403, 'Unable to list resource: Insufficient permissions');
+        try {
+
+            if (!$this->user->canDoAll(Arr::get($params, 'tenant_id', ''), [
+                'roles.read'
+            ])) {
+                $this->abort(403, 'Unable to list resource: Insufficient permissions');
+            }
+
+        } catch (UnexpectedException $e) {
+            $this->abort(500, 'Unable to list resource: Unexpected error', $e);
         }
 
         // Require headers
@@ -98,7 +111,7 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
 
         // Function
         try {
-            $collection = $this->permissionsModel->list(new QueryParser($this->getQuery()));
+            $collection = $this->tenantRolesModel->list(new QueryParser($this->getQuery()));
         } catch (InvalidRequestException $e) {
             $this->abort(400, 'Unable to list resource: Invalid request', $e);
         } catch (UnexpectedException $e) {
@@ -148,8 +161,16 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
     {
 
         // Check permissions
-        if (!$this->user->isAdmin()) {
-            $this->abort(403, 'Unable to read resource: Insufficient permissions');
+        try {
+
+            if (!$this->user->canDoAll(Arr::get($params, 'tenant_id', ''), [
+                'roles.read'
+            ])) {
+                $this->abort(403, 'Unable to read resource: Insufficient permissions');
+            }
+
+        } catch (UnexpectedException $e) {
+            $this->abort(500, 'Unable to read resource: Unexpected error', $e);
         }
 
         // Require headers
@@ -158,7 +179,7 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
 
         // Function
         try {
-            $resource = $this->permissionsModel->read(Arr::get($params, 'id', ''));
+            $resource = $this->tenantRolesModel->read(Arr::get($params, 'id', ''));
         } catch (DoesNotExistException $e) {
             $this->abort(404, 'Unable to read resource: Resource does not exist', $e);
         } catch (UnexpectedException $e) {
@@ -184,8 +205,17 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
     {
 
         // Check permissions
-        if (!$this->user->isAdmin()) {
-            $this->abort(403, 'Unable to update resource: Insufficient permissions');
+        try {
+
+            if (!$this->user->canDoAll(Arr::get($params, 'tenant_id', ''), [
+                'roles.update',
+                'roles.read'
+            ])) {
+                $this->abort(403, 'Unable to update resource: Insufficient permissions');
+            }
+
+        } catch (UnexpectedException $e) {
+            $this->abort(500, 'Unable to update resource: Unexpected error', $e);
         }
 
         // Require headers
@@ -197,7 +227,7 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
 
         // Function
         try {
-            $resource = $this->permissionsModel->update(Arr::get($params, 'id'), $this->getBody());
+            $resource = $this->tenantRolesModel->update(Arr::get($params, 'id'), $this->getBody());
         } catch (AlreadyExistsException $e) {
             $this->abort(409, 'Unable to update resource: Existing conflict', $e);
         } catch (DoesNotExistException $e) {
@@ -225,8 +255,16 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
     {
 
         // Check permissions
-        if (!$this->user->isAdmin()) {
-            $this->abort(403, 'Unable to delete resource: Insufficient permissions');
+        try {
+
+            if (!$this->user->canDoAll(Arr::get($params, 'tenant_id', ''), [
+                'roles.delete'
+            ])) {
+                $this->abort(403, 'Unable to delete resource: Insufficient permissions');
+            }
+
+        } catch (UnexpectedException $e) {
+            $this->abort(500, 'Unable to delete resource: Unexpected error', $e);
         }
 
         // Require headers
@@ -235,7 +273,7 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
 
         // Function
         try {
-            $this->permissionsModel->delete(Arr::get($params, 'id'));
+            $this->tenantRolesModel->delete(Arr::get($params, 'id'));
         } catch (UnexpectedException $e) {
             $this->abort(500, 'Unable to delete resource: Unexpected error', $e);
         }

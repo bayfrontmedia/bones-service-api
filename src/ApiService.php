@@ -9,6 +9,7 @@ use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\BonesService\Api\Controllers\Auth;
 use Bayfront\BonesService\Api\Controllers\Private\Permissions;
+use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
 use Bayfront\BonesService\Api\Controllers\Public\Home;
 use Bayfront\BonesService\Api\Events\ApiServiceEvents;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -97,7 +98,14 @@ class ApiService extends Service
             ->get('/permissions',  [Permissions::class, 'list'])
             ->get('/permissions/{*:id}',  [Permissions::class, 'read'])
             ->patch('/permissions/{*:id}',  [Permissions::class, 'update'])
-            ->delete('/permissions/{*:id}',  [Permissions::class, 'delete']);
+            ->delete('/permissions/{*:id}',  [Permissions::class, 'delete'])
+
+            ->post('/tenants/{*:tenant_id}/roles', [TenantRoles::class, 'create'])
+            ->get('/tenants/{*:tenant_id}/roles',  [TenantRoles::class, 'list'])
+            ->get('/tenants/{*:tenant_id}/roles/{*:id}',  [TenantRoles::class, 'read'])
+            ->patch('/tenants/{*:tenant_id}/roles/{*:id}',  [TenantRoles::class, 'update'])
+            ->delete('/tenants/{*:tenant_id}/roles/{*:id}',  [TenantRoles::class, 'delete'])
+        ;
     }
 
 }

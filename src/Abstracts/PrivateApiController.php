@@ -3,6 +3,7 @@
 namespace Bayfront\BonesService\Api\Abstracts;
 
 use Bayfront\BonesService\Api\ApiService;
+use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
 use Bayfront\BonesService\Rbac\Authenticators\TokenAuthenticator;
 use Bayfront\BonesService\Rbac\Authenticators\UserKeyAuthenticator;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\ExpiredUserKeyException;
@@ -23,6 +24,10 @@ abstract class PrivateApiController extends ApiController
 
     public User $user;
 
+    /**
+     * @param ApiService $apiService
+     * @throws ApiExceptionInterface
+     */
     public function __construct(ApiService $apiService)
     {
         parent::__construct($apiService);
@@ -38,9 +43,14 @@ abstract class PrivateApiController extends ApiController
 
     }
 
+    /**
+     * @return User
+     * @throws ApiExceptionInterface
+     */
     private function authenticateUser(): User
     {
-        if (Request::hasHeader('Bearer')) {
+
+        if ($this->apiService->getConfig('auth.token') === true && Request::hasHeader('Bearer')) {
 
             $authenticator = new TokenAuthenticator($this->rbacService);
 
@@ -56,7 +66,7 @@ abstract class PrivateApiController extends ApiController
                 $this->abort(500, $e->getMessage());
             }
 
-        } else if (Request::hasHeader('X-API-Key')) {
+        } else if ($this->apiService->getConfig('auth.key') === true && Request::hasHeader('X-API-Key')) {
 
             $authenticator = new UserKeyAuthenticator($this->rbacService);
 

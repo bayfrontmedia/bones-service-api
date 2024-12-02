@@ -2,10 +2,8 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Public;
 
-use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\BonesService\Api\Abstracts\PublicApiController;
 use Bayfront\BonesService\Api\ApiService;
-use Bayfront\HttpRequest\Request;
 
 class Home extends PublicApiController
 {

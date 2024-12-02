@@ -6,12 +6,7 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Interfaces\ApiControllerInterface;
-use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
-use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
-use Bayfront\BonesService\Orm\Exceptions\InvalidFieldException;
-use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
-use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
-use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
+use Bayfront\BonesService\Api\Traits\UsesOrmModel;
 use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
 
 /**
@@ -23,6 +18,8 @@ use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
  */
 class TenantRoles extends PrivateApiController implements ApiControllerInterface
 {
+
+    use UsesOrmModel;
 
     protected TenantRolesModel $tenantRolesModel;
 
@@ -52,20 +49,9 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
         // Validate body
 
         // Function
-        try {
-            $resource = $this->tenantRolesModel->create($this->getBody());
-        } catch (AlreadyExistsException $e) {
-            $this->abort(409, 'Unable to create resource: Existing conflict', $e);
-        } catch (DoesNotExistException|InvalidFieldException $e) {
-            $this->abort(400, 'Unable to create resource: Invalid or missing field(s)', $e);
-        } catch (UnexpectedException $e) {
-            $this->abort(500, 'Unable to create resource: Unexpected error', $e);
-        }
 
         // Schema
-        $schema = [
-            'data' => $resource->read()
-        ];
+        $schema = $this->createOrmResource($this->tenantRolesModel, $this->getBody());
 
         // Response
         $this->respond(201, $schema);
@@ -88,42 +74,9 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
         // Validate body
 
         // Function
-        try {
-            $collection = $this->tenantRolesModel->list(new QueryParser($this->getQuery()));
-        } catch (InvalidRequestException $e) {
-            $this->abort(400, 'Unable to list resource: Invalid request', $e);
-        } catch (UnexpectedException $e) {
-            $this->abort(500, 'Unable to list resource: Unexpected error', $e);
-        }
 
-        try {
-            $pagination = $collection->getPagination();
-            $aggregate = $collection->getAggregate();
-        } catch (InvalidRequestException $e) {
-            $this->abort(400, 'Unable to list resource: Invalid request', $e);
-        }
-
-        if (empty($pagination) && empty($aggregate)) {
-
-            // Schema
-            $schema = $collection->list();
-
-        } else {
-
-            // Schema
-            $schema = [
-                'data' => $collection->list()
-            ];
-
-            if (!empty($pagination)) {
-                $schema['pagination'] = $pagination;
-            }
-
-            if (!empty($aggregate)) {
-                $schema['aggregate'] = $aggregate;
-            }
-
-        }
+        // Schema
+        $schema = $this->listOrmResources($this->tenantRolesModel, $this->getQuery());
 
         // Response
         $this->respond(200, $schema, [
@@ -148,18 +101,9 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
         // Validate body
 
         // Function
-        try {
-            $resource = $this->tenantRolesModel->read(Arr::get($params, 'id', ''));
-        } catch (DoesNotExistException $e) {
-            $this->abort(404, 'Unable to read resource: Resource does not exist', $e);
-        } catch (UnexpectedException $e) {
-            $this->abort(500, 'Unable to read resource: Unexpected error', $e);
-        }
 
         // Schema
-        $schema = [
-            'data' => $resource
-        ];
+        $schema = $this->readOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''));
 
         // Response
         $this->respond(200, $schema, [
@@ -188,22 +132,10 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
         // Validate body
 
         // Function
-        try {
-            $resource = $this->tenantRolesModel->update(Arr::get($params, 'id'), $this->getBody());
-        } catch (AlreadyExistsException $e) {
-            $this->abort(409, 'Unable to update resource: Existing conflict', $e);
-        } catch (DoesNotExistException $e) {
-            $this->abort(404, 'Unable to update resource: Resource does not exist', $e);
-        } catch (InvalidFieldException $e) {
-            $this->abort(400, 'Unable to update resource: Invalid or missing field(s)', $e);
-        } catch (UnexpectedException $e) {
-            $this->abort(500, 'Unable to update resource: Unexpected error', $e);
-        }
+
 
         // Schema
-        $schema = [
-            'data' => $resource->read()
-        ];
+        $schema = $this->updateOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''), $this->getBody());
 
         // Response
         $this->respond(200, $schema);
@@ -226,11 +158,7 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
         // Validate body
 
         // Function
-        try {
-            $this->tenantRolesModel->delete(Arr::get($params, 'id'));
-        } catch (UnexpectedException $e) {
-            $this->abort(500, 'Unable to delete resource: Unexpected error', $e);
-        }
+        $this->deleteOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''));
 
         // Response
         $this->respond(204);

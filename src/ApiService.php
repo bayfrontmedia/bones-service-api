@@ -86,20 +86,25 @@ class ApiService extends Service
     /**
      * Add default API service routes.
      *
+     * TODO:
+     * Possibly condense the rules.
+     *
      * @param Router $router
      * @return void
      */
     public function addRoutes(Router $router): void
     {
         $router->get('/', [Home::class, 'index'])
+            // Auth
             ->post('/auth/login', [Auth::class, 'login'])
             ->post('/auth/refresh', [Auth::class, 'refresh'])
+            // Permissions
             ->post('/permissions', [Permissions::class, 'create'])
             ->get('/permissions',  [Permissions::class, 'list'])
             ->get('/permissions/{*:id}',  [Permissions::class, 'read'])
             ->patch('/permissions/{*:id}',  [Permissions::class, 'update'])
             ->delete('/permissions/{*:id}',  [Permissions::class, 'delete'])
-
+            // Tenant roles
             ->post('/tenants/{*:tenant_id}/roles', [TenantRoles::class, 'create'])
             ->get('/tenants/{*:tenant_id}/roles',  [TenantRoles::class, 'list'])
             ->get('/tenants/{*:tenant_id}/roles/{*:id}',  [TenantRoles::class, 'read'])

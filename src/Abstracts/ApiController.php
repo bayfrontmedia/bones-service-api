@@ -21,7 +21,9 @@ use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Exceptions\Http\UnauthorizedException;
 use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
 use Bayfront\BonesService\Api\Traits\Auditable;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\RbacService;
+use Bayfront\BonesService\Rbac\User;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
@@ -131,6 +133,34 @@ abstract class ApiController extends Controller
                 $this->abort(400, 'Required header missing or invalid: ' . $k);
             }
 
+        }
+
+    }
+
+    /**
+     * Require permissions for non-admin user.
+     * On error, aborts with 403 HTTP status.
+     *
+     * @param User $user
+     * @param string $tenant_id
+     * @param array $permission_names
+     * @return void
+     */
+    protected function requirePermissions(User $user, string $tenant_id, array $permission_names): void
+    {
+
+        if ($user->isAdmin()) {
+            return;
+        }
+
+        try {
+
+            if (!$user->canDoAll($tenant_id, $permission_names)) {
+                $this->abort(403, 'Forbidden: Insufficient permissions');
+            }
+
+        } catch (UnexpectedException $e) {
+            $this->abort(500, 'Unable to verify permissions: Unexpected error', $e);
         }
 
     }
@@ -251,7 +281,7 @@ abstract class ApiController extends Controller
      * @param int $status_code
      * @param string $message
      * @param Throwable|null $previous
-     * @return void
+     * @return no-return
      * @throws ApiExceptionInterface
      */
     protected function abort(int $status_code, string $message = '', Throwable $previous = null): void

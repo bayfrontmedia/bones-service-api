@@ -3,10 +3,10 @@
 namespace Bayfront\BonesService\Api\Traits;
 
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
-use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidFieldException;
@@ -27,7 +27,8 @@ trait UsesOrmModel
      * @param ResourceModel $resourceModel
      * @param array $fields
      * @return array
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     protected function createOrmResource(ResourceModel $resourceModel, array $fields): array
     {
@@ -59,7 +60,8 @@ trait UsesOrmModel
      * @param ResourceModel $resourceModel
      * @param array $query (URL query parameters)
      * @return array
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     protected function listOrmResources(ResourceModel $resourceModel, array $query = []): array
     {
@@ -104,7 +106,8 @@ trait UsesOrmModel
      * @param ResourceModel $resourceModel
      * @param mixed $primary_key_id
      * @return array
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     protected function readOrmResource(ResourceModel $resourceModel, mixed $primary_key_id): array
     {
@@ -133,7 +136,8 @@ trait UsesOrmModel
      * @param mixed $primary_key_id
      * @param array $fields
      * @return array
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     protected function updateOrmResource(ResourceModel $resourceModel, mixed $primary_key_id, array $fields): array
     {
@@ -162,7 +166,7 @@ trait UsesOrmModel
      * @param ResourceModel $resourceModel
      * @param mixed $primary_key_id
      * @return bool
-     * @throws ApiExceptionInterface
+     * @throws ApiServiceException
      */
     protected function deleteOrmResource(ResourceModel $resourceModel, mixed $primary_key_id): bool
     {

@@ -5,7 +5,8 @@ namespace Bayfront\BonesService\Api\Controllers;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\ApiController;
 use Bayfront\BonesService\Api\ApiService;
-use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
+use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\ApiHttpException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Authenticators\PasswordAuthenticator;
@@ -24,6 +25,11 @@ use Bayfront\HttpRequest\Request;
 class Auth extends ApiController
 {
 
+    /**
+     * @param ApiService $apiService
+     * @throws ApiHttpException
+     * @throws ApiServiceException
+     */
     public function __construct(ApiService $apiService)
     {
         parent::__construct($apiService);
@@ -39,7 +45,8 @@ class Auth extends ApiController
     /**
      * @param User $user
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     private function respondWithTokens(User $user): void
     {
@@ -72,7 +79,8 @@ class Auth extends ApiController
      * Authenticate with email and password.
      *
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     public function login(): void
     {
@@ -109,7 +117,8 @@ class Auth extends ApiController
      * Authenticate with refresh token.
      *
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     public function refresh(): void
     {

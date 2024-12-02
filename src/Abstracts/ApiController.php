@@ -10,6 +10,7 @@ use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Application\Utilities\Helpers;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
@@ -19,7 +20,6 @@ use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
 use Bayfront\BonesService\Api\Exceptions\Http\PaymentRequiredException;
 use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Exceptions\Http\UnauthorizedException;
-use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
 use Bayfront\BonesService\Api\Traits\Auditable;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\RbacService;
@@ -69,7 +69,8 @@ abstract class ApiController extends Controller
      * @param string $id
      * @param int $limit
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     protected function enforceRateLimit(string $id, int $limit): void
     {
@@ -122,7 +123,8 @@ abstract class ApiController extends Controller
      *
      * @param array $headers
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     protected function requireHeaders(array $headers): void
     {
@@ -145,6 +147,8 @@ abstract class ApiController extends Controller
      * @param string $tenant_id
      * @param array $permission_names
      * @return void
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     protected function requirePermissions(User $user, string $tenant_id, array $permission_names): void
     {
@@ -171,6 +175,8 @@ abstract class ApiController extends Controller
      *
      * @param array $required (Required fields)
      * @return array
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     protected function getBody(array $required = []): array
     {
@@ -198,6 +204,8 @@ abstract class ApiController extends Controller
      * @param array $allowed (Allowed keys)
      * @param array $required (Required keys)
      * @return array
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     protected function getQuery(array $allowed = [], array $required = []): array
     {
@@ -228,7 +236,8 @@ abstract class ApiController extends Controller
      * @param array $data (Data to send)
      * @param array $headers (Key/value pairs of header values to send)
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     protected function respond(int $status_code = 200, array $data = [], array $headers = []): void
     {
@@ -272,7 +281,8 @@ abstract class ApiController extends Controller
      * @param string $message
      * @param Throwable|null $previous
      * @return no-return
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     protected function abort(int $status_code, string $message = '', Throwable $previous = null): void
     {

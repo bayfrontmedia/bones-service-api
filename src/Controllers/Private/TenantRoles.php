@@ -5,6 +5,8 @@ namespace Bayfront\BonesService\Api\Controllers\Private;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\ApiService;
+use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\ApiHttpException;
 use Bayfront\BonesService\Api\Interfaces\ApiControllerInterface;
 use Bayfront\BonesService\Api\Traits\UsesOrmModel;
 use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
@@ -23,6 +25,12 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
 
     protected TenantRolesModel $tenantRolesModel;
 
+    /**
+     * @param ApiService $apiService
+     * @param TenantRolesModel $tenantRolesModel
+     * @throws ApiServiceException
+     * @throws ApiHttpException
+     */
     public function __construct(ApiService $apiService, TenantRolesModel $tenantRolesModel)
     {
         parent::__construct($apiService);

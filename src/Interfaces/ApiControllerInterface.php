@@ -2,6 +2,9 @@
 
 namespace Bayfront\BonesService\Api\Interfaces;
 
+use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\ApiHttpException;
+
 interface ApiControllerInterface
 {
 
@@ -10,7 +13,8 @@ interface ApiControllerInterface
      *
      * @param array $params
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     public function create(array $params): void;
 
@@ -19,7 +23,8 @@ interface ApiControllerInterface
      *
      * @param array $params
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     public function list(array $params): void;
 
@@ -28,7 +33,8 @@ interface ApiControllerInterface
      *
      * @param array $params
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     public function read(array $params): void;
 
@@ -37,7 +43,8 @@ interface ApiControllerInterface
      *
      * @param array $params
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     public function update(array $params): void;
 
@@ -46,7 +53,8 @@ interface ApiControllerInterface
      *
      * @param array $params
      * @return void
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     public function delete(array $params): void;
 

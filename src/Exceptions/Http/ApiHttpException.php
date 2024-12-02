@@ -2,10 +2,13 @@
 
 namespace Bayfront\BonesService\Api\Exceptions\Http;
 
+use Bayfront\Bones\Exceptions\HttpException;
+use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
+
 /**
  * HTTP status 400.
  */
-class BadRequestException extends ApiHttpException
+class ApiHttpException extends HttpException implements ApiExceptionInterface
 {
 
     /**

@@ -5,6 +5,8 @@ namespace Bayfront\BonesService\Api\Controllers\Private;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\ApiService;
+use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\ApiHttpException;
 use Bayfront\BonesService\Api\Interfaces\ApiControllerInterface;
 use Bayfront\BonesService\Api\Traits\Auditable;
 use Bayfront\BonesService\Api\Traits\UsesOrmModel;
@@ -17,6 +19,12 @@ class Permissions extends PrivateApiController implements ApiControllerInterface
 
     protected PermissionsModel $permissionsModel;
 
+    /**
+     * @param ApiService $apiService
+     * @param PermissionsModel $permissionsModel
+     * @throws ApiServiceException
+     * @throws ApiHttpException
+     */
     public function __construct(ApiService $apiService, PermissionsModel $permissionsModel)
     {
         parent::__construct($apiService);

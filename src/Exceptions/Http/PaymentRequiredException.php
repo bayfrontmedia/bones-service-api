@@ -2,13 +2,10 @@
 
 namespace Bayfront\BonesService\Api\Exceptions\Http;
 
-use Bayfront\Bones\Exceptions\HttpException;
-use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
-
 /**
  * HTTP status 402.
  */
-class PaymentRequiredException extends HttpException implements ApiExceptionInterface
+class PaymentRequiredException extends ApiHttpException
 {
 
     /**

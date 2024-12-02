@@ -6,6 +6,7 @@ use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
 
 /**
+ * Unexpected exception.
  * HTTP status 500.
  */
 class ApiServiceException extends ServiceException implements ApiExceptionInterface

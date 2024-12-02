@@ -3,7 +3,8 @@
 namespace Bayfront\BonesService\Api\Abstracts;
 
 use Bayfront\BonesService\Api\ApiService;
-use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
+use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\ApiHttpException;
 use Bayfront\BonesService\Rbac\Authenticators\TokenAuthenticator;
 use Bayfront\BonesService\Rbac\Authenticators\UserKeyAuthenticator;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\ExpiredUserKeyException;
@@ -26,7 +27,8 @@ abstract class PrivateApiController extends ApiController
 
     /**
      * @param ApiService $apiService
-     * @throws ApiExceptionInterface
+     * @throws ApiServiceException
+     * @throws ApiHttpException
      */
     public function __construct(ApiService $apiService)
     {
@@ -47,7 +49,8 @@ abstract class PrivateApiController extends ApiController
      * Identify user using an enabled identification method.
      *
      * @return User
-     * @throws ApiExceptionInterface
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     private function identifyUser(): User
     {

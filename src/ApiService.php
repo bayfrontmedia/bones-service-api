@@ -10,6 +10,7 @@ use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\BonesService\Api\Controllers\Auth\Auth;
 use Bayfront\BonesService\Api\Controllers\Private\Permissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
+use Bayfront\BonesService\Api\Controllers\Private\Users;
 use Bayfront\BonesService\Api\Controllers\Public\Home;
 use Bayfront\BonesService\Api\Events\ApiServiceEvents;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -107,6 +108,10 @@ class ApiService extends Service
             ->get('/permissions/{*:id}',  [Permissions::class, 'read'])
             ->patch('/permissions/{*:id}',  [Permissions::class, 'update'])
             ->delete('/permissions/{*:id}',  [Permissions::class, 'delete'])
+            // Users
+            ->get('/users/logout', [Users::class, 'logout'])
+            ->get('/users/me',  [Users::class, 'me'])
+            ->get('/users/{*:id}',  [Users::class, 'read'])
             // Tenant roles
             ->post('/tenants/{*:tenant}/roles', [TenantRoles::class, 'create'])
             ->get('/tenants/{*:tenant}/roles',  [TenantRoles::class, 'list'])

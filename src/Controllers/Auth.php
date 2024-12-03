@@ -91,8 +91,8 @@ class Auth extends ApiController
         ]);
 
         $body = $this->getBody([
-            'email',
-            'password'
+            'email' => 'required|email|maxLength:255',
+            'password' => 'required|isString|maxLength:255'
         ]);
 
         $authenticator = new PasswordAuthenticator($this->rbacService);
@@ -129,7 +129,7 @@ class Auth extends ApiController
         ]);
 
         $body = $this->getBody([
-            'refresh_token'
+            'refresh_token' => 'required|isString'
         ]);
 
         $authenticator = new TokenAuthenticator($this->rbacService);

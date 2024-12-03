@@ -8,20 +8,14 @@ use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Exceptions\Http\ApiHttpException;
 use Bayfront\BonesService\Api\Interfaces\ApiControllerInterface;
+use Bayfront\BonesService\Api\Traits\ScopedEndpoint;
 use Bayfront\BonesService\Api\Traits\UsesOrmModel;
 use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
 
-/**
- * TODO:
- * If user is not admin, do not allow tenant ID to be defined in body
- * of create() and update()
- *
- * Possibly update getBody to getBody($validations)
- */
 class TenantRoles extends PrivateApiController implements ApiControllerInterface
 {
 
-    use UsesOrmModel;
+    use UsesOrmModel, ScopedEndpoint;
 
     protected TenantRolesModel $tenantRolesModel;
 
@@ -44,7 +38,7 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
     {
 
         // Check permissions
-        $this->requirePermissions($this->user, Arr::get($params, 'tenant_id', ''), [
+        $this->requirePermissions($this->user, Arr::get($params, 'tenant', ''), [
             'roles.create',
             'roles.read'
         ]);
@@ -56,10 +50,14 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
 
         // Validate body
 
+        $body = $this->defineScopedFields($this->getBody(), [
+            'tenant' => Arr::get($params, 'tenant', '')
+        ]);
+
         // Function
 
         // Schema
-        $schema = $this->createOrmResource($this->tenantRolesModel, $this->getBody());
+        $schema = $this->createOrmResource($this->tenantRolesModel, $body);
 
         // Response
         $this->respond(201, $schema);
@@ -73,7 +71,7 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
     {
 
         // Check permissions
-        $this->requirePermissions($this->user, Arr::get($params, 'tenant_id', ''), [
+        $this->requirePermissions($this->user, Arr::get($params, 'tenant', ''), [
             'roles.read'
         ]);
 
@@ -100,7 +98,7 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
     {
 
         // Check permissions
-        $this->requirePermissions($this->user, Arr::get($params, 'tenant_id', ''), [
+        $this->requirePermissions($this->user, Arr::get($params, 'tenant', ''), [
             'roles.read'
         ]);
 
@@ -125,9 +123,8 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
      */
     public function update(array $params): void
     {
-
         // Check permissions
-        $this->requirePermissions($this->user, Arr::get($params, 'tenant_id', ''), [
+        $this->requirePermissions($this->user, Arr::get($params, 'tenant', ''), [
             'roles.update',
             'roles.read'
         ]);
@@ -139,11 +136,15 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
 
         // Validate body
 
+        $body = $this->disallowScopedFields($this->getBody(), [
+            'tenant'
+        ]);
+
         // Function
 
 
         // Schema
-        $schema = $this->updateOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''), $this->getBody());
+        $schema = $this->updateOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''), $body);
 
         // Response
         $this->respond(200, $schema);
@@ -157,7 +158,7 @@ class TenantRoles extends PrivateApiController implements ApiControllerInterface
     {
 
         // Check permissions
-        $this->requirePermissions($this->user, Arr::get($params, 'tenant_id', ''), [
+        $this->requirePermissions($this->user, Arr::get($params, 'tenant', ''), [
             'roles.delete'
         ]);
 

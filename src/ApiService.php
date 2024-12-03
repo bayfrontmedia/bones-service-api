@@ -105,11 +105,11 @@ class ApiService extends Service
             ->patch('/permissions/{*:id}',  [Permissions::class, 'update'])
             ->delete('/permissions/{*:id}',  [Permissions::class, 'delete'])
             // Tenant roles
-            ->post('/tenants/{*:tenant_id}/roles', [TenantRoles::class, 'create'])
-            ->get('/tenants/{*:tenant_id}/roles',  [TenantRoles::class, 'list'])
-            ->get('/tenants/{*:tenant_id}/roles/{*:id}',  [TenantRoles::class, 'read'])
-            ->patch('/tenants/{*:tenant_id}/roles/{*:id}',  [TenantRoles::class, 'update'])
-            ->delete('/tenants/{*:tenant_id}/roles/{*:id}',  [TenantRoles::class, 'delete'])
+            ->post('/tenants/{*:tenant}/roles', [TenantRoles::class, 'create'])
+            ->get('/tenants/{*:tenant}/roles',  [TenantRoles::class, 'list'])
+            ->get('/tenants/{*:tenant}/roles/{*:id}',  [TenantRoles::class, 'read'])
+            ->patch('/tenants/{*:tenant}/roles/{*:id}',  [TenantRoles::class, 'update'])
+            ->delete('/tenants/{*:tenant}/roles/{*:id}',  [TenantRoles::class, 'delete'])
         ;
     }
 

@@ -36,7 +36,7 @@ trait UsesOrmModel
         try {
 
             return [
-                'data' => $resourceModel->create($fields)
+                'data' => $resourceModel->create($fields)->read()
             ];
 
         } catch (AlreadyExistsException $e) {
@@ -145,7 +145,7 @@ trait UsesOrmModel
         try {
 
             return [
-                'data' => $resourceModel->update($primary_key_id, $fields)
+                'data' => $resourceModel->update($primary_key_id, $fields)->read()
             ];
 
         } catch (AlreadyExistsException $e) {

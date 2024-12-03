@@ -30,6 +30,7 @@ use Bayfront\HttpResponse\Response;
 use Bayfront\LeakyBucket\AdapterException;
 use Bayfront\LeakyBucket\Bucket;
 use Bayfront\LeakyBucket\BucketException;
+use Bayfront\Validator\Validator;
 use Exception;
 use Throwable;
 
@@ -173,12 +174,14 @@ abstract class ApiController extends Controller
      * Get JSON-encoded request body.
      * On error, aborts with 400 HTTP status.
      *
-     * @param array $required (Required fields)
+     * See: https://github.com/bayfrontmedia/php-validator/blob/master/docs/validator.md
+     *
+     * @param array $validation_rules (Validation rules for fields)
      * @return array
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    protected function getBody(array $required = []): array
+    protected function getBody(array $validation_rules = []): array
     {
 
         $body = json_decode(Request::getBody(), true);
@@ -187,10 +190,15 @@ abstract class ApiController extends Controller
             $this->abort(400, 'Unable to get body: Invalid or missing JSON');
         }
 
-        foreach ($required as $field) {
-            if (!isset($body[$field])) {
-                $this->abort(400, 'Unable to get body: Missing field (' . $field . ')');
+        if (!empty($validation_rules)) {
+
+            $validator = new Validator();
+            $validator->validate($body, $validation_rules, false, true);
+
+            if (!$validator->isValid()) {
+                $this->abort(400, 'Unable to get body: Invalid or missing field(s)');
             }
+
         }
 
         return $body;
@@ -200,6 +208,9 @@ abstract class ApiController extends Controller
     /**
      * Get URL query parameters.
      * On error, aborts with 400 HTTP status.
+     *
+     * TODO:
+     * Revisit allowed/required
      *
      * @param array $allowed (Allowed keys)
      * @param array $required (Required keys)

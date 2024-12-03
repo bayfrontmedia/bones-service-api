@@ -2,8 +2,8 @@
 
 namespace Bayfront\BonesService\Api\Traits;
 
+use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
-use Bayfront\BonesService\Api\Exceptions\Http\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;

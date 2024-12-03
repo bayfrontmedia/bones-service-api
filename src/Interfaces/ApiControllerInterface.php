@@ -2,8 +2,8 @@
 
 namespace Bayfront\BonesService\Api\Interfaces;
 
+use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
-use Bayfront\BonesService\Api\Exceptions\Http\ApiHttpException;
 
 interface ApiControllerInterface
 {

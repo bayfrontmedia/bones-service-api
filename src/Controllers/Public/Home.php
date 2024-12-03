@@ -4,14 +4,16 @@ namespace Bayfront\BonesService\Api\Controllers\Public;
 
 use Bayfront\BonesService\Api\Abstracts\PublicApiController;
 use Bayfront\BonesService\Api\ApiService;
+use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
-use Bayfront\BonesService\Api\Exceptions\Http\ApiHttpException;
 
 class Home extends PublicApiController
 {
 
     /**
      * @param ApiService $apiService
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     public function __construct(ApiService $apiService)
     {

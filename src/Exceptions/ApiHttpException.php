@@ -1,6 +1,6 @@
 <?php
 
-namespace Bayfront\BonesService\Api\Exceptions\Http;
+namespace Bayfront\BonesService\Api\Exceptions;
 
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;

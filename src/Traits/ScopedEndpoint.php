@@ -2,7 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Traits;
 
-use Bayfront\BonesService\Api\Exceptions\Http\ApiHttpException;
+use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 
 trait ScopedEndpoint

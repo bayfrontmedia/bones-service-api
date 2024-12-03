@@ -160,6 +160,10 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
     /**
      * Run scheduled API jobs.
+     *
+     * TODO:
+     * Check schedule. Do these need to be run as frequently?
+     *
      * @return void
      * @throws LabelExistsException
      * @throws SyntaxException
@@ -171,6 +175,13 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
             $usersModel = new UsersModel($this->apiService->rbacService);
             $usersModel->deleteExpiredMfas();
+
+        })->everyMinutes(15);
+
+        $this->scheduler->call('delete-expired-password-requests', function () {
+
+            $userMetaModel = new UserMetaModel($this->apiService->rbacService);
+            $userMetaModel->deleteExpiredPasswordRequests();
 
         })->everyMinutes(15);
 

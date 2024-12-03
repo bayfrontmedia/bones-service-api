@@ -8,6 +8,7 @@ use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
+use Bayfront\BonesService\Orm\Exceptions\OrmServiceException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Authenticators\EmailAuthenticator;
 use Bayfront\BonesService\Rbac\Authenticators\MfaAuthenticator;
@@ -297,7 +298,8 @@ class Auth extends AuthApiController
     }
 
     /**
-     * Request password reset.
+     * Request password reset and respond with 201 HTTP status code.
+     * Executes rbac.user.password.request event.
      *
      * @return void
      * @throws ApiHttpException
@@ -319,35 +321,70 @@ class Auth extends AuthApiController
 
         $userMetaModel = new UserMetaModel($this->rbacService);
 
-        /*
-         * TODO:
-         *
-         * Add to UserMeta model similar to tokens:
-         * createPasswordRequest, use MFA duration and wait time, doEvent: rbac.user.password.request
-         * readPasswordRequest
-         * deletePasswordRequest
-         * deleteExpiredPasswordRequests
-         *
-         * Add documentation for these and need for scheduled job
-         *
-         */
+        try {
+            $userMetaModel->createPasswordRequest($user->getId());
+        } catch (AlreadyExistsException) {
+            $this->abort(409, 'Password request already exists: Wait time not yet elapsed');
+        } catch (UnexpectedException $e) {
+            $this->abort(500, 'Unexpected error creating password request', $e);
+        }
+
+        $this->respond(201);
+
     }
 
     /**
-     * Reset password.
+     * Reset password and respond with 200 HTTP status code.
+     * Executes rbac.user.password.updated event.
      *
      * @return void
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     public function passwordReset(): void
     {
 
-        /*
-         * TODO:
-         * Revoke all access and refresh tokens
-         * deletePasswordRequest
-         *
-         * Use $users->update to ensure password updated event is executed.
-         */
+        // Require headers
+        $this->requireHeaders([
+            'Content-Type' => 'application/json',
+        ]);
+
+        $body = $this->getBody([
+            'email' => 'required|email|maxLength:255',
+            'password' => 'required|isString|maxLength:255',
+            'token' => 'required|isString'
+        ]);
+
+        $user = $this->authenticateEmail($body['email']);
+
+        $userMetaModel = new UserMetaModel($this->rbacService);
+
+        try {
+            $request = $userMetaModel->getPasswordRequest($user->getId());
+        } catch (DoesNotExistException) {
+            $this->abort(401, 'Invalid password reset token');
+        }
+
+        if (!$this->apiService->rbacService->hashMatches(Arr::get($request, 'value', ''), $body['token'])) {
+            $this->abort(401, 'Invalid password reset token value');
+        }
+
+        $usersModel = new UsersModel($this->rbacService);
+
+        try {
+
+            $usersModel->update($user->getId(), [
+                'password' => $body['password']
+            ]);
+
+        } catch (OrmServiceException $e) {
+            $this->abort(500, 'Unexpected error resetting password', $e);
+        }
+
+        $userMetaModel->deletePasswordRequest($user->getId());
+        $userMetaModel->deleteAllTokens($user->getId());
+
+        $this->respond();
 
     }
 

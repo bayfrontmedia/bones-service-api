@@ -63,6 +63,16 @@ class Auth extends AuthApiController
     private function respondWithTokens(User $user): void
     {
 
+        /*
+         * MFA is deleted on successful MfaAuthenticator,
+         * but for added security, they will be deleted
+         * whenever a successful authentication has completed
+         * and new tokens have been created.
+         */
+
+        $usersModel = new UsersModel($this->rbacService);
+        $usersModel->deleteMfa($user->getEmail());
+
         $userMetaModel = new UserMetaModel($this->rbacService);
 
         try {

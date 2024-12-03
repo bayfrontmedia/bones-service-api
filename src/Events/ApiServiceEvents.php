@@ -185,6 +185,13 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
         })->everyMinutes(15);
 
+        $this->scheduler->call('delete-expired-user-verifications', function () {
+
+            $userMetaModel = new UserMetaModel($this->apiService->rbacService);
+            $userMetaModel->deleteExpiredUserVerifications();
+
+        })->everyMinutes(15);
+
         $this->scheduler->call('delete-expired-tokens', function () {
 
             $userMetaModel = new UserMetaModel($this->apiService->rbacService);
@@ -206,7 +213,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
         })->everyHours(12);
 
-        if ($this->apiService->rbacService->getConfig('user.require_verification') === true
+        if ($this->apiService->rbacService->getConfig('user.verification.require') === true
             && (int)$this->apiService->getConfig('unverified_user_expiration', 0) > 0) {
 
             $this->scheduler->call('delete-unverified-users', function () {

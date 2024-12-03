@@ -102,6 +102,8 @@ class ApiService extends Service
             ->post('/auth/otp-verify', [Auth::class, 'otpVerify'])
             ->post('/auth/password-request', [Auth::class, 'passwordRequest'])
             ->post('/auth/password-reset', [Auth::class, 'passwordReset'])
+            ->post('/auth/verification-request', [Auth::class, 'verificationRequest'])
+            ->post('/auth/verification-verify', [Auth::class, 'verificationVerify']) // TODO: Rename -verify endpoints?
             // Permissions
             ->post('/permissions', [Permissions::class, 'create'])
             ->get('/permissions',  [Permissions::class, 'list'])

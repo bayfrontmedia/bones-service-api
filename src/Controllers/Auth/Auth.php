@@ -397,4 +397,48 @@ class Auth extends AuthApiController
 
     }
 
+    /**
+     * Request new user verification TOTP and respond with 201 HTTP status code.
+     * Executes rbac.user.verification.request event.
+     *
+     * TODO:
+     * When a new user is created (onCreated), this event should be executed if validation is required.
+     *
+     * @return void
+     */
+    public function verificationRequest(): void
+    {
+
+        /*
+         * If user is enabled and not yet verified,
+         * create TOTP if one does not exist with time not yet elapsed.
+         *
+         * Cannot use AuthenticateByEmail, since it will check if user is verified.
+         * May be able to add a boolean parameter: $require_verified
+         *
+         * Event passes user ID and TOTP (see rbac.user.password.request)
+         */
+
+    }
+
+    /**
+     * Verify new user verification TOTP.
+     * Executes rbac.user.verification.verified event.
+     *
+     * @return void
+     */
+    public function verificationVerify(): void
+    {
+
+        /*
+         * If user is enabled and not yet verified and TOTP is valid,
+         * $userModel->verify()
+         * Or if it makes sense, remove that method altogether and handle
+         * it here.
+         *
+         * At a minimum, the user's email is passed as a parameter.
+         */
+
+    }
+
 }

@@ -7,12 +7,12 @@ use Bayfront\BonesService\Api\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
-use Bayfront\BonesService\Api\Interfaces\ApiControllerInterface;
+use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Traits\ScopedEndpoint;
 use Bayfront\BonesService\Api\Traits\UsesOrmModel;
 use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
 
-class TenantRoles extends PrivateApiController implements ApiControllerInterface
+class TenantRoles extends PrivateApiController implements CrudControllerInterface
 {
 
     use UsesOrmModel, ScopedEndpoint;

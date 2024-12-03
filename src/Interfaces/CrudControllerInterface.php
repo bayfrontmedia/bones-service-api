@@ -5,7 +5,7 @@ namespace Bayfront\BonesService\Api\Interfaces;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 
-interface ApiControllerInterface
+interface CrudControllerInterface
 {
 
     /**

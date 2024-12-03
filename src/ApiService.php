@@ -7,7 +7,7 @@ use Bayfront\Bones\Abstracts\Service;
 use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Exceptions\ServiceException;
-use Bayfront\BonesService\Api\Controllers\Auth;
+use Bayfront\BonesService\Api\Controllers\Auth\Auth;
 use Bayfront\BonesService\Api\Controllers\Private\Permissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
 use Bayfront\BonesService\Api\Controllers\Public\Home;
@@ -96,8 +96,11 @@ class ApiService extends Service
     {
         $router->get('/', [Home::class, 'index'])
             // Auth
-            ->post('/auth/login', [Auth::class, 'login'])
-            ->post('/auth/refresh', [Auth::class, 'refresh'])
+            ->post('/auth/login', [Auth::class, 'login']) // Receive tokens OR sends OTP with event, depending on config (password optional depending on config)
+            ->post('/auth/refresh', [Auth::class, 'refresh']) // Receive tokens
+            ->post('/auth/otp-verify', [Auth::class, 'otpVerify']) // Receive tokens
+            ->post('/auth/password-request', [Auth::class, 'passwordRequest']) // Sends code - needs event
+            ->post('/auth/password-reset', [Auth::class, 'passwordReset'])
             // Permissions
             ->post('/permissions', [Permissions::class, 'create'])
             ->get('/permissions',  [Permissions::class, 'list'])

@@ -7,12 +7,12 @@ use Bayfront\BonesService\Api\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
-use Bayfront\BonesService\Api\Interfaces\ApiControllerInterface;
+use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Traits\Auditable;
 use Bayfront\BonesService\Api\Traits\UsesOrmModel;
 use Bayfront\BonesService\Rbac\Models\PermissionsModel;
 
-class Permissions extends PrivateApiController implements ApiControllerInterface
+class Permissions extends PrivateApiController implements CrudControllerInterface
 {
 
     use Auditable, UsesOrmModel;

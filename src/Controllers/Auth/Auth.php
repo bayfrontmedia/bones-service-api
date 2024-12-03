@@ -1,10 +1,9 @@
 <?php
 
-namespace Bayfront\BonesService\Api\Controllers;
+namespace Bayfront\BonesService\Api\Controllers\Auth;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\BonesService\Api\Abstracts\ApiController;
-use Bayfront\BonesService\Api\ApiService;
+use Bayfront\BonesService\Api\Abstracts\AuthApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
@@ -20,27 +19,9 @@ use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDoesNotExistExcepti
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserNotVerifiedException;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\User;
-use Bayfront\HttpRequest\Request;
 
-class Auth extends ApiController
+class Auth extends AuthApiController
 {
-
-    /**
-     * @param ApiService $apiService
-     * @throws ApiHttpException
-     * @throws ApiServiceException
-     */
-    public function __construct(ApiService $apiService)
-    {
-        parent::__construct($apiService);
-
-        // Rate limit
-
-        if ((int)$this->apiService->getConfig('rate_limit.auth', 0) > 0) {
-            $this->enforceRateLimit(md5('auth-' . Request::getIp()), (int)$this->apiService->getConfig('rate_limit.auth'));
-        }
-
-    }
 
     /**
      * @param User $user
@@ -147,6 +128,36 @@ class Auth extends ApiController
         }
 
         $this->respondWithTokens($user);
+
+    }
+
+    /**
+     * Verify OTP.
+     *
+     * @return void
+     */
+    public function otpVerify(): void
+    {
+
+    }
+
+    /**
+     * Request password reset.
+     *
+     * @return void
+     */
+    public function passwordRequest(): void
+    {
+
+    }
+
+    /**
+     * Reset password.
+     *
+     * @return void
+     */
+    public function passwordReset(): void
+    {
 
     }
 

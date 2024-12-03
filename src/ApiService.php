@@ -96,10 +96,10 @@ class ApiService extends Service
     {
         $router->get('/', [Home::class, 'index'])
             // Auth
-            ->post('/auth/login', [Auth::class, 'login']) // Receive tokens OR sends OTP with event, depending on config (password optional depending on config)
-            ->post('/auth/refresh', [Auth::class, 'refresh']) // Receive tokens
-            ->post('/auth/otp-verify', [Auth::class, 'otpVerify']) // Receive tokens
-            ->post('/auth/password-request', [Auth::class, 'passwordRequest']) // Sends code - needs event
+            ->post('/auth/login', [Auth::class, 'login'])
+            ->post('/auth/refresh', [Auth::class, 'refresh'])
+            ->post('/auth/mfa-verify', [Auth::class, 'mfaVerify'])
+            ->post('/auth/password-request', [Auth::class, 'passwordRequest'])
             ->post('/auth/password-reset', [Auth::class, 'passwordReset'])
             // Permissions
             ->post('/permissions', [Permissions::class, 'create'])

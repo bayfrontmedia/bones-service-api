@@ -176,6 +176,10 @@ abstract class ApiController extends Controller
      *
      * See: https://github.com/bayfrontmedia/php-validator/blob/master/docs/validator.md
      *
+     * TODO:
+     * Need to validate only allowed keys exist in body.
+     * i.e.: Auth->login OTP
+     *
      * @param array $validation_rules (Validation rules for fields)
      * @return array
      * @throws ApiHttpException

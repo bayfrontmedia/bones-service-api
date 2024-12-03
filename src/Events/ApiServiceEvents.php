@@ -159,7 +159,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     }
 
     /**
-     * Run API scheduled jobs.
+     * Run scheduled API jobs.
      * @return void
      * @throws LabelExistsException
      * @throws SyntaxException

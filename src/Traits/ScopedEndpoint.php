@@ -14,6 +14,11 @@ trait ScopedEndpoint
      *
      * Helpful when creating a scoped resource.
      *
+     * TODO:
+     * Once the body is validated against the OpenAPI spec,
+     * there may not be a need to check if the field exists
+     * since the spec will not allow it.
+     *
      * @param array $array
      * @param array $values
      * @return array
@@ -30,6 +35,11 @@ trait ScopedEndpoint
      * On error, aborts with 400 HTTP status.
      *
      * Helpful when updating a scoped resource.
+     *
+     * TODO:
+     * Once the body is validated against the OpenAPI spec,
+     * there may not be a need to check if the field exists
+     * since the spec will not allow it.
      *
      * @param array $array
      * @param array $field_names

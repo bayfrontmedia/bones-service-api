@@ -88,6 +88,31 @@ class Auth extends AuthApiController
     }
 
     /**
+     * @param string $email
+     * @return User
+     * @throws ApiHttpException
+     * @throws ApiServiceException
+     */
+    private function authenticateEmail(string $email): User
+    {
+
+        $authenticator = new EmailAuthenticator($this->rbacService);
+
+        try {
+            return $authenticator->authenticate($email);
+        } catch (UserDoesNotExistException) {
+            $this->abort(401, 'Invalid credentials');
+        } catch (UserDisabledException) {
+            $this->abort(401, 'User is disabled');
+        } catch (UserNotVerifiedException) {
+            $this->abort(401, 'User is unverified');
+        } catch (UnexpectedAuthenticationException $e) {
+            $this->abort(500, $e->getMessage());
+        }
+
+    }
+
+    /**
      * Login with email and create MFA.
      *
      * @return void
@@ -106,19 +131,7 @@ class Auth extends AuthApiController
             'email' => 'required|email|maxLength:255'
         ]);
 
-        $authenticator = new EmailAuthenticator($this->rbacService);
-
-        try {
-            $authenticator->authenticate($body['email']);
-        } catch (UserDoesNotExistException) {
-            $this->abort(401, 'Invalid credentials');
-        } catch (UserDisabledException) {
-            $this->abort(401, 'User is disabled');
-        } catch (UserNotVerifiedException) {
-            $this->abort(401, 'User is unverified');
-        } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, $e->getMessage());
-        }
+        $this->authenticateEmail($body['email']);
 
         $this->createMfa($body['email']);
 
@@ -180,7 +193,7 @@ class Auth extends AuthApiController
     {
 
         if ($this->apiService->getConfig('auth.login.mfa.enabled') === true
-            && $this->apiService->getConfig('auth.login.mfa.otp') === true) {
+            && $this->apiService->getConfig('auth.login.mfa.totp') === true) {
 
             $this->loginWithEmail();
 
@@ -277,12 +290,37 @@ class Auth extends AuthApiController
      * Request password reset.
      *
      * @return void
+     * @throws ApiHttpException
+     * @throws ApiServiceException
      */
     public function passwordRequest(): void
     {
 
-        // TODO: Send this as user meta- delete expired. doEvent. Need scheduled job to delete expired
+        // Require headers
+        $this->requireHeaders([
+            'Content-Type' => 'application/json',
+        ]);
 
+        $body = $this->getBody([
+            'email' => 'required|email|maxLength:255'
+        ]);
+
+        $user = $this->authenticateEmail($body['email']);
+
+        $userMetaModel = new UserMetaModel($this->rbacService);
+
+        /*
+         * TODO:
+         *
+         * Add to UserMeta model similar to tokens:
+         * createPasswordRequest, use MFA duration and wait time, doEvent: rbac.user.password.request
+         * readPasswordRequest
+         * deletePasswordRequest
+         * deleteExpiredPasswordRequests
+         *
+         * Add documentation for these and need for scheduled job
+         *
+         */
     }
 
     /**
@@ -293,7 +331,13 @@ class Auth extends AuthApiController
     public function passwordReset(): void
     {
 
-        // TODO: Revoke all access and refresh tokens, delete meta, doEvent (rbac.user.password.updated) - use $users->update()
+        /*
+         * TODO:
+         * Revoke all access and refresh tokens
+         * deletePasswordRequest
+         *
+         * Use $users->update to ensure password updated event is executed.
+         */
 
     }
 

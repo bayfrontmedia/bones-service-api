@@ -11,13 +11,13 @@ use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\OrmServiceException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Authenticators\EmailAuthenticator;
-use Bayfront\BonesService\Rbac\Authenticators\MfaAuthenticator;
 use Bayfront\BonesService\Rbac\Authenticators\PasswordAuthenticator;
 use Bayfront\BonesService\Rbac\Authenticators\TokenAuthenticator;
+use Bayfront\BonesService\Rbac\Authenticators\TotpAuthenticator;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\InvalidPasswordException;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\InvalidTokenException;
-use Bayfront\BonesService\Rbac\Exceptions\Authentication\MfaDoesNotExistException;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\TokenDoesNotExistException;
+use Bayfront\BonesService\Rbac\Exceptions\Authentication\TotpDoesNotExistException;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UnexpectedAuthenticationException;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDisabledException;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDoesNotExistException;
@@ -30,25 +30,32 @@ class Auth extends AuthApiController
 {
 
     /**
-     * Create MFA and respond with 201 HTTP status code.
-     * Executes rbac.user.mfa.created event.
+     * Create TOTP and respond with 201 HTTP status code.
+     * Executes rbac.user.totp.created event.
      *
-     * @param string $email
+     * @param string $user_id
+     * @param int $length
+     * @param string $type
      * @return void
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    private function createMfa(string $email): void
+    private function createTotp(string $user_id, int $length, string $type): void
     {
 
-        $usersModel = new UsersModel($this->rbacService);
+        /*
+         * The user has already been authenticated.
+         */
+
+
+        $userMetaModel = new UserMetaModel($this->rbacService);
 
         try {
-            $usersModel->createMfa($email, $this->apiService->getConfig('auth.login.mfa.length', 6));
+            $userMetaModel->createUserTotp($user_id, $length, $type);
         } catch (AlreadyExistsException) {
-            $this->abort(409, 'MFA already exists: Wait time not yet elapsed');
-        } catch (DoesNotExistException $e) {
-            $this->abort(500, 'Unable to create MFA: Unexpected error', $e);
+            $this->abort(409, 'TOTP already exists: Wait time not yet elapsed');
+        } catch (UnexpectedException $e) {
+            $this->abort(500, 'Unable to create TOTP: Unexpected error', $e);
         }
 
         $this->respond(201);
@@ -65,16 +72,17 @@ class Auth extends AuthApiController
     {
 
         /*
-         * MFA is deleted on successful MfaAuthenticator,
+         * TOTP is deleted on successful TotpAuthenticator,
          * but for added security, they will be deleted
          * whenever a successful authentication has completed
          * and new tokens have been created.
+         *
+         * For added security, ensure all TOTP's are deleted.
          */
 
-        $usersModel = new UsersModel($this->rbacService);
-        $usersModel->deleteMfa($user->getEmail());
-
         $userMetaModel = new UserMetaModel($this->rbacService);
+        $userMetaModel->deletePasswordRequest($user->getId());
+        $userMetaModel->deleteUserTotp($user->getId());
 
         try {
 
@@ -124,7 +132,7 @@ class Auth extends AuthApiController
     }
 
     /**
-     * Login with email and create MFA.
+     * Login with email and create TOTP.
      *
      * @return void
      * @throws ApiHttpException
@@ -142,15 +150,15 @@ class Auth extends AuthApiController
             'email' => 'required|email|maxLength:255'
         ]);
 
-        $this->authenticateEmail($body['email']);
+        $user = $this->authenticateEmail($body['email']);
 
-        $this->createMfa($body['email']);
+        $this->createTotp($user->getId(), $this->apiService->getConfig('auth.login.mfa.length', 6), $this->apiService->getConfig('auth.login.mfa.type', $this->rbacService::TOTP_TYPE_NUMERIC));
 
     }
 
     /**
      * Login with email and password.
-     * Creates MFA if needed.
+     * Creates TOTP if needed.
      *
      * @return void
      * @throws ApiHttpException
@@ -185,7 +193,7 @@ class Auth extends AuthApiController
 
         if ($this->apiService->getConfig('auth.login.mfa.enabled') === true) {
 
-            $this->createMfa($body['email']);
+            $this->createTotp($user->getId(), $this->apiService->getConfig('auth.login.mfa.length', 6), $this->apiService->getConfig('auth.login.mfa.type', $this->rbacService::TOTP_TYPE_NUMERIC));
 
         } else {
             $this->respondWithTokens($user);
@@ -256,13 +264,13 @@ class Auth extends AuthApiController
     }
 
     /**
-     * Verify MFA.
+     * Verify OTP.
      *
      * @return void
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    public function mfaVerify(): void
+    public function otpVerify(): void
     {
 
         if ($this->apiService->getConfig('auth.login.mfa.enabled') === false) {
@@ -276,14 +284,14 @@ class Auth extends AuthApiController
 
         $body = $this->getBody([
             'email' => 'required|email|maxLength:255',
-            'mfa' => 'required|isString'
+            'token' => 'required|isString'
         ]);
 
-        $authenticator = new MfaAuthenticator($this->rbacService);
+        $authenticator = new TotpAuthenticator($this->rbacService);
 
         try {
-            $user = $authenticator->authenticate($body['email'], $body['mfa']);
-        } catch (MfaDoesNotExistException|UserDoesNotExistException) {
+            $user = $authenticator->authenticate($body['email'], $body['token']);
+        } catch (TotpDoesNotExistException|UserDoesNotExistException) {
             $this->abort(401, 'Invalid credentials');
         } catch (UserDisabledException) {
             $this->abort(401, 'User is disabled');
@@ -322,7 +330,7 @@ class Auth extends AuthApiController
         $userMetaModel = new UserMetaModel($this->rbacService);
 
         try {
-            $userMetaModel->createPasswordRequest($user->getId());
+            $userMetaModel->createPasswordRequest($user->getId(), $this->rbacService->getConfig('password_request.length', 36), $this->rbacService->getConfig('password_request.type', $this->rbacService::TOTP_TYPE_ALPHANUMERIC));
         } catch (AlreadyExistsException) {
             $this->abort(409, 'Password request already exists: Wait time not yet elapsed');
         } catch (UnexpectedException $e) {
@@ -360,12 +368,12 @@ class Auth extends AuthApiController
         $userMetaModel = new UserMetaModel($this->rbacService);
 
         try {
-            $request = $userMetaModel->getPasswordRequest($user->getId());
+            $totp = $userMetaModel->getPasswordRequest($user->getId());
         } catch (DoesNotExistException) {
             $this->abort(401, 'Invalid password reset token');
         }
 
-        if (!$this->apiService->rbacService->hashMatches(Arr::get($request, 'value', ''), $body['token'])) {
+        if (!$this->apiService->rbacService->hashMatches($totp->getValue(), $body['token'])) {
             $this->abort(401, 'Invalid password reset token value');
         }
 
@@ -382,6 +390,7 @@ class Auth extends AuthApiController
         }
 
         $userMetaModel->deletePasswordRequest($user->getId());
+        $userMetaModel->deleteUserTotp($user->getId());
         $userMetaModel->deleteAllTokens($user->getId());
 
         $this->respond();

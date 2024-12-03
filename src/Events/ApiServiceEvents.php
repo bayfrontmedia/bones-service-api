@@ -171,10 +171,10 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     public function scheduleApiJobs(): void
     {
 
-        $this->scheduler->call('delete-expired-mfas', function () {
+        $this->scheduler->call('delete-expired-user-totps', function () {
 
-            $usersModel = new UsersModel($this->apiService->rbacService);
-            $usersModel->deleteExpiredMfas();
+            $userMetaModel = new UserMetaModel($this->apiService->rbacService);
+            $userMetaModel->deleteExpiredUserTotps();
 
         })->everyMinutes(15);
 

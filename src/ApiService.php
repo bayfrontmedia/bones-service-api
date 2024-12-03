@@ -98,7 +98,7 @@ class ApiService extends Service
             // Auth
             ->post('/auth/login', [Auth::class, 'login'])
             ->post('/auth/refresh', [Auth::class, 'refresh'])
-            ->post('/auth/mfa-verify', [Auth::class, 'mfaVerify'])
+            ->post('/auth/otp-verify', [Auth::class, 'otpVerify'])
             ->post('/auth/password-request', [Auth::class, 'passwordRequest'])
             ->post('/auth/password-reset', [Auth::class, 'passwordReset'])
             // Permissions

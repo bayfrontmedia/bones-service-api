@@ -8,6 +8,8 @@ use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
+use Bayfront\BonesService\Api\Schemas\PermissionCollection;
+use Bayfront\BonesService\Api\Schemas\PermissionResource;
 use Bayfront\BonesService\Api\Traits\Auditable;
 use Bayfront\BonesService\Api\Traits\UsesOrmModel;
 use Bayfront\BonesService\Rbac\Models\PermissionsModel;
@@ -66,10 +68,10 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
         // Function
 
         // Schema
-        $schema = $this->createOrmResource($this->permissionsModel, $this->getBody());
+        $resource = $this->createOrmResource($this->permissionsModel, $this->getBody());
 
         // Response
-        $this->respond(201, $schema);
+        $this->respond(201, PermissionResource::create($resource));
 
     }
 
@@ -91,10 +93,10 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
         // Function
 
         // Schema
-        $schema = $this->listOrmResources($this->permissionsModel, $this->getQuery());
+        $collection = $this->listOrmResources($this->permissionsModel, $this->getQuery());
 
         // Response
-        $this->respond(200, $schema, [
+        $this->respond(200, PermissionCollection::create($collection), [
             'Cache-Control' => 'max-age=3600'
         ]);
 
@@ -118,10 +120,10 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
         // Function
 
         // Schema
-        $schema = $this->readOrmResource($this->permissionsModel, Arr::get($params, 'id', ''));
+        $resource = $this->readOrmResource($this->permissionsModel, Arr::get($params, 'id', ''));
 
         // Response
-        $this->respond(200, $schema, [
+        $this->respond(200, PermissionResource::create($resource), [
             'Cache-Control' => 'max-age=3600'
         ]);
 
@@ -148,10 +150,10 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
         // Function
 
         // Schema
-        $schema = $this->updateOrmResource($this->permissionsModel, Arr::get($params, 'id', ''), $this->getBody());
+        $resource = $this->updateOrmResource($this->permissionsModel, Arr::get($params, 'id', ''), $this->getBody());
 
         // Response
-        $this->respond(200, $schema);
+        $this->respond(200, PermissionResource::create($resource));
 
     }
 

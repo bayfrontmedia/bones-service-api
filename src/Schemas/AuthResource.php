@@ -3,7 +3,6 @@
 namespace Bayfront\BonesService\Api\Schemas;
 
 use Bayfront\ArraySchema\SchemaInterface;
-use Bayfront\BonesService\Api\Schemas\Types\ResourceSchema;
 
 class AuthResource implements SchemaInterface
 {
@@ -13,7 +12,9 @@ class AuthResource implements SchemaInterface
      */
     public static function create(array $array, array $config = []): array
     {
-        return ResourceSchema::create($array);
+        return [
+            'data' => $array
+        ];
     }
 
 }

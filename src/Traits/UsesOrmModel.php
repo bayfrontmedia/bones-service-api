@@ -35,9 +35,7 @@ trait UsesOrmModel
 
         try {
 
-            return [
-                'data' => $resourceModel->create($fields)->read()
-            ];
+            return $resourceModel->create($fields)->read();
 
         } catch (AlreadyExistsException $e) {
             throw new ConflictException('Unable to create resource: Existing conflict', 0, $e);
@@ -114,9 +112,7 @@ trait UsesOrmModel
 
         try {
 
-            return [
-                'data' => $resourceModel->read($primary_key_id)
-            ];
+            return $resourceModel->read($primary_key_id);
 
         } catch (DoesNotExistException $e) {
             throw new NotFoundException('Unable to read resource: Resource does not exist', 0, $e);
@@ -144,9 +140,7 @@ trait UsesOrmModel
 
         try {
 
-            return [
-                'data' => $resourceModel->update($primary_key_id, $fields)->read()
-            ];
+            return $resourceModel->update($primary_key_id, $fields)->read();
 
         } catch (AlreadyExistsException $e) {
             throw new ConflictException('Unable to update resource: Existing conflict', 0, $e);

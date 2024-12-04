@@ -1,10 +1,10 @@
 <?php
 
-namespace Bayfront\BonesService\Api\Schemas\Types;
+namespace Bayfront\BonesService\Api\Schemas;
 
 use Bayfront\ArraySchema\SchemaInterface;
 
-class ResourceSchema implements SchemaInterface
+class PagePagination implements SchemaInterface
 {
 
     /**
@@ -12,9 +12,7 @@ class ResourceSchema implements SchemaInterface
      */
     public static function create(array $array, array $config = []): array
     {
-        return [
-            'data' => $array
-        ];
+        return $array;
     }
 
 }

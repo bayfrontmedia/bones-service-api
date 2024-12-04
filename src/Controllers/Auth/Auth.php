@@ -6,6 +6,7 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\AuthApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Models\ApiModel;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\OrmServiceException;
@@ -453,18 +454,9 @@ class Auth extends AuthApiController
 
     }
 
-
-
-
-
     /**
      * Request new user verification TOTP and respond with 201 HTTP status code.
-     * Executes api.auth.user_verification event.
-     *
-     * TODO:
-     * When a new user is created (onCreated), this event should be executed if validation is required.
-     * This can be done from the rbac.user.created event.
-     * This service can subscribe to the event.
+     * Executes api.user.verification event.
      *
      * @return void
      * @throws ApiHttpException
@@ -486,36 +478,27 @@ class Auth extends AuthApiController
             'email' => 'required|email|maxLength:255'
         ]);
 
-        $user = $this->authenticateEmail($body['email'], 'api.auth.fail.verification', false);
+        $user = $this->authenticateEmail($body['email'], 'api.auth.fail.verification-request', false);
 
         if ($user->isVerified()) {
-            $this->events->doEvent('api.auth.fail.verification', $body['email']);
+            $this->events->doEvent('api.auth.fail.verification-request', $body['email']);
             $this->abort(401, 'Unable to create verification: User is already verified');
         }
 
         // Create TOTP
 
-        $userMetaModel = new UserMetaModel($this->rbacService);
+        $apiModel = new ApiModel($this->apiService);
 
         try {
 
-            $totp = $userMetaModel->createTotp(
-                $user->getId(),
-                $userMetaModel->getTotpKeyVerificationRequest(),
-                $this->apiService->getConfig('user_verification.wait', 3),
-                $this->apiService->getConfig('user_verification.duration', 1440),
-                $this->apiService->getConfig('user_verification.length', 36),
-                $this->apiService->getConfig('user_verification.type', $this->rbacService::TOTP_TYPE_ALPHANUMERIC)
-            );
+            $apiModel->createUserVerificationRequest($user->getResource());
 
         } catch (AlreadyExistsException) {
-            $this->events->doEvent('api.auth.fail.verification', $body['email']);
+            $this->events->doEvent('api.auth.fail.verification-request', $body['email']);
             $this->abort(409, 'Unable to create verification: Wait time not yet elapsed');
         } catch (DoesNotExistException|UnexpectedException $e) {
             $this->abort(500, 'Unable to create verification: Unexpected error', $e);
         }
-
-        $this->events->doEvent('api.auth.user_verification.request', $user, $totp);
 
         $this->respond(201);
 
@@ -532,10 +515,9 @@ class Auth extends AuthApiController
     public function verification(): void
     {
 
-        /*
-         * TODO:
-         * Check if user is enabled and not yet verified
-         */
+        if ($this->apiService->getConfig('user_verification.enabled') === false) {
+            $this->abort(404, 'Not found');
+        }
 
         // Require headers
         $this->requireHeaders([
@@ -547,25 +529,34 @@ class Auth extends AuthApiController
             'token' => 'required|isString'
         ]);
 
-        $user = $this->authenticateEmail($body['email'], false);
+        $user = $this->authenticateEmail($body['email'], 'api.auth.fail.verification', false);
+
+        if ($user->isVerified()) {
+            $this->events->doEvent('api.auth.fail.verification', $body['email']);
+            $this->abort(401, 'Unable to verify user: User is already verified');
+        }
+
+        // Verify then delete TOTP
 
         $userMetaModel = new UserMetaModel($this->rbacService);
 
         try {
-            $totp = $userMetaModel->getUserVerification($user->getId());
+            $totp = $userMetaModel->getTotp($user->getId(), $userMetaModel->getTotpKeyVerificationRequest());
         } catch (DoesNotExistException) {
-            $this->abort(401, 'Invalid verification token');
+            $this->abort(401, 'Unable to verify user: Invalid verification token');
         }
 
-        if (!$this->apiService->rbacService->hashMatches($totp->getValue(), $body['token'])) {
-            $this->abort(401, 'Invalid verification token value');
+        if (!$this->rbacService->hashMatches($totp->getValue(), $body['token'])) {
+            $this->abort(401, 'Unable to verify user: Invalid verification token');
         }
+
+        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->getTotpKeyVerificationRequest());
+
+        // Verify user
 
         $usersModel = new UsersModel($this->rbacService);
 
         $usersModel->verify($body['email']);
-
-        $userMetaModel->deleteUserVerification($user->getId());
 
         $this->respond();
 

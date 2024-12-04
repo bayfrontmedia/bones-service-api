@@ -12,6 +12,11 @@ use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotAcceptableException;
 use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
+use Bayfront\BonesService\Api\Models\ApiModel;
+use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
+use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
+use Bayfront\BonesService\Orm\OrmResource;
 use Bayfront\BonesService\Rbac\Models\TenantInvitationsModel;
 use Bayfront\BonesService\Rbac\Models\UserKeysModel;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
@@ -42,6 +47,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     public function getSubscriptions(): array
     {
         return [
+            new EventSubscription('rbac.user.created', [$this, 'createUserVerificationRequest'], 10),
             new EventSubscription('api.controller', [$this, 'checkRequiredHeaders'], 5),
             new EventSubscription('api.controller', [$this, 'checkHttps'], 5),
             new EventSubscription('api.controller', [$this, 'checkIpWhitelist'], 5),
@@ -49,6 +55,27 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
             new EventSubscription('bones.exception', [$this, 'setStatusCode'], 5),
             new EventSubscription('app.cli', [$this, 'scheduleApiJobs'], 10)
         ];
+    }
+
+    /**
+     * Create user verification request if user verification is enabled.
+     *
+     * @param OrmResource $user
+     * @return void
+     * @throws AlreadyExistsException
+     * @throws DoesNotExistException
+     * @throws UnexpectedException
+     */
+    public function createUserVerificationRequest(OrmResource $user): void
+    {
+
+        if ($this->apiService->getConfig('user_verification.enabled') === false) {
+            return;
+        }
+
+        $apiModel = new ApiModel($this->apiService);
+        $apiModel->createUserVerificationRequest($user);
+
     }
 
     /**

@@ -66,6 +66,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
     public function create(array $params): void
     {
         // TODO: Implement create() method.
+
     }
 
     /**

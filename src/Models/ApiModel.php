@@ -1,0 +1,52 @@
+<?php
+
+namespace Bayfront\BonesService\Api\Models;
+
+use Bayfront\Bones\Abstracts\Model;
+use Bayfront\BonesService\Api\ApiService;
+use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
+use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
+use Bayfront\BonesService\Orm\OrmResource;
+use Bayfront\BonesService\Rbac\Models\UserMetaModel;
+
+class ApiModel extends Model
+{
+
+    protected ApiService $apiService;
+
+    public function __construct(ApiService $apiService)
+    {
+        $this->apiService = $apiService;
+        parent::__construct($apiService->events);
+    }
+
+    /**
+     * Create user verification TOTP and execute
+     * api.user.verification event.
+     *
+     * @param OrmResource $user
+     * @return void
+     * @throws AlreadyExistsException
+     * @throws DoesNotExistException
+     * @throws UnexpectedException
+     */
+    public function createUserVerificationRequest(OrmResource $user): void
+    {
+
+        $userMetaModel = new UserMetaModel($this->apiService->rbacService);
+
+        $totp = $userMetaModel->createTotp(
+            $user->getPrimaryKey(),
+            $userMetaModel->getTotpKeyVerificationRequest(),
+            $this->apiService->getConfig('user_verification.wait', 3),
+            $this->apiService->getConfig('user_verification.duration', 1440),
+            $this->apiService->getConfig('user_verification.length', 36),
+            $this->apiService->getConfig('user_verification.type', $this->apiService->rbacService::TOTP_TYPE_ALPHANUMERIC)
+        );
+
+        $this->apiService->events->doEvent('api.user.verification', $user, $totp);
+
+    }
+
+}

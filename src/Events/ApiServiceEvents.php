@@ -198,24 +198,12 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     public function scheduleApiJobs(): void
     {
 
-        $this->scheduler->call('delete-expired-user-totps', function () {
+        $this->scheduler->call('delete-expired-totps', function () {
 
             $userMetaModel = new UserMetaModel($this->apiService->rbacService);
-            $userMetaModel->deleteExpiredUserTotps();
-
-        })->everyMinutes(15);
-
-        $this->scheduler->call('delete-expired-password-requests', function () {
-
-            $userMetaModel = new UserMetaModel($this->apiService->rbacService);
-            $userMetaModel->deleteExpiredPasswordRequests();
-
-        })->everyMinutes(15);
-
-        $this->scheduler->call('delete-expired-user-verifications', function () {
-
-            $userMetaModel = new UserMetaModel($this->apiService->rbacService);
-            $userMetaModel->deleteExpiredUserVerifications();
+            $userMetaModel->deleteExpiredTotps($userMetaModel->getTotpKeyTfa());
+            $userMetaModel->deleteExpiredTotps($userMetaModel->getTotpKeyPasswordRequest());
+            $userMetaModel->deleteExpiredTotps($userMetaModel->getTotpKeyVerificationRequest());
 
         })->everyMinutes(15);
 

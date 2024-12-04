@@ -9,6 +9,7 @@ use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\BonesService\Api\Controllers\Auth\Auth;
+use Bayfront\BonesService\Api\Controllers\Auth\User;
 use Bayfront\BonesService\Api\Controllers\Private\Permissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
 use Bayfront\BonesService\Api\Controllers\Private\Users;
@@ -96,7 +97,8 @@ class ApiService extends Service
      * Add default API service routes.
      *
      * TODO:
-     * Possibly condense the rules.
+     * Possibly condense the rules
+     * and move to static utility class.
      *
      * @param Router $router
      * @return void
@@ -106,12 +108,14 @@ class ApiService extends Service
         $router->get('/', [Home::class, 'index'])
             // Auth
             ->post('/auth/login', [Auth::class, 'login'])
+            ->post('/auth/otp', [Auth::class, 'otp'])
             ->post('/auth/tfa', [Auth::class, 'tfa'])
             ->post('/auth/refresh', [Auth::class, 'refresh'])
-            ->post('/auth/password-request', [Auth::class, 'passwordRequest'])
-            ->post('/auth/password', [Auth::class, 'password'])
-            ->post('/auth/verification-request', [Auth::class, 'verificationRequest'])
-            ->post('/auth/verification', [Auth::class, 'verification'])
+            // User
+            ->post('/user/password-request', [User::class, 'passwordRequest'])
+            ->post('/user/password', [User::class, 'password'])
+            ->post('/user/verification-request', [User::class, 'verificationRequest'])
+            ->post('/user/verification', [User::class, 'verification'])
             // Permissions
             ->post('/permissions', [Permissions::class, 'create'])
             ->get('/permissions',  [Permissions::class, 'list'])

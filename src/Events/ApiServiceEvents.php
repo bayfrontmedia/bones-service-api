@@ -69,7 +69,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     public function createUserVerificationRequest(OrmResource $user): void
     {
 
-        if ($this->apiService->getConfig('user_verification.enabled') === false) {
+        if ($this->apiService->getConfig('user.verification.enabled') === false) {
             return;
         }
 

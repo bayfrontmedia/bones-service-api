@@ -178,7 +178,7 @@ class User extends AuthApiController
 
     /**
      * Request new user verification TOTP and respond with 201 HTTP status code.
-     * Executes api.user.verification event.
+     * Executes api.user.verification_request event.
      *
      * @return void
      * @throws ApiHttpException

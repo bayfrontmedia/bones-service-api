@@ -45,7 +45,7 @@ class ApiModel extends Model
             $this->apiService->getConfig('user.verification.type', $this->apiService->rbacService::TOTP_TYPE_ALPHANUMERIC)
         );
 
-        $this->apiService->events->doEvent('api.user.verification', $user, $totp);
+        $this->apiService->events->doEvent('api.user.verification_request', $user, $totp);
 
     }
 

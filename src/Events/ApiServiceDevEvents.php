@@ -27,10 +27,11 @@ class ApiServiceDevEvents extends EventSubscriber implements EventSubscriberInte
     public function getSubscriptions(): array
     {
         return [
-            new EventSubscription('api.auth.tfa.request', [$this, 'tfaRequest'], 10),
-            new EventSubscription('api.auth.password_request', [$this, 'passwordRequest'], 10),
+            new EventSubscription('api.auth.password.tfa', [$this, 'tfa'], 10),
+            new EventSubscription('api.auth.otp', [$this, 'otp'], 10),
+            new EventSubscription('api.user.password_request', [$this, 'passwordRequest'], 10),
             new EventSubscription('rbac.user.password.updated', [$this, 'passwordUpdated'], 10),
-            new EventSubscription('api.user.verification', [$this, 'userVerification'], 10),
+            new EventSubscription('api.user.verification_request', [$this, 'verificationRequest'], 10),
             new EventSubscription('rbac.user.verified', [$this, 'userVerified'], 10),
         ];
     }
@@ -40,11 +41,29 @@ class ApiServiceDevEvents extends EventSubscriber implements EventSubscriberInte
      * @param Totp $totp
      * @return void
      */
-    #[NoReturn] public function tfaRequest(User $user, Totp $totp): void
+    #[NoReturn] public function tfa(User $user, Totp $totp): void
     {
 
         $this->apiService->response->sendJson([
-            'event' => 'api.auth.tfa.request',
+            'event' => 'api.auth.password.tfa',
+            'user' => $user->read(),
+            'totp' => $totp->getTotp()
+        ]);
+
+        die;
+
+    }
+
+    /**
+     * @param User $user
+     * @param Totp $totp
+     * @return void
+     */
+    #[NoReturn] public function otp(User $user, Totp $totp): void
+    {
+
+        $this->apiService->response->sendJson([
+            'event' => 'api.auth.otp',
             'user' => $user->read(),
             'totp' => $totp->getTotp()
         ]);
@@ -62,7 +81,7 @@ class ApiServiceDevEvents extends EventSubscriber implements EventSubscriberInte
     {
 
         $this->apiService->response->sendJson([
-            'event' => 'api.auth.password_request',
+            'event' => 'api.user.password_request',
             'user' => $user->read(),
             'totp' => $totp->getTotp()
         ]);
@@ -92,11 +111,11 @@ class ApiServiceDevEvents extends EventSubscriber implements EventSubscriberInte
      * @param Totp $totp
      * @return void
      */
-    #[NoReturn] public function userVerification(OrmResource $user, Totp $totp): void
+    #[NoReturn] public function verificationRequest(OrmResource $user, Totp $totp): void
     {
 
         $this->apiService->response->sendJson([
-            'event' => 'api.auth.user_verification.request',
+            'event' => 'api.user.verification_request',
             'user' => $user->read(),
             'totp' => $totp->getTotp()
         ]);

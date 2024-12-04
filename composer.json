@@ -28,7 +28,7 @@
     "php": "^8.0",
     "bayfrontmedia/bones": "dev-dev",
     "bayfrontmedia/bones-service-orm": "dev-dev",
-    "bayfrontmedia/bones-service-rbac": "dev-dev",
+    "bayfrontmedia/bones-service-rbac": "@dev",
     "bayfrontmedia/leaky-bucket": "^2.2",
     "bayfrontmedia/php-array-helpers": "^2.0",
     "bayfrontmedia/php-http-request": "^3.1",
@@ -39,5 +39,14 @@
     "psr-4": {
       "Bayfront\\BonesService\\Api\\": "src/"
     }
-  }
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "/Users/John/Documents/dev/github/bayfrontmedia/bones-service-rbac",
+      "options": {
+        "symlink": true
+      }
+    }
+  ]
 }

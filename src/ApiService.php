@@ -98,12 +98,15 @@ class ApiService extends Service
         $router->get('/', [Home::class, 'index'])
             // Auth
             ->post('/auth/login', [Auth::class, 'login'])
+            ->post('/auth/tfa', [Auth::class, 'tfa'])
             ->post('/auth/refresh', [Auth::class, 'refresh'])
-            ->post('/auth/otp-verify', [Auth::class, 'otpVerify'])
             ->post('/auth/password-request', [Auth::class, 'passwordRequest'])
-            ->post('/auth/password-reset', [Auth::class, 'passwordReset'])
+            ->post('/auth/password', [Auth::class, 'password'])
             ->post('/auth/verification-request', [Auth::class, 'verificationRequest'])
-            ->post('/auth/verification-verify', [Auth::class, 'verificationVerify']) // TODO: Rename -verify endpoints?
+
+
+
+            ->post('/auth/verification', [Auth::class, 'verification'])
             // Permissions
             ->post('/permissions', [Permissions::class, 'create'])
             ->get('/permissions',  [Permissions::class, 'list'])

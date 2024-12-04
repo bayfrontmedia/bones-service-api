@@ -24,45 +24,88 @@ use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDoesNotExistExcepti
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserNotVerifiedException;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
+use Bayfront\BonesService\Rbac\Totp;
 use Bayfront\BonesService\Rbac\User;
 
 class Auth extends AuthApiController
 {
 
     /**
-     * Create TOTP and respond with 201 HTTP status code.
-     * Executes rbac.user.totp.created event.
+     * Authenticate email or abort.
      *
-     * @param string $user_id
-     * @param int $length
-     * @param string $type
-     * @return void
+     * @param string $email
+     * @param string $fail_event
+     * @param bool $check_verified
+     * @return User
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    private function createTotp(string $user_id, int $length, string $type): void
+    private function authenticateEmail(string $email, string $fail_event, bool $check_verified = true): User
+    {
+
+        $authenticator = new EmailAuthenticator($this->rbacService);
+
+        try {
+            return $authenticator->authenticate($email, $check_verified);
+        } catch (UserDoesNotExistException) {
+            $this->events->doEvent($fail_event, $email);
+            $this->abort(401, 'Invalid credentials');
+        } catch (UserDisabledException) {
+            $this->events->doEvent($fail_event, $email);
+            $this->abort(401, 'User is disabled');
+        } catch (UserNotVerifiedException) {
+            $this->events->doEvent($fail_event, $email);
+            $this->abort(401, 'User is unverified');
+        } catch (UnexpectedAuthenticationException $e) {
+            $this->abort(500, $e->getMessage());
+        }
+
+    }
+
+    /**
+     * Create and save TFA.
+     *
+     * @param string $user_id
+     * @param string $email
+     * @param string $fail_event
+     * @return Totp
+     * @throws ApiHttpException
+     * @throws ApiServiceException
+     */
+    private function createTfa(string $user_id, string $email, string $fail_event): Totp
     {
 
         /*
          * The user has already been authenticated.
          */
 
-
         $userMetaModel = new UserMetaModel($this->rbacService);
 
         try {
-            $userMetaModel->createUserTotp($user_id, $length, $type);
-        } catch (AlreadyExistsException) {
-            $this->abort(409, 'TOTP already exists: Wait time not yet elapsed');
-        } catch (UnexpectedException $e) {
-            $this->abort(500, 'Unable to create TOTP: Unexpected error', $e);
-        }
 
-        $this->respond(201);
+            return $userMetaModel->createTotp(
+                $user_id,
+                $userMetaModel->getTotpKeyTfa(),
+                $this->apiService->getConfig('auth.tfa.wait', 3),
+                $this->apiService->getConfig('auth.tfa.duration', 15),
+                $this->apiService->getConfig('auth.tfa.length', 6),
+                $this->apiService->getConfig('auth.tfa.type', $this->rbacService::TOTP_TYPE_NUMERIC)
+            );
+
+        } catch (AlreadyExistsException) {
+            $this->events->doEvent($fail_event, $email);
+            $this->abort(409, 'Unable to create TFA: Wait time not yet elapsed');
+        } catch (DoesNotExistException|UnexpectedException $e) {
+            $this->abort(500, 'Unable to create TFA: Unexpected error', $e);
+        }
 
     }
 
     /**
+     * Respond with access and refresh tokens.
+     *
+     * On success, executes api.auth.success event and responds with 201 HTTP status code.
+     *
      * @param User $user
      * @return void
      * @throws ApiHttpException
@@ -81,8 +124,8 @@ class Auth extends AuthApiController
          */
 
         $userMetaModel = new UserMetaModel($this->rbacService);
-        $userMetaModel->deletePasswordRequest($user->getId());
-        $userMetaModel->deleteUserTotp($user->getId());
+        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->getTotpKeyTfa());
+        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->getTotpKeyPasswordRequest());
 
         try {
 
@@ -98,6 +141,7 @@ class Auth extends AuthApiController
                 ]
             ];
 
+            $this->events->doEvent('api.auth.success', $user);
             $this->respond(201, $schema);
 
         } catch (DoesNotExistException|UnexpectedException $e) {
@@ -107,33 +151,8 @@ class Auth extends AuthApiController
     }
 
     /**
-     * @param string $email
-     * @param bool $check_verified
-     * @return User
-     * @throws ApiHttpException
-     * @throws ApiServiceException
-     */
-    private function authenticateEmail(string $email, bool $check_verified = true): User
-    {
-
-        $authenticator = new EmailAuthenticator($this->rbacService);
-
-        try {
-            return $authenticator->authenticate($email, $check_verified);
-        } catch (UserDoesNotExistException) {
-            $this->abort(401, 'Invalid credentials');
-        } catch (UserDisabledException) {
-            $this->abort(401, 'User is disabled');
-        } catch (UserNotVerifiedException) {
-            $this->abort(401, 'User is unverified');
-        } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, $e->getMessage());
-        }
-
-    }
-
-    /**
-     * Login with email and create TOTP.
+     * Login with email and create TFA.
+     * On success, executes api.auth.tfa.request event and responds with 201 HTTP status code.
      *
      * @return void
      * @throws ApiHttpException
@@ -151,9 +170,12 @@ class Auth extends AuthApiController
             'email' => 'required|email|maxLength:255'
         ]);
 
-        $user = $this->authenticateEmail($body['email']);
+        $user = $this->authenticateEmail($body['email'], 'api.auth.fail.email');
 
-        $this->createTotp($user->getId(), $this->apiService->getConfig('auth.login.mfa.length', 6), $this->apiService->getConfig('auth.login.mfa.type', $this->rbacService::TOTP_TYPE_NUMERIC));
+        $totp = $this->createTfa($user->getId(), $user->getEmail(), 'api.auth.fail.email');
+
+        $this->events->doEvent('api.auth.tfa.request', $user, $totp);
+        $this->respond(201);
 
     }
 
@@ -183,18 +205,23 @@ class Auth extends AuthApiController
         try {
             $user = $authenticator->authenticate($body['email'], $body['password']);
         } catch (InvalidPasswordException|UserDoesNotExistException) {
+            $this->events->doEvent('api.auth.fail.password', $body['email']);
             $this->abort(401, 'Invalid credentials');
         } catch (UserDisabledException) {
+            $this->events->doEvent('api.auth.fail.password', $body['email']);
             $this->abort(401, 'User is disabled');
         } catch (UserNotVerifiedException) {
+            $this->events->doEvent('api.auth.fail.password', $body['email']);
             $this->abort(401, 'User is unverified');
         } catch (UnexpectedAuthenticationException $e) {
             $this->abort(500, $e->getMessage());
         }
 
-        if ($this->apiService->getConfig('auth.login.mfa.enabled') === true) {
+        if ($this->apiService->getConfig('auth.tfa.enabled') === true) {
 
-            $this->createTotp($user->getId(), $this->apiService->getConfig('auth.login.mfa.length', 6), $this->apiService->getConfig('auth.login.mfa.type', $this->rbacService::TOTP_TYPE_NUMERIC));
+            $totp = $this->createTfa($user->getId(), $user->getEmail(), 'api.auth.fail.password');
+            $this->events->doEvent('api.auth.tfa.request', $user, $totp);
+            $this->respond(201);
 
         } else {
             $this->respondWithTokens($user);
@@ -203,7 +230,7 @@ class Auth extends AuthApiController
     }
 
     /**
-     * Authenticate with email and password.
+     * Login.
      *
      * @return void
      * @throws ApiHttpException
@@ -212,14 +239,57 @@ class Auth extends AuthApiController
     public function login(): void
     {
 
-        if ($this->apiService->getConfig('auth.login.mfa.enabled') === true
-            && $this->apiService->getConfig('auth.login.mfa.totp') === true) {
-
+        if ($this->apiService->getConfig('auth.tfa.enabled') === true
+            && $this->apiService->getConfig('auth.tfa.otp') === true) {
             $this->loginWithEmail();
-
         } else {
             $this->loginWithPassword();
         }
+
+    }
+
+    /**
+     * Login with email and TFA.
+     *
+     * @return void
+     * @throws ApiHttpException
+     * @throws ApiServiceException
+     */
+    public function tfa(): void
+    {
+
+        if ($this->apiService->getConfig('auth.tfa.enabled') === false) {
+            $this->abort(404, 'Not found');
+        }
+
+        // Require headers
+        $this->requireHeaders([
+            'Content-Type' => 'application/json',
+        ]);
+
+        $body = $this->getBody([
+            'email' => 'required|email|maxLength:255',
+            'token' => 'required|isString'
+        ]);
+
+        $authenticator = new TotpAuthenticator($this->rbacService);
+
+        try {
+            $user = $authenticator->authenticate($body['email'], $body['token']);
+        } catch (TotpDoesNotExistException|UserDoesNotExistException) {
+            $this->events->doEvent('api.auth.fail.tfa', $body['email']);
+            $this->abort(401, 'Invalid credentials');
+        } catch (UserDisabledException) {
+            $this->events->doEvent('api.auth.fail.tfa', $body['email']);
+            $this->abort(401, 'User is disabled');
+        } catch (UserNotVerifiedException) {
+            $this->events->doEvent('api.auth.fail.tfa', $body['email']);
+            $this->abort(401, 'User is unverified');
+        } catch (UnexpectedAuthenticationException $e) {
+            $this->abort(500, $e->getMessage());
+        }
+
+        $this->respondWithTokens($user);
 
     }
 
@@ -251,52 +321,13 @@ class Auth extends AuthApiController
         try {
             $user = $authenticator->authenticate($body['refresh_token'], $authenticator::TOKEN_TYPE_REFRESH);
         } catch (InvalidTokenException|TokenDoesNotExistException|UserDoesNotExistException) {
+            $this->events->doEvent('api.auth.fail.refresh');
             $this->abort(401, 'Invalid refresh token');
         } catch (UserDisabledException) {
+            $this->events->doEvent('api.auth.fail.refresh');
             $this->abort(401, 'User is disabled');
         } catch (UserNotVerifiedException) {
-            $this->abort(401, 'User is unverified');
-        } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, $e->getMessage());
-        }
-
-        $this->respondWithTokens($user);
-
-    }
-
-    /**
-     * Verify OTP.
-     *
-     * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
-     */
-    public function otpVerify(): void
-    {
-
-        if ($this->apiService->getConfig('auth.login.mfa.enabled') === false) {
-            $this->abort(404, 'Not found');
-        }
-
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
-        ]);
-
-        $body = $this->getBody([
-            'email' => 'required|email|maxLength:255',
-            'token' => 'required|isString'
-        ]);
-
-        $authenticator = new TotpAuthenticator($this->rbacService);
-
-        try {
-            $user = $authenticator->authenticate($body['email'], $body['token']);
-        } catch (TotpDoesNotExistException|UserDoesNotExistException) {
-            $this->abort(401, 'Invalid credentials');
-        } catch (UserDisabledException) {
-            $this->abort(401, 'User is disabled');
-        } catch (UserNotVerifiedException) {
+            $this->events->doEvent('api.auth.fail.refresh');
             $this->abort(401, 'User is unverified');
         } catch (UnexpectedAuthenticationException $e) {
             $this->abort(500, $e->getMessage());
@@ -308,7 +339,7 @@ class Auth extends AuthApiController
 
     /**
      * Request password reset and respond with 201 HTTP status code.
-     * Executes rbac.user.password.request event.
+     * Executes api.auth.password_request event.
      *
      * @return void
      * @throws ApiHttpException
@@ -326,17 +357,31 @@ class Auth extends AuthApiController
             'email' => 'required|email|maxLength:255'
         ]);
 
-        $user = $this->authenticateEmail($body['email']);
+        $user = $this->authenticateEmail($body['email'], 'api.auth.fail.password-request');
+
+        // Create TOTP
 
         $userMetaModel = new UserMetaModel($this->rbacService);
 
         try {
-            $userMetaModel->createPasswordRequest($user->getId(), $this->rbacService->getConfig('password_request.length', 36), $this->rbacService->getConfig('password_request.type', $this->rbacService::TOTP_TYPE_ALPHANUMERIC));
+
+            $totp = $userMetaModel->createTotp(
+                $user->getId(),
+                $userMetaModel->getTotpKeyPasswordRequest(),
+                $this->apiService->getConfig('password_request.wait', 3),
+                $this->apiService->getConfig('password_request.duration', 15),
+                $this->apiService->getConfig('password_request.length', 36),
+                $this->apiService->getConfig('password_request.type', $this->rbacService::TOTP_TYPE_ALPHANUMERIC)
+            );
+
         } catch (AlreadyExistsException) {
-            $this->abort(409, 'Password request already exists: Wait time not yet elapsed');
-        } catch (UnexpectedException $e) {
-            $this->abort(500, 'Unexpected error creating password request', $e);
+            $this->events->doEvent('api.auth.fail.password-request', $body['email']);
+            $this->abort(409, 'Unable to create TFA: Wait time not yet elapsed');
+        } catch (DoesNotExistException|UnexpectedException $e) {
+            $this->abort(500, 'Unable to create TFA: Unexpected error', $e);
         }
+
+        $this->events->doEvent('api.auth.password_request', $user, $totp);
 
         $this->respond(201);
 
@@ -350,7 +395,7 @@ class Auth extends AuthApiController
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    public function passwordReset(): void
+    public function password(): void
     {
 
         // Require headers
@@ -364,19 +409,29 @@ class Auth extends AuthApiController
             'token' => 'required|isString'
         ]);
 
-        $user = $this->authenticateEmail($body['email']);
+        $user = $this->authenticateEmail($body['email'], 'api.auth.fail.password');
+
+        // Verify TOTP
 
         $userMetaModel = new UserMetaModel($this->rbacService);
 
         try {
-            $totp = $userMetaModel->getPasswordRequest($user->getId());
+            $totp = $userMetaModel->getTotp($user->getId(), $userMetaModel->getTotpKeyPasswordRequest());
         } catch (DoesNotExistException) {
-            $this->abort(401, 'Invalid password reset token');
+            $this->events->doEvent('api.auth.fail.password', $body['email']);
+            $this->abort(401, 'Unable to reset password: Token does not exist');
         }
 
-        if (!$this->apiService->rbacService->hashMatches($totp->getValue(), $body['token'])) {
-            $this->abort(401, 'Invalid password reset token value');
+        if (!$this->rbacService->hashMatches($totp->getValue(), $body['token'])) {
+            $this->events->doEvent('api.auth.fail.password', $body['email']);
+            $this->abort(401, 'Unable to reset password: Invalid token');
         }
+
+        // Delete TOTP
+
+        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->getTotpKeyPasswordRequest());
+
+        // Update user
 
         $usersModel = new UsersModel($this->rbacService);
 
@@ -390,22 +445,26 @@ class Auth extends AuthApiController
             $this->abort(500, 'Unexpected error resetting password', $e);
         }
 
-        $userMetaModel->deletePasswordRequest($user->getId());
-        $userMetaModel->deleteUserTotp($user->getId());
+        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->getTotpKeyTfa());
+        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->getTotpKeyPasswordRequest());
         $userMetaModel->deleteAllTokens($user->getId());
 
         $this->respond();
 
     }
 
+
+
+
+
     /**
      * Request new user verification TOTP and respond with 201 HTTP status code.
-     * Executes rbac.user.verification.request event.
+     * Executes api.auth.user_verification event.
      *
      * TODO:
      * When a new user is created (onCreated), this event should be executed if validation is required.
-     * This will require the length and type settings to either be hard coded
-     * or added to the RBAC service config.
+     * This can be done from the rbac.user.created event.
+     * This service can subscribe to the event.
      *
      * @return void
      * @throws ApiHttpException
@@ -413,6 +472,10 @@ class Auth extends AuthApiController
      */
     public function verificationRequest(): void
     {
+
+        if ($this->apiService->getConfig('user_verification.enabled') === false) {
+            $this->abort(404, 'Not found');
+        }
 
         // Require headers
         $this->requireHeaders([
@@ -423,23 +486,36 @@ class Auth extends AuthApiController
             'email' => 'required|email|maxLength:255'
         ]);
 
-        $user = $this->authenticateEmail($body['email'], false);
+        $user = $this->authenticateEmail($body['email'], 'api.auth.fail.verification', false);
 
-        /*
-         * TODO:
-         * Check if verification is enabled and if user is already verified.
-         * Can add isVerified method to User class.
-         */
+        if ($user->isVerified()) {
+            $this->events->doEvent('api.auth.fail.verification', $body['email']);
+            $this->abort(401, 'Unable to create verification: User is already verified');
+        }
+
+        // Create TOTP
 
         $userMetaModel = new UserMetaModel($this->rbacService);
 
         try {
-            $userMetaModel->createUserVerification($user->getId(), $this->apiService->getConfig('user_verification.length', 36), $this->apiService->getConfig('user_verification.type', $this->rbacService::TOTP_TYPE_ALPHANUMERIC));
+
+            $totp = $userMetaModel->createTotp(
+                $user->getId(),
+                $userMetaModel->getTotpKeyVerificationRequest(),
+                $this->apiService->getConfig('user_verification.wait', 3),
+                $this->apiService->getConfig('user_verification.duration', 1440),
+                $this->apiService->getConfig('user_verification.length', 36),
+                $this->apiService->getConfig('user_verification.type', $this->rbacService::TOTP_TYPE_ALPHANUMERIC)
+            );
+
         } catch (AlreadyExistsException) {
-            $this->abort(409, 'User verification already exists: Wait time not yet elapsed');
-        } catch (UnexpectedException $e) {
-            $this->abort(500, 'Unable to create user verification: Unexpected error', $e);
+            $this->events->doEvent('api.auth.fail.verification', $body['email']);
+            $this->abort(409, 'Unable to create verification: Wait time not yet elapsed');
+        } catch (DoesNotExistException|UnexpectedException $e) {
+            $this->abort(500, 'Unable to create verification: Unexpected error', $e);
         }
+
+        $this->events->doEvent('api.auth.user_verification.request', $user, $totp);
 
         $this->respond(201);
 
@@ -453,7 +529,7 @@ class Auth extends AuthApiController
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    public function verificationVerify(): void
+    public function verification(): void
     {
 
         /*

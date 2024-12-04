@@ -6,6 +6,7 @@ use Bayfront\BonesService\Api\Abstracts\PublicApiController;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Schemas\ServerStatusResource;
 
 class Home extends PublicApiController
 {
@@ -29,16 +30,12 @@ class Home extends PublicApiController
     public function index(): void
     {
 
-        // Schema
-        $schema = [
-            'data' => [
-                'status' => 'OK'
-            ]
-        ];
-
-        $this->respond(200, $schema, [
+        $this->respond(200, ServerStatusResource::create([
+            'status' => 'ok'
+        ]), [
             'Cache-Control' => 'no-cache, no-store, max-age=0, must-revalidate'
         ]);
+
     }
 
 }

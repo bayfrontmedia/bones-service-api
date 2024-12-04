@@ -6,6 +6,7 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Abstracts\AuthApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Schemas\AuthResource;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
@@ -54,17 +55,12 @@ class Auth extends AuthApiController
             $access_token = $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_ACCESS);
             $jwt = $userMetaModel->readToken($access_token);
 
-            // Schema
-            $schema = [
-                'data' => [
-                    'access' => $access_token,
-                    'refresh' => $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_REFRESH),
-                    'expires' => Arr::get($jwt, 'exp')
-                ]
-            ];
-
             $this->events->doEvent('api.auth.success', $user);
-            $this->respond(201, $schema);
+            $this->respond(201, AuthResource::create([
+                'access' => $access_token,
+                'refresh' => $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_REFRESH),
+                'expires' => Arr::get($jwt, 'exp')
+            ]));
 
         } catch (DoesNotExistException|UnexpectedException $e) {
             $this->abort(500, $e->getMessage());

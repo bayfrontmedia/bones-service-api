@@ -86,7 +86,7 @@ class Auth extends AuthApiController
 
             return $userMetaModel->createTotp(
                 $user_id,
-                $userMetaModel->getTotpKeyTfa(),
+                $userMetaModel->totp_meta_key_tfa,
                 $this->apiService->getConfig('auth.tfa.wait', 3),
                 $this->apiService->getConfig('auth.tfa.duration', 15),
                 $this->apiService->getConfig('auth.tfa.length', 6),
@@ -125,8 +125,8 @@ class Auth extends AuthApiController
          */
 
         $userMetaModel = new UserMetaModel($this->rbacService);
-        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->getTotpKeyTfa());
-        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->getTotpKeyPasswordRequest());
+        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_tfa);
+        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_password);
 
         try {
 
@@ -368,7 +368,7 @@ class Auth extends AuthApiController
 
             $totp = $userMetaModel->createTotp(
                 $user->getId(),
-                $userMetaModel->getTotpKeyPasswordRequest(),
+                $userMetaModel->totp_meta_key_password,
                 $this->apiService->getConfig('password_request.wait', 3),
                 $this->apiService->getConfig('password_request.duration', 15),
                 $this->apiService->getConfig('password_request.length', 36),
@@ -417,7 +417,7 @@ class Auth extends AuthApiController
         $userMetaModel = new UserMetaModel($this->rbacService);
 
         try {
-            $totp = $userMetaModel->getTotp($user->getId(), $userMetaModel->getTotpKeyPasswordRequest());
+            $totp = $userMetaModel->getTotp($user->getId(), $userMetaModel->totp_meta_key_password);
         } catch (DoesNotExistException) {
             $this->events->doEvent('api.auth.fail.password', $body['email']);
             $this->abort(401, 'Unable to reset password: Token does not exist');
@@ -430,7 +430,7 @@ class Auth extends AuthApiController
 
         // Delete TOTP
 
-        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->getTotpKeyPasswordRequest());
+        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_password);
 
         // Update user
 
@@ -446,8 +446,8 @@ class Auth extends AuthApiController
             $this->abort(500, 'Unexpected error resetting password', $e);
         }
 
-        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->getTotpKeyTfa());
-        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->getTotpKeyPasswordRequest());
+        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_tfa);
+        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_password);
         $userMetaModel->deleteAllTokens($user->getId());
 
         $this->respond();
@@ -541,7 +541,7 @@ class Auth extends AuthApiController
         $userMetaModel = new UserMetaModel($this->rbacService);
 
         try {
-            $totp = $userMetaModel->getTotp($user->getId(), $userMetaModel->getTotpKeyVerificationRequest());
+            $totp = $userMetaModel->getTotp($user->getId(), $userMetaModel->totp_meta_key_verification);
         } catch (DoesNotExistException) {
             $this->abort(401, 'Unable to verify user: Invalid verification token');
         }
@@ -550,7 +550,7 @@ class Auth extends AuthApiController
             $this->abort(401, 'Unable to verify user: Invalid verification token');
         }
 
-        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->getTotpKeyVerificationRequest());
+        $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_verification);
 
         // Verify user
 

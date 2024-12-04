@@ -201,9 +201,9 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
         $this->scheduler->call('delete-expired-totps', function () {
 
             $userMetaModel = new UserMetaModel($this->apiService->rbacService);
-            $userMetaModel->deleteExpiredTotps($userMetaModel->getTotpKeyTfa());
-            $userMetaModel->deleteExpiredTotps($userMetaModel->getTotpKeyPasswordRequest());
-            $userMetaModel->deleteExpiredTotps($userMetaModel->getTotpKeyVerificationRequest());
+            $userMetaModel->deleteExpiredTotps($userMetaModel->totp_meta_key_password);
+            $userMetaModel->deleteExpiredTotps($userMetaModel->totp_meta_key_tfa);
+            $userMetaModel->deleteExpiredTotps($userMetaModel->totp_meta_key_verification);
 
         })->everyMinutes(15);
 

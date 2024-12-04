@@ -38,7 +38,7 @@ class ApiModel extends Model
 
         $totp = $userMetaModel->createTotp(
             $user->getPrimaryKey(),
-            $userMetaModel->getTotpKeyVerificationRequest(),
+            $userMetaModel->totp_meta_key_verification,
             $this->apiService->getConfig('user_verification.wait', 3),
             $this->apiService->getConfig('user_verification.duration', 1440),
             $this->apiService->getConfig('user_verification.length', 36),

@@ -6,12 +6,14 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Abstracts\Service;
 use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Services\Filters\FilterService;
+use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\BonesService\Api\Controllers\Auth\Auth;
 use Bayfront\BonesService\Api\Controllers\Private\Permissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
 use Bayfront\BonesService\Api\Controllers\Private\Users;
 use Bayfront\BonesService\Api\Controllers\Public\Home;
+use Bayfront\BonesService\Api\Events\ApiServiceDevEvents;
 use Bayfront\BonesService\Api\Events\ApiServiceEvents;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Filters\ApiServiceFilters;
@@ -55,7 +57,13 @@ class ApiService extends Service
         // Enqueue events
 
         try {
+
             $this->events->addSubscriptions(new ApiServiceEvents($this, $scheduler));
+
+            if (in_array(App::environment(), $this->getConfig('dev_events', []))) {
+                $this->events->addSubscriptions(new ApiServiceDevEvents($this));
+            }
+
         } catch (ServiceException $e) {
             throw new ApiServiceException('Unable to start ApiService: ' . $e->getMessage(), $e->getCode(), $e->getPrevious());
         }

@@ -188,9 +188,6 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     /**
      * Run scheduled API jobs.
      *
-     * TODO:
-     * Check schedule. Do these need to be run as frequently?
-     *
      * @return void
      * @throws LabelExistsException
      * @throws SyntaxException
@@ -236,7 +233,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
                 $usersModel = new UsersModel($this->apiService->rbacService);
                 $usersModel->deleteUnverified(time() - (int)$this->apiService->getConfig('unverified_user_expiration'));
 
-            })->everyHours(12);
+            })->daily();
 
         }
 

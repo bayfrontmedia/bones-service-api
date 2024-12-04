@@ -103,9 +103,6 @@ class ApiService extends Service
             ->post('/auth/password-request', [Auth::class, 'passwordRequest'])
             ->post('/auth/password', [Auth::class, 'password'])
             ->post('/auth/verification-request', [Auth::class, 'verificationRequest'])
-
-
-
             ->post('/auth/verification', [Auth::class, 'verification'])
             // Permissions
             ->post('/permissions', [Permissions::class, 'create'])

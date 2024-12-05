@@ -252,8 +252,8 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
      */
     public function defineRequestId(): void
     {
-        if (!Constants::isDefined('REQUEST_ID')) {
-            Constants::define('REQUEST_ID', strtolower(Str::random(8, 'alphanumeric')));
+        if ($this->apiService->getConfig('request.id.enabled') === true && !Constants::isDefined('REQUEST_ID')) {
+            Constants::define('REQUEST_ID', strtolower(Str::random($this->apiService->getConfig('request.id.length', 8), 'alphanumeric')));
         }
     }
 

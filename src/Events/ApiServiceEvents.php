@@ -5,9 +5,11 @@ namespace Bayfront\BonesService\Api\Events;
 use Bayfront\Bones\Abstracts\EventSubscriber;
 use Bayfront\Bones\Application\Services\Events\EventSubscription;
 use Bayfront\Bones\Application\Utilities\App;
+use Bayfront\Bones\Application\Utilities\Constants;
+use Bayfront\Bones\Exceptions\ConstantAlreadyDefinedException;
 use Bayfront\Bones\Interfaces\EventSubscriberInterface;
-use Bayfront\BonesService\Api\Abstracts\ApiController;
 use Bayfront\BonesService\Api\ApiService;
+use Bayfront\BonesService\Api\Controllers\Abstracts\ApiController;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotAcceptableException;
@@ -27,6 +29,7 @@ use Bayfront\CronScheduler\SyntaxException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
+use Bayfront\StringHelpers\Str;
 use Throwable;
 
 class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterface
@@ -53,7 +56,8 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
             new EventSubscription('api.controller', [$this, 'checkIpWhitelist'], 5),
             new EventSubscription('api.response', [$this, 'setRequiredHeaders'], 5),
             new EventSubscription('bones.exception', [$this, 'setStatusCode'], 5),
-            new EventSubscription('app.cli', [$this, 'scheduleApiJobs'], 10)
+            new EventSubscription('app.cli', [$this, 'scheduleApiJobs'], 10),
+            new EventSubscription('app.http', [$this, 'defineRequestId'], 5)
         ];
     }
 
@@ -237,6 +241,20 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
         }
 
+    }
+
+    /**
+     * Define request ID.
+     * This can be used to identify and trace a single request throughout the application lifecycle.
+     *
+     * @return void
+     * @throws ConstantAlreadyDefinedException
+     */
+    public function defineRequestId(): void
+    {
+        if (!Constants::isDefined('REQUEST_ID')) {
+            Constants::define('REQUEST_ID', strtolower(Str::random(8, 'alphanumeric')));
+        }
     }
 
 }

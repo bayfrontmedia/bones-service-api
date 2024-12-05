@@ -3,7 +3,7 @@
 namespace Bayfront\BonesService\Api\Controllers\Auth;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\BonesService\Api\Abstracts\AuthApiController;
+use Bayfront\BonesService\Api\Controllers\Abstracts\AuthApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Schemas\AuthResource;
@@ -56,6 +56,7 @@ class Auth extends AuthApiController
             $jwt = $userMetaModel->readToken($access_token);
 
             $this->events->doEvent('api.auth.success', $user);
+
             $this->respond(201, AuthResource::create([
                 'access' => $access_token,
                 'refresh' => $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_REFRESH),

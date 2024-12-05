@@ -2,8 +2,8 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Public;
 
-use Bayfront\BonesService\Api\Abstracts\PublicApiController;
 use Bayfront\BonesService\Api\ApiService;
+use Bayfront\BonesService\Api\Controllers\Abstracts\PublicApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Schemas\ServerStatusResource;

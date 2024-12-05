@@ -4,9 +4,8 @@ namespace Bayfront\BonesService\Api\Schemas;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\ArraySchema\SchemaInterface;
-use Bayfront\BonesService\Api\Schemas\Utilities\ResourceSchema;
 
-class ServerStatusResource implements SchemaInterface
+class PermissionObject implements SchemaInterface
 {
 
     /**
@@ -15,10 +14,15 @@ class ServerStatusResource implements SchemaInterface
     public static function create(array $array, array $config = []): array
     {
         $keys = [
-            'status'
+            'id',
+            'name',
+            'description',
+            'created_at',
+            'updated_at',
+            'deleted_at'
         ];
 
-        return ResourceSchema::create(Arr::order(Arr::only($array, $keys), $keys));
+        return Arr::order(Arr::only($array, $keys), $keys);
     }
 
 }

@@ -2,7 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Auth;
 
-use Bayfront\BonesService\Api\Abstracts\AuthApiController;
+use Bayfront\BonesService\Api\Controllers\Abstracts\AuthApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Models\ApiModel;

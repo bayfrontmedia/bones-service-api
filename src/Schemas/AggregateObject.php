@@ -4,7 +4,7 @@ namespace Bayfront\BonesService\Api\Schemas;
 
 use Bayfront\ArraySchema\SchemaInterface;
 
-class PagePagination implements SchemaInterface
+class AggregateObject implements SchemaInterface
 {
 
     /**

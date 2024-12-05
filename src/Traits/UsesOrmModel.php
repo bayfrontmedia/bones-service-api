@@ -51,9 +51,8 @@ trait UsesOrmModel
      * List OrmModel resources, including pagination and aggregate of requested.
      *
      * Array keys:
-     * - data: Collection list
-     * - pagination: Collection pagination, if requested
-     * - aggregate: Aggregate results, if requested
+     * - list: Collection list
+     * - config: Schema configuration array
      *
      * @param ResourceModel $resourceModel
      * @param array $query (URL query parameters)
@@ -65,7 +64,8 @@ trait UsesOrmModel
     {
 
         try {
-            $collection = $resourceModel->list(new QueryParser($query));
+            $parser = new QueryParser($query);
+            $collection = $resourceModel->list($parser);
         } catch (InvalidRequestException $e) {
             throw new BadRequestException('Unable to list resource: Invalid request', 0, $e);
         } catch (UnexpectedException $e) {
@@ -80,15 +80,17 @@ trait UsesOrmModel
         }
 
         $result = [
-            'data' => $collection->list()
+            'list' => $collection->list(),
+            'config' => []
         ];
 
-        if (!empty($pagination)) {
-            $result['pagination'] = $pagination;
+        if ($parser->getPagination() != '' && !empty($pagination)) {
+            $result['config']['pagination_type'] = $parser->getPagination();
+            $result['config']['pagination'] = $pagination;
         }
 
         if (!empty($aggregate)) {
-            $result['aggregate'] = $aggregate;
+            $result['config']['aggregate'] = $aggregate;
         }
 
         return $result;

@@ -6,6 +6,8 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Abstracts\FilterSubscriber;
 use Bayfront\Bones\Application\Services\Filters\FilterSubscription;
 use Bayfront\Bones\Application\Utilities\App;
+use Bayfront\Bones\Application\Utilities\Constants;
+use Bayfront\Bones\Exceptions\UndefinedConstantException;
 use Bayfront\Bones\Interfaces\FilterSubscriberInterface;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\HttpRequest\Request;
@@ -52,6 +54,7 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
      *
      * @param array $data
      * @return array
+     * @throws UndefinedConstantException
      */
     public function addMetadata(array $data): array
     {
@@ -62,7 +65,8 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
 
             $data[$meta_field] = array_merge((array)Arr::get($data, $meta_field, []), $this->apiService->filters->doFilter('api.response.meta', [
                 'version' => $this->apiService->getConfig('version', ''),
-                'clientIp' => Request::getIp(),
+                'client_ip' => Request::getIp(),
+                'request_id' => Constants::isDefined('REQUEST_ID') ? Constants::get('REQUEST_ID') : null,
                 'date' => date('c'),
                 'elapsed' => App::getElapsedTime()
             ]));

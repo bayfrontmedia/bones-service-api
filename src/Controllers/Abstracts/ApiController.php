@@ -1,6 +1,6 @@
 <?php
 
-namespace Bayfront\BonesService\Api\Abstracts;
+namespace Bayfront\BonesService\Api\Controllers\Abstracts;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Abstracts\Controller;

@@ -3,8 +3,8 @@
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\BonesService\Api\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\ApiService;
+use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
@@ -96,7 +96,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
         $collection = $this->listOrmResources($this->permissionsModel, $this->getQuery());
 
         // Response
-        $this->respond(200, PermissionCollection::create($collection), [
+        $this->respond(200, PermissionCollection::create($collection['list'], $collection['config']), [
             'Cache-Control' => 'max-age=3600'
         ]);
 

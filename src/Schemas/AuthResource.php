@@ -2,7 +2,9 @@
 
 namespace Bayfront\BonesService\Api\Schemas;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\ArraySchema\SchemaInterface;
+use Bayfront\BonesService\Api\Schemas\Utilities\ResourceSchema;
 
 class AuthResource implements SchemaInterface
 {
@@ -12,9 +14,13 @@ class AuthResource implements SchemaInterface
      */
     public static function create(array $array, array $config = []): array
     {
-        return [
-            'data' => $array
+        $keys = [
+            'access',
+            'refresh',
+            'expires'
         ];
+
+        return ResourceSchema::create(Arr::order(Arr::only($array, $keys), $keys));
     }
 
 }

@@ -104,6 +104,10 @@ abstract class ApiController extends Controller
                 'Retry-After' => $wait
             ]);
 
+            if ($this instanceof AuthApiController) {
+                $this->events->doEvent('api.auth.limit');
+            }
+
             $this->abort(429, 'Rate limit exceeded. Try again in ' . $wait . ' seconds');
 
         } catch (AdapterException $e) {

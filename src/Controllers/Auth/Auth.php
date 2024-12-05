@@ -64,7 +64,7 @@ class Auth extends AuthApiController
             ]));
 
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->abort(500, $e->getMessage());
+            $this->abort(500, 'Unexpected error', $e);
         }
 
     }
@@ -97,17 +97,11 @@ class Auth extends AuthApiController
 
         try {
             $user = $authenticator->authenticate($body['email'], $body['password']);
-        } catch (InvalidPasswordException|UserDoesNotExistException) {
+        } catch (UserDoesNotExistException|InvalidPasswordException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent('api.auth.password.fail', $body['email']);
-            $this->abort(401, 'Invalid credentials');
-        } catch (UserDisabledException) {
-            $this->events->doEvent('api.auth.password.fail', $body['email']);
-            $this->abort(401, 'User is disabled');
-        } catch (UserNotVerifiedException) {
-            $this->events->doEvent('api.auth.password.fail', $body['email']);
-            $this->abort(401, 'User is unverified');
+            $this->abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, $e->getMessage());
+            $this->abort(500, 'Unexpected error', $e);
         }
 
         if ($this->apiService->getConfig('auth.password.tfa.enabled') === true) {
@@ -125,11 +119,11 @@ class Auth extends AuthApiController
                     $this->apiService->getConfig('auth.password.tfa.type', $this->rbacService::TOTP_TYPE_NUMERIC)
                 );
 
-            } catch (AlreadyExistsException) {
+            } catch (AlreadyExistsException) { // TFA exists and wait time has not elapsed
                 $this->events->doEvent('api.auth.password.fail', $body['email']);
-                $this->abort(409, 'Unable to create TFA: Wait time not yet elapsed');
+                $this->abort(429);
             } catch (DoesNotExistException|UnexpectedException $e) {
-                $this->abort(500, 'Unable to create TFA: Unexpected error', $e);
+                $this->abort(500, 'Unexpected error', $e);
             }
 
             $this->events->doEvent('api.auth.password.tfa', $user, $totp);
@@ -168,17 +162,11 @@ class Auth extends AuthApiController
 
         try {
             $user = $authenticator->authenticate($body['email']);
-        } catch (UserDoesNotExistException) {
+        } catch (UserDoesNotExistException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent('api.auth.otp.fail', $body['email']);
-            $this->abort(401, 'Invalid credentials');
-        } catch (UserDisabledException) {
-            $this->events->doEvent('api.auth.otp.fail', $body['email']);
-            $this->abort(401, 'User is disabled');
-        } catch (UserNotVerifiedException) {
-            $this->events->doEvent('api.auth.otp.fail', $body['email']);
-            $this->abort(401, 'User is unverified');
+            $this->abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, $e->getMessage());
+            $this->abort(500, 'Unexpected error', $e);
         }
 
         $userMetaModel = new UserMetaModel($this->rbacService);
@@ -194,11 +182,11 @@ class Auth extends AuthApiController
                 $this->apiService->getConfig('auth.otp.type', $this->rbacService::TOTP_TYPE_NUMERIC)
             );
 
-        } catch (AlreadyExistsException) {
+        } catch (AlreadyExistsException) { // OTP exists and wait time has not elapsed
             $this->events->doEvent('api.auth.otp.fail', $body['email']);
-            $this->abort(409, 'Unable to create OTP: Wait time not yet elapsed');
+            $this->abort(429);
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->abort(500, 'Unable to create OTP: Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', $e);
         }
 
         $this->events->doEvent('api.auth.otp', $user, $totp);
@@ -235,17 +223,11 @@ class Auth extends AuthApiController
 
         try {
             $user = $authenticator->authenticate($body['email'], $body['token']);
-        } catch (TotpDoesNotExistException|UserDoesNotExistException) {
+        } catch (TotpDoesNotExistException|UserDoesNotExistException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent('api.auth.tfa.fail', $body['email']);
-            $this->abort(401, 'Invalid credentials');
-        } catch (UserDisabledException) {
-            $this->events->doEvent('api.auth.tfa.fail', $body['email']);
-            $this->abort(401, 'User is disabled');
-        } catch (UserNotVerifiedException) {
-            $this->events->doEvent('api.auth.tfa.fail', $body['email']);
-            $this->abort(401, 'User is unverified');
+            $this->abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, $e->getMessage());
+            $this->abort(500, 'Unexpected error', $e);
         }
 
         $this->respondWithTokens($user);
@@ -279,17 +261,11 @@ class Auth extends AuthApiController
 
         try {
             $user = $authenticator->authenticate($body['refresh_token'], $authenticator::TOKEN_TYPE_REFRESH);
-        } catch (InvalidTokenException|TokenDoesNotExistException|UserDoesNotExistException) {
+        } catch (InvalidTokenException|TokenDoesNotExistException|UserDoesNotExistException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent('api.auth.refresh.fail');
-            $this->abort(401, 'Invalid refresh token');
-        } catch (UserDisabledException) {
-            $this->events->doEvent('api.auth.refresh.fail');
-            $this->abort(401, 'User is disabled');
-        } catch (UserNotVerifiedException) {
-            $this->events->doEvent('api.auth.refresh.fail');
-            $this->abort(401, 'User is unverified');
+            $this->abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, $e->getMessage());
+            $this->abort(500, 'Unexpected error', $e);
         }
 
         $this->respondWithTokens($user);

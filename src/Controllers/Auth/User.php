@@ -39,17 +39,11 @@ class User extends AuthApiController
 
         try {
             return $authenticator->authenticate($email, $check_verified);
-        } catch (UserDoesNotExistException) {
+        } catch (UserDoesNotExistException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent($fail_event, $email);
-            $this->abort(401, 'Invalid credentials');
-        } catch (UserDisabledException) {
-            $this->events->doEvent($fail_event, $email);
-            $this->abort(401, 'User is disabled');
-        } catch (UserNotVerifiedException) {
-            $this->events->doEvent($fail_event, $email);
-            $this->abort(401, 'User is unverified');
+            $this->abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, $e->getMessage());
+            $this->abort(500, 'Unexpected error', $e);
         }
 
     }
@@ -96,9 +90,9 @@ class User extends AuthApiController
 
         } catch (AlreadyExistsException) {
             $this->events->doEvent('api.user.password_request.fail', $body['email']);
-            $this->abort(409, 'Unable to create TFA: Wait time not yet elapsed');
+            $this->abort(429);
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->abort(500, 'Unable to create TFA: Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', $e);
         }
 
         $this->events->doEvent('api.user.password_request', $user, $totp);
@@ -140,14 +134,14 @@ class User extends AuthApiController
 
         try {
             $totp = $userMetaModel->getTotp($user->getId(), $userMetaModel->totp_meta_key_password);
-        } catch (DoesNotExistException) {
+        } catch (DoesNotExistException) { // Token does not exist
             $this->events->doEvent('api.user.password.fail', $body['email']);
-            $this->abort(401, 'Unable to reset password: Token does not exist');
+            $this->abort(401);
         }
 
-        if (!$this->rbacService->hashMatches($totp->getValue(), $body['token'])) {
+        if (!$this->rbacService->hashMatches($totp->getValue(), $body['token'])) { // Invalid token value
             $this->events->doEvent('api.user.password.fail', $body['email']);
-            $this->abort(401, 'Unable to reset password: Invalid token');
+            $this->abort(401);
         }
 
         // Delete TOTP
@@ -165,7 +159,7 @@ class User extends AuthApiController
             ]);
 
         } catch (OrmServiceException $e) {
-            $this->abort(500, 'Unexpected error resetting password', $e);
+            $this->abort(500, 'Unexpected error', $e);
         }
 
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_password);
@@ -204,7 +198,8 @@ class User extends AuthApiController
 
         if ($user->isVerified()) {
             $this->events->doEvent('api.user.verification_request.fail', $body['email']);
-            $this->abort(401, 'Unable to create verification: User is already verified');
+            $this->respond(201);
+            return;
         }
 
         $apiModel = new ApiModel($this->apiService);
@@ -215,9 +210,9 @@ class User extends AuthApiController
 
         } catch (AlreadyExistsException) {
             $this->events->doEvent('api.user.verification_request.fail', $body['email']);
-            $this->abort(409, 'Unable to create verification: Wait time not yet elapsed');
+            $this->abort(429);
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->abort(500, 'Unable to create verification: Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', $e);
         }
 
         $this->respond(201);
@@ -253,7 +248,8 @@ class User extends AuthApiController
 
         if ($user->isVerified()) {
             $this->events->doEvent('api.user.verification.fail', $body['email']);
-            $this->abort(401, 'Unable to verify user: User is already verified');
+            $this->respond();
+            return;
         }
 
         // Verify then delete TOTP
@@ -264,12 +260,12 @@ class User extends AuthApiController
             $totp = $userMetaModel->getTotp($user->getId(), $userMetaModel->totp_meta_key_verification);
         } catch (DoesNotExistException) {
             $this->events->doEvent('api.user.verification.fail', $body['email']);
-            $this->abort(401, 'Unable to verify user: Invalid verification token');
+            $this->abort(401);
         }
 
-        if (!$this->rbacService->hashMatches($totp->getValue(), $body['token'])) {
+        if (!$this->rbacService->hashMatches($totp->getValue(), $body['token'])) { // Invalid token value
             $this->events->doEvent('api.user.verification.fail', $body['email']);
-            $this->abort(401, 'Unable to verify user: Invalid verification token');
+            $this->abort(401);
         }
 
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_verification);

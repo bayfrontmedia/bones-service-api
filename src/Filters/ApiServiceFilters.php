@@ -51,6 +51,7 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
 
     /**
      * Add metadata to API response when requested in request query.
+     * Filters meta using the api.response.meta filter.
      *
      * @param array $data
      * @return array
@@ -61,7 +62,9 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
 
         $meta_field = $this->apiService->getConfig('request.meta_field', 'meta');
 
-        if (Request::getQuery($meta_field) == 'true') {
+        if ($this->apiService->getConfig('request.meta.enabled') === true
+            && Request::getQuery($meta_field) == 'true'
+            && in_array(App::environment(), $this->apiService->getConfig('request.meta.env', []))) {
 
             $data[$meta_field] = array_merge((array)Arr::get($data, $meta_field, []), $this->apiService->filters->doFilter('api.response.meta', [
                 'version' => $this->apiService->getConfig('version', ''),
@@ -70,6 +73,8 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
                 'date' => date('c'),
                 'elapsed' => App::getElapsedTime()
             ]));
+
+            $data[$meta_field] = $this->apiService->filters->doFilter('api.response.meta', $data[$meta_field]);
 
         }
 

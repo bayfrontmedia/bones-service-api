@@ -30,7 +30,7 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
 
         return [
             new FilterSubscription('about.bones', [$this, 'addApiVersion'], 10),
-            new FilterSubscription('api.response', [$this, 'addMetadata'], 10),
+            new FilterSubscription('api.response', [$this, 'addMetadata'], 5)
         ];
 
     }

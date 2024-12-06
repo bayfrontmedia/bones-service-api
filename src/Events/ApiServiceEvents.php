@@ -244,7 +244,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     }
 
     /**
-     * Define request ID.
+     * Define request UID.
      * This can be used to identify and trace a single request throughout the application lifecycle.
      *
      * @return void
@@ -252,8 +252,8 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
      */
     public function defineRequestId(): void
     {
-        if ($this->apiService->getConfig('request.id.enabled') === true && !Constants::isDefined('REQUEST_ID')) {
-            Constants::define('REQUEST_ID', strtolower(Str::random($this->apiService->getConfig('request.id.length', 8), 'alphanumeric')));
+        if ($this->apiService->getConfig('request.uid.enabled') === true && !Constants::isDefined('REQUEST_UID')) {
+            Constants::define('REQUEST_UID', strtolower(Str::uid($this->apiService->getConfig('request.uid.length', 8))));
         }
     }
 

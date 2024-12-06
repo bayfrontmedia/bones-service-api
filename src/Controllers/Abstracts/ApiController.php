@@ -169,7 +169,7 @@ abstract class ApiController extends Controller
             }
 
         } catch (UnexpectedException $e) {
-            $this->abort(500, 'Unable to verify permissions: Unexpected error', $e);
+            $this->abort(500, 'Unable to verify permissions: Unexpected error', 0, $e);
         }
 
     }
@@ -296,18 +296,15 @@ abstract class ApiController extends Controller
     /**
      * Aborts with appropriate API exception based on status code.
      *
-     * TODO:
-     * Add $code after $message
-     * Can be used to return link to documentation
-     *
      * @param int $status_code
      * @param string $message
+     * @param int $code
      * @param Throwable|null $previous
      * @return no-return
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    protected function abort(int $status_code, string $message = '', Throwable $previous = null): void
+    protected function abort(int $status_code, string $message = '', int $code = 0, Throwable $previous = null): void
     {
 
         $exceptions = [
@@ -323,10 +320,10 @@ abstract class ApiController extends Controller
         ];
 
         if (isset($exceptions[$status_code])) {
-            throw new $exceptions[$status_code]($message, 0, $previous);
+            throw new $exceptions[$status_code]($message, $code, $previous);
         }
 
-        throw new ApiServiceException($message, 0, $previous);
+        throw new ApiServiceException($message, $code, $previous);
 
     }
 

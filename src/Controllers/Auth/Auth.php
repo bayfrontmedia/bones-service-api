@@ -64,7 +64,7 @@ class Auth extends AuthApiController
             ]));
 
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->abort(500, 'Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', 0, $e);
         }
 
     }
@@ -101,7 +101,7 @@ class Auth extends AuthApiController
             $this->events->doEvent('api.auth.password.fail', $body['email']);
             $this->abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, 'Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', 0, $e);
         }
 
         if ($this->apiService->getConfig('auth.password.tfa.enabled') === true) {
@@ -123,7 +123,7 @@ class Auth extends AuthApiController
                 $this->events->doEvent('api.auth.password.fail', $body['email']);
                 $this->abort(429);
             } catch (DoesNotExistException|UnexpectedException $e) {
-                $this->abort(500, 'Unexpected error', $e);
+                $this->abort(500, 'Unexpected error', 0, $e);
             }
 
             $this->events->doEvent('api.auth.password.tfa', $user, $totp);
@@ -166,7 +166,7 @@ class Auth extends AuthApiController
             $this->events->doEvent('api.auth.otp.fail', $body['email']);
             $this->abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, 'Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', 0, $e);
         }
 
         $userMetaModel = new UserMetaModel($this->rbacService);
@@ -186,7 +186,7 @@ class Auth extends AuthApiController
             $this->events->doEvent('api.auth.otp.fail', $body['email']);
             $this->abort(429);
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->abort(500, 'Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', 0, $e);
         }
 
         $this->events->doEvent('api.auth.otp', $user, $totp);
@@ -227,7 +227,7 @@ class Auth extends AuthApiController
             $this->events->doEvent('api.auth.tfa.fail', $body['email']);
             $this->abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, 'Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', 0, $e);
         }
 
         $this->respondWithTokens($user);
@@ -265,7 +265,7 @@ class Auth extends AuthApiController
             $this->events->doEvent('api.auth.refresh.fail');
             $this->abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, 'Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', 0, $e);
         }
 
         $this->respondWithTokens($user);

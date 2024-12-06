@@ -43,7 +43,7 @@ class User extends AuthApiController
             $this->events->doEvent($fail_event, $email);
             $this->abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, 'Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', 0, $e);
         }
 
     }
@@ -92,7 +92,7 @@ class User extends AuthApiController
             $this->events->doEvent('api.user.password_request.fail', $body['email']);
             $this->abort(429);
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->abort(500, 'Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', 0, $e);
         }
 
         $this->events->doEvent('api.user.password_request', $user, $totp);
@@ -159,7 +159,7 @@ class User extends AuthApiController
             ]);
 
         } catch (OrmServiceException $e) {
-            $this->abort(500, 'Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', 0, $e);
         }
 
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_password);
@@ -212,7 +212,7 @@ class User extends AuthApiController
             $this->events->doEvent('api.user.verification_request.fail', $body['email']);
             $this->abort(429);
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->abort(500, 'Unexpected error', $e);
+            $this->abort(500, 'Unexpected error', 0, $e);
         }
 
         $this->respond(204);

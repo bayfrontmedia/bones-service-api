@@ -120,7 +120,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
         // Function
 
         // Schema
-        $resource = $this->readOrmResource($this->permissionsModel, Arr::get($params, 'id', ''));
+        $resource = $this->readOrmResource($this->permissionsModel, Arr::get($params, 'id', ''), $this->getQuery());
 
         // Response
         $this->respond(200, PermissionResource::create($resource), [

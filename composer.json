@@ -34,6 +34,7 @@
     "bayfrontmedia/array-schema": "^2.1",
     "bayfrontmedia/php-http-request": "^3.1",
     "bayfrontmedia/php-http-response": "^2.0",
+    "bayfrontmedia/php-string-helpers": "^2.2",
     "bayfrontmedia/php-validator": "^4.0"
   },
   "autoload": {

@@ -13,6 +13,7 @@ use Bayfront\BonesService\Orm\Exceptions\InvalidFieldException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Orm\Models\ResourceModel;
+use Bayfront\BonesService\Orm\Utilities\Parsers\FieldParser;
 use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
 
 trait UsesOrmModel
@@ -105,19 +106,25 @@ trait UsesOrmModel
      *
      * @param ResourceModel $resourceModel
      * @param mixed $primary_key_id
+     * @param array $query (URL query parameters)
      * @return array
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
      */
-    protected function readOrmResource(ResourceModel $resourceModel, mixed $primary_key_id): array
+    protected function readOrmResource(ResourceModel $resourceModel, mixed $primary_key_id, array $query = []): array
     {
+
+        $parser = new FieldParser($query);
 
         try {
 
-            return $resourceModel->read($primary_key_id);
+            return $resourceModel->read($primary_key_id, $parser->getFields());
 
         } catch (DoesNotExistException $e) {
             throw new NotFoundException('Unable to read resource: Resource does not exist', 0, $e);
+        } catch (InvalidRequestException $e) {
+            throw new BadRequestException('Unable to read resource: Invalid field(s)', 0, $e);
         } catch (UnexpectedException $e) {
             throw new ApiServiceException('Unable to read resource: Unexpected error', 0, $e);
         }

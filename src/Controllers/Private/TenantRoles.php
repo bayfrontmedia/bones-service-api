@@ -109,7 +109,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         // Function
 
         // Schema
-        $schema = $this->readOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''));
+        $schema = $this->readOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''), $this->getQuery());
 
         // Response
         $this->respond(200, $schema, [

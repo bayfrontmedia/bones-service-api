@@ -296,6 +296,10 @@ abstract class ApiController extends Controller
     /**
      * Aborts with appropriate API exception based on status code.
      *
+     * TODO:
+     * Add $code after $message
+     * Can be used to return link to documentation
+     *
      * @param int $status_code
      * @param string $message
      * @param Throwable|null $previous

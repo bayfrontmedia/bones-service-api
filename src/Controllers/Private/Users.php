@@ -95,7 +95,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
         // Function
 
         // Schema
-        $schema = $this->readOrmResource($this->usersModel, Arr::get($params, 'id', ''));
+        $schema = $this->readOrmResource($this->usersModel, Arr::get($params, 'id', ''), $this->getQuery());
 
         // Response
         $this->respond(200, $schema, [

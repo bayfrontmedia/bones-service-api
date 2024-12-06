@@ -13,7 +13,7 @@ use Bayfront\BonesService\Api\Controllers\Auth\User;
 use Bayfront\BonesService\Api\Controllers\Private\Permissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
 use Bayfront\BonesService\Api\Controllers\Private\Users;
-use Bayfront\BonesService\Api\Controllers\Public\Home;
+use Bayfront\BonesService\Api\Controllers\Public\Server;
 use Bayfront\BonesService\Api\Events\ApiServiceDevEvents;
 use Bayfront\BonesService\Api\Events\ApiServiceEvents;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -105,13 +105,16 @@ class ApiService extends Service
      */
     public function addRoutes(Router $router): void
     {
-        $router->get('/', [Home::class, 'index'])
+        $router
+            // Server
+            ->get('/server/status', [Server::class, 'status'])
             // Auth
             ->post('/auth/login', [Auth::class, 'login'])
             ->post('/auth/otp', [Auth::class, 'otp'])
             ->post('/auth/tfa', [Auth::class, 'tfa'])
             ->post('/auth/refresh', [Auth::class, 'refresh'])
             // User
+            ->post('/user/register', [User::class, 'register'])
             ->post('/user/password-request', [User::class, 'passwordRequest'])
             ->post('/user/password', [User::class, 'password'])
             ->post('/user/verification-request', [User::class, 'verificationRequest'])

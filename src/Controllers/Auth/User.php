@@ -48,6 +48,17 @@ class User extends AuthApiController
 
     }
 
+    public function register(): void
+    {
+
+        if ($this->apiService->getConfig('user.public_registration') !== true) {
+            $this->abort(404);
+        }
+
+        // TODO: register
+
+    }
+
     /**
      * Request password reset and respond with 201 HTTP status code.
      * Executes api.user.password_request event.

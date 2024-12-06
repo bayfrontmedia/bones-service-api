@@ -8,7 +8,7 @@ use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Schemas\ServerStatusResource;
 
-class Home extends PublicApiController
+class Server extends PublicApiController
 {
 
     /**
@@ -27,7 +27,7 @@ class Home extends PublicApiController
      * @throws ApiServiceException
      * @throws ApiHttpException
      */
-    public function index(): void
+    public function status(): void
     {
 
         $this->respond(200, ServerStatusResource::create([

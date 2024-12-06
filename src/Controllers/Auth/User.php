@@ -96,7 +96,7 @@ class User extends AuthApiController
         }
 
         $this->events->doEvent('api.user.password_request', $user, $totp);
-        $this->respond(201);
+        $this->respond(204);
 
     }
 
@@ -166,7 +166,7 @@ class User extends AuthApiController
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_tfa);
         $userMetaModel->deleteAllTokens($user->getId());
 
-        $this->respond();
+        $this->respond(204);
 
     }
 
@@ -198,7 +198,7 @@ class User extends AuthApiController
 
         if ($user->isVerified()) {
             $this->events->doEvent('api.user.verification_request.fail', $body['email']);
-            $this->respond(201);
+            $this->respond(204);
             return;
         }
 
@@ -215,7 +215,7 @@ class User extends AuthApiController
             $this->abort(500, 'Unexpected error', $e);
         }
 
-        $this->respond(201);
+        $this->respond(204);
 
     }
 
@@ -248,7 +248,7 @@ class User extends AuthApiController
 
         if ($user->isVerified()) {
             $this->events->doEvent('api.user.verification.fail', $body['email']);
-            $this->respond();
+            $this->respond(204);
             return;
         }
 
@@ -276,7 +276,7 @@ class User extends AuthApiController
 
         $usersModel->verify($body['email']);
 
-        $this->respond();
+        $this->respond(204);
 
     }
 

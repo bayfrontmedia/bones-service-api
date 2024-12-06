@@ -60,7 +60,7 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
     public function addMetadata(array $data): array
     {
 
-        $meta_field = $this->apiService->getConfig('request.meta_field', 'meta');
+        $meta_field = $this->apiService->getConfig('request.meta.field', 'meta');
 
         if ($this->apiService->getConfig('request.meta.enabled') === true
             && Request::getQuery($meta_field) == 'true'

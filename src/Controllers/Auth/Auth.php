@@ -127,7 +127,7 @@ class Auth extends AuthApiController
             }
 
             $this->events->doEvent('api.auth.password.tfa', $user, $totp);
-            $this->respond(201);
+            $this->respond(204);
 
         } else {
             $this->respondWithTokens($user);
@@ -190,7 +190,7 @@ class Auth extends AuthApiController
         }
 
         $this->events->doEvent('api.auth.otp', $user, $totp);
-        $this->respond(201);
+        $this->respond(204);
 
     }
 

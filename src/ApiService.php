@@ -118,21 +118,63 @@ class ApiService extends Service
             ->post('/user/verification', [User::class, 'verification'])
             // Permissions
             ->post('/permissions', [Permissions::class, 'create'])
-            ->get('/permissions',  [Permissions::class, 'list'])
-            ->get('/permissions/{*:id}',  [Permissions::class, 'read'])
-            ->patch('/permissions/{*:id}',  [Permissions::class, 'update'])
-            ->delete('/permissions/{*:id}',  [Permissions::class, 'delete'])
+            ->get('/permissions', [Permissions::class, 'list'])
+            ->get('/permissions/{*:id}', [Permissions::class, 'read'])
+            ->patch('/permissions/{*:id}', [Permissions::class, 'update'])
+            ->delete('/permissions/{*:id}', [Permissions::class, 'delete'])
             // Users
             ->get('/users/logout', [Users::class, 'logout'])
-            ->get('/users/me',  [Users::class, 'me'])
-            ->get('/users/{*:id}',  [Users::class, 'read'])
+            ->get('/users/me', [Users::class, 'me'])
+            ->get('/users/{*:id}', [Users::class, 'read'])
             // Tenant roles
             ->post('/tenants/{*:tenant}/roles', [TenantRoles::class, 'create'])
-            ->get('/tenants/{*:tenant}/roles',  [TenantRoles::class, 'list'])
-            ->get('/tenants/{*:tenant}/roles/{*:id}',  [TenantRoles::class, 'read'])
-            ->patch('/tenants/{*:tenant}/roles/{*:id}',  [TenantRoles::class, 'update'])
-            ->delete('/tenants/{*:tenant}/roles/{*:id}',  [TenantRoles::class, 'delete'])
-        ;
+            ->get('/tenants/{*:tenant}/roles', [TenantRoles::class, 'list'])
+            ->get('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'read'])
+            ->patch('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'update'])
+            ->delete('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'delete']);
+    }
+
+    /**
+     * Verify input string meets requirements.
+     * Helpful to enforce string complexity, such as with the rbac.user.password filter.
+     *
+     * TODO:
+     * Move to static utility class or to the RBAC service.
+     *
+     * @param string $string
+     * @param int $min_length
+     * @param int $max_length
+     * @param int $lowercase
+     * @param int $uppercase
+     * @param int $digits
+     * @param int $special_chars
+     * @return bool
+     */
+    public function stringMeetsRequirements(string $string, int $min_length, int $max_length, int $lowercase, int $uppercase, int $digits, int $special_chars): bool
+    {
+
+        if (strlen($string) < $min_length || strlen($string) > $max_length) {
+            return false;
+        }
+
+        if ($lowercase > 0 && preg_match_all('/[a-z]/', $string) < $lowercase) {
+            return false;
+        }
+
+        if ($uppercase > 0 && preg_match_all('/[A-Z]/', $string) < $uppercase) {
+            return false;
+        }
+
+        if ($digits > 0 && preg_match_all('/[0-9]/', $string) < $digits) {
+            return false;
+        }
+
+        if ($special_chars > 0 && preg_match_all('/[^A-Za-z0-9]/', $string) < $special_chars) {
+            return false;
+        }
+
+        return true;
+
     }
 
 }

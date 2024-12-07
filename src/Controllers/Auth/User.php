@@ -48,6 +48,11 @@ class User extends AuthApiController
 
     }
 
+    /**
+     * @return void
+     * @throws ApiHttpException
+     * @throws ApiServiceException
+     */
     public function register(): void
     {
 
@@ -74,15 +79,13 @@ class User extends AuthApiController
             $this->abort(404);
         }
 
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getBody([
+        $body = $this->getJsonBody([
             'email' => 'required|email|maxLength:255'
         ]);
-
 
         $user = $this->authenticateEmail($body['email'], 'api.user.password_request.fail');
 
@@ -126,12 +129,11 @@ class User extends AuthApiController
             $this->abort(404);
         }
 
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getBody([
+        $body = $this->getJsonBody([
             'email' => 'required|email|maxLength:255',
             'password' => 'required|isString|maxLength:255',
             'token' => 'required|isString'
@@ -196,12 +198,11 @@ class User extends AuthApiController
             $this->abort(404);
         }
 
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getBody([
+        $body = $this->getJsonBody([
             'email' => 'required|email|maxLength:255'
         ]);
 
@@ -245,12 +246,11 @@ class User extends AuthApiController
             $this->abort(404);
         }
 
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getBody([
+        $body = $this->getJsonBody([
             'email' => 'required|email|maxLength:255',
             'token' => 'required|isString'
         ]);

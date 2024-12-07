@@ -8,6 +8,8 @@ use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
+use Bayfront\BonesService\Api\Schemas\TenantRolesCollection;
+use Bayfront\BonesService\Api\Schemas\TenantRolesResource;
 use Bayfront\BonesService\Api\Traits\ScopedEndpoint;
 use Bayfront\BonesService\Api\Traits\UsesOrmModel;
 use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
@@ -37,30 +39,26 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
     public function create(array $params): void
     {
 
-        // Check permissions
-        $this->requirePermissions($this->user, Arr::get($params, 'tenant', ''), [
+        $this->validatePermissions($this->user, Arr::get($params, 'tenant', ''), [
             'roles.create',
             'roles.read'
         ]);
 
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
+        $this->validatePath($params, [
+            'tenant' => 'uuid'
         ]);
 
-        // Validate body
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
+        ]);
 
-        $body = $this->defineScopedFields($this->getBody(), [
+        $body = $this->defineScopedFields($this->getJsonBody($this->tenantRolesModel->getAllowedFieldsWrite()), [
             'tenant' => Arr::get($params, 'tenant', '')
         ]);
 
-        // Function
+        $resource = $this->createOrmResource($this->tenantRolesModel, $body);
 
-        // Schema
-        $schema = $this->createOrmResource($this->tenantRolesModel, $body);
-
-        // Response
-        $this->respond(201, $schema);
+        $this->respond(201, TenantRolesResource::create($resource));
 
     }
 
@@ -70,22 +68,19 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
     public function list(array $params): void
     {
 
-        // Check permissions
-        $this->requirePermissions($this->user, Arr::get($params, 'tenant', ''), [
+        $this->validatePermissions($this->user, Arr::get($params, 'tenant', ''), [
             'roles.read'
         ]);
 
-        // Require headers
+        $this->validatePath($params, [
+            'tenant' => 'uuid'
+        ]);
 
-        // Validate body
+        $this->validateQuery($this->getQueryParserRules());
 
-        // Function
+        $collection = $this->listOrmResources($this->tenantRolesModel);
 
-        // Schema
-        $schema = $this->listOrmResources($this->tenantRolesModel, $this->getQuery());
-
-        // Response
-        $this->respond(200, $schema, [
+        $this->respond(200, TenantRolesCollection::create($collection['list'], $collection['config']), [
             'Cache-Control' => 'max-age=3600'
         ]);
 
@@ -97,22 +92,20 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
     public function read(array $params): void
     {
 
-        // Check permissions
-        $this->requirePermissions($this->user, Arr::get($params, 'tenant', ''), [
+        $this->validatePermissions($this->user, Arr::get($params, 'tenant', ''), [
             'roles.read'
         ]);
 
-        // Require headers
+        $this->validatePath($params, [
+            'tenant' => 'uuid',
+            'id' => 'uuid'
+        ]);
 
-        // Validate body
+        $this->validateQuery($this->getFieldParserRules());
 
-        // Function
+        $resource = $this->readOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''));
 
-        // Schema
-        $schema = $this->readOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''), $this->getQuery());
-
-        // Response
-        $this->respond(200, $schema, [
+        $this->respond(200, TenantRolesResource::create($resource), [
             'Cache-Control' => 'max-age=3600'
         ]);
 
@@ -123,31 +116,28 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
      */
     public function update(array $params): void
     {
-        // Check permissions
-        $this->requirePermissions($this->user, Arr::get($params, 'tenant', ''), [
+
+        $this->validatePermissions($this->user, Arr::get($params, 'tenant', ''), [
             'roles.update',
             'roles.read'
         ]);
 
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
+        $this->validatePath($params, [
+            'tenant' => 'uuid',
+            'id' => 'uuid'
         ]);
 
-        // Validate body
-
-        $body = $this->disallowScopedFields($this->getBody(), [
-            'tenant'
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
         ]);
 
-        // Function
+        $body = $this->defineScopedFields($this->getJsonBody($this->tenantRolesModel->getAllowedFieldsWrite()), [
+            'tenant' => Arr::get($params, 'tenant', '')
+        ]);
 
+        $resource = $this->updateOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''), $body);
 
-        // Schema
-        $schema = $this->updateOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''), $body);
-
-        // Response
-        $this->respond(200, $schema);
+        $this->respond(200, TenantRolesResource::create($resource));
 
     }
 
@@ -157,19 +147,17 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
     public function delete(array $params): void
     {
 
-        // Check permissions
-        $this->requirePermissions($this->user, Arr::get($params, 'tenant', ''), [
+        $this->validatePermissions($this->user, Arr::get($params, 'tenant', ''), [
             'roles.delete'
         ]);
 
-        // Require headers
+        $this->validatePath($params, [
+            'tenant' => 'uuid',
+            'id' => 'uuid'
+        ]);
 
-        // Validate body
-
-        // Function
         $this->deleteOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''));
 
-        // Response
         $this->respond(204);
 
     }

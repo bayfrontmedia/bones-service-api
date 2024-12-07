@@ -13,7 +13,6 @@ use Bayfront\BonesService\Api\Schemas\PermissionResource;
 use Bayfront\BonesService\Api\Traits\Auditable;
 use Bayfront\BonesService\Api\Traits\UsesOrmModel;
 use Bayfront\BonesService\Rbac\Models\PermissionsModel;
-use Bayfront\HttpRequest\Request;
 
 class Permissions extends PrivateApiController implements CrudControllerInterface
 {
@@ -56,17 +55,19 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
 
         $this->validateIsAdmin($this->user);
 
-        $this->validateHeaders(Request::getHeader(), [
+        $this->validateHeaders([
             'Content-Type' => 'required|matches:application/json'
         ]);
 
         /*
          * TODO:
-         * getAllowedFieldsWrite does not check for required fields
+         * getAllowedFieldsWrite does not check for required fields.
+         * This will not matter if using OAS to create these rules.
          */
-        $this->validateBodyJson(Request::getBody(), $this->permissionsModel->getAllowedFieldsWrite());
 
-        $resource = $this->createOrmResource($this->permissionsModel, $this->getBody());
+        $body = $this->getJsonBody($this->permissionsModel->getAllowedFieldsWrite());
+
+        $resource = $this->createOrmResource($this->permissionsModel, $body);
 
         $this->respond(201, PermissionResource::create($resource));
 
@@ -80,14 +81,10 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
 
         $this->validateIsAdmin($this->user);
 
-        $this->validateQuery(Request::getQuery(), [ // TODO: Make predefined ORM query parser rules
-            'filter' => 'isJson',
-            'aggregate' => 'isJson'
-        ]);
+        $this->validateQuery($this->getQueryParserRules());
 
-        $collection = $this->listOrmResources($this->permissionsModel, Request::getQuery());
+        $collection = $this->listOrmResources($this->permissionsModel);
 
-        // Response
         $this->respond(200, PermissionCollection::create($collection['list'], $collection['config']), [
             'Cache-Control' => 'max-age=3600'
         ]);
@@ -106,11 +103,9 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
             'id' => 'uuid'
         ]);
 
-        $this->validateQuery(Request::getQuery(), [
-            'fields' => 'isString'
-        ]);
+        $this->validateQuery($this->getFieldParserRules());
 
-        $resource = $this->readOrmResource($this->permissionsModel, Arr::get($params, 'id', ''), Request::getQuery());
+        $resource = $this->readOrmResource($this->permissionsModel, Arr::get($params, 'id', ''));
 
         $this->respond(200, PermissionResource::create($resource), [
             'Cache-Control' => 'max-age=3600'
@@ -130,13 +125,13 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
             'id' => 'uuid'
         ]);
 
-        $this->validateHeaders(Request::getHeader(), [
+        $this->validateHeaders([
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $this->validateBodyJson(Request::getBody(), $this->permissionsModel->getAllowedFieldsWrite());
+        $body = $this->getJsonBody($this->permissionsModel->getAllowedFieldsWrite());
 
-        $resource = $this->updateOrmResource($this->permissionsModel, Arr::get($params, 'id', ''), $this->getBody());
+        $resource = $this->updateOrmResource($this->permissionsModel, Arr::get($params, 'id', ''), $body);
 
         $this->respond(200, PermissionResource::create($resource));
 

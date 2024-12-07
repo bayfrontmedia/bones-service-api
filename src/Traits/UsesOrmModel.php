@@ -15,9 +15,35 @@ use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Orm\Models\ResourceModel;
 use Bayfront\BonesService\Orm\Utilities\Parsers\FieldParser;
 use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
+use Bayfront\HttpRequest\Request;
 
 trait UsesOrmModel
 {
+
+    /**
+     * Get FieldParser rules.
+     *
+     * @return array
+     */
+    protected function getFieldParserRules(): array
+    {
+        return [
+            'fields' => 'isString'
+        ];
+    }
+
+    /**
+     * Get QueryParser rules.
+     *
+     * @return array
+     */
+    protected function getQueryParserRules(): array
+    {
+        return [
+            'filter' => 'isJson',
+            'aggregate' => 'isJson'
+        ];
+    }
 
     /**
      * Create new OrmResource.
@@ -56,16 +82,15 @@ trait UsesOrmModel
      * - config: Schema configuration array
      *
      * @param ResourceModel $resourceModel
-     * @param array $query (URL query parameters)
      * @return array
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    protected function listOrmResources(ResourceModel $resourceModel, array $query = []): array
+    protected function listOrmResources(ResourceModel $resourceModel): array
     {
 
         try {
-            $parser = new QueryParser($query);
+            $parser = new QueryParser(Request::getQuery());
             $collection = $resourceModel->list($parser);
         } catch (InvalidRequestException $e) {
             throw new BadRequestException('Unable to list resource: Invalid request', 0, $e);
@@ -106,16 +131,15 @@ trait UsesOrmModel
      *
      * @param ResourceModel $resourceModel
      * @param mixed $primary_key_id
-     * @param array $query (URL query parameters)
      * @return array
      * @throws ApiServiceException
      * @throws BadRequestException
      * @throws NotFoundException
      */
-    protected function readOrmResource(ResourceModel $resourceModel, mixed $primary_key_id, array $query = []): array
+    protected function readOrmResource(ResourceModel $resourceModel, mixed $primary_key_id): array
     {
 
-        $parser = new FieldParser($query);
+        $parser = new FieldParser(Request::getQuery());
 
         try {
 

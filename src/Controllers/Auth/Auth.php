@@ -83,12 +83,11 @@ class Auth extends AuthApiController
             $this->abort(404);
         }
 
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getBody([
+        $body = $this->getJsonBody([
             'email' => 'required|email|maxLength:255',
             'password' => 'required|isString|maxLength:255'
         ]);
@@ -149,12 +148,11 @@ class Auth extends AuthApiController
             $this->abort(404);
         }
 
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getBody([
+        $body = $this->getJsonBody([
             'email' => 'required|email|maxLength:255'
         ]);
 
@@ -209,12 +207,11 @@ class Auth extends AuthApiController
             $this->abort(404);
         }
 
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getBody([
+        $body = $this->getJsonBody([
             'email' => 'required|email|maxLength:255',
             'token' => 'required|isString'
         ]);
@@ -248,12 +245,11 @@ class Auth extends AuthApiController
             $this->abort(404);
         }
 
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getBody([
+        $body = $this->getJsonBody([
             'refresh_token' => 'required|isString'
         ]);
 

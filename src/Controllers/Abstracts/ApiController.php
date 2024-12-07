@@ -129,101 +129,6 @@ abstract class ApiController extends Controller
     }
 
     /**
-     * Require headers.
-     * On error, aborts with 400 HTTP status.
-     *
-     * @param array $headers
-     * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
-     * @deprecated 
-     */
-    protected function requireHeaders(array $headers): void
-    {
-
-        foreach ($headers as $k => $v) {
-
-            if (Request::getHeader($k) !== $v) {
-                $this->abort(400, 'Required header missing or invalid: ' . $k);
-            }
-
-        }
-
-    }
-
-    /**
-     * Require permissions for non-admin user.
-     * On error, aborts with 403 HTTP status.
-     *
-     * @param User $user
-     * @param string $tenant_id
-     * @param array $permission_names
-     * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
-     * @deprecated
-     */
-    protected function requirePermissions(User $user, string $tenant_id, array $permission_names): void
-    {
-
-        if ($user->isAdmin()) {
-            return;
-        }
-
-        try {
-
-            if (!$user->canDoAll($tenant_id, $permission_names)) {
-                $this->abort(403, 'Forbidden: Insufficient permissions');
-            }
-
-        } catch (UnexpectedException $e) {
-            $this->abort(500, 'Unable to verify permissions: Unexpected error', 0, $e);
-        }
-
-    }
-
-    /**
-     * Get JSON-encoded request body.
-     * On error, aborts with 400 HTTP status.
-     *
-     * See: https://github.com/bayfrontmedia/php-validator/blob/master/docs/validator.md
-     *
-     * TODO:
-     * Need to validate only allowed keys exist in body.
-     * i.e.: Auth->login OTP
-     *
-     * @param array $validation_rules (Validation rules for fields)
-     * @return array
-     * @throws ApiHttpException
-     * @throws ApiServiceException
-     */
-    protected function getBody(array $validation_rules = []): array
-    {
-
-        $body = json_decode(Request::getBody(), true);
-
-        if (!$body || !is_array($body)) {
-            $this->abort(400, 'Unable to get body: Invalid or missing JSON');
-        }
-
-        if (!empty($validation_rules)) {
-
-            $validator = new Validator();
-            $validator->validate($body, $validation_rules, false, true);
-
-            if (!$validator->isValid()) {
-                $this->abort(400, 'Unable to get body: Invalid or missing field(s)');
-            }
-
-        }
-
-        return $body;
-
-    }
-    
-    // ------------------------- Start OAS -------------------------
-
-    /**
      * Validate user is admin.
      *
      * @param User $user
@@ -295,17 +200,16 @@ abstract class ApiController extends Controller
      * Since everything is a string, without further processing
      * it can basically only evaluate whether it exists string related functions (length, etc)
      *
-     * @param array $query
      * @param array $rules
      * @return void
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    protected function validateQuery(array $query, array $rules = []): void
+    protected function validateQuery(array $rules = []): void
     {
 
         $validator = new Validator();
-        $validator->validate($query, $rules);
+        $validator->validate(Request::getQuery(), $rules);
 
         if (!$validator->isValid()) {
             $this->abort(400, 'Unable to validate query: Invalid or missing parameter(s)');
@@ -316,17 +220,16 @@ abstract class ApiController extends Controller
     /**
      * Validate headers against a defined set of rules.
      *
-     * @param array $headers
      * @param array $rules
      * @return void
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    protected function validateHeaders(array $headers, array $rules = []): void
+    protected function validateHeaders(array $rules = []): void
     {
 
         $validator = new Validator();
-        $validator->validate($headers, $rules);
+        $validator->validate(Request::getHeader(), $rules);
 
         if (!$validator->isValid()) {
             $this->abort(400, 'Unable to validate headers: Invalid or missing parameter(s)');
@@ -345,63 +248,66 @@ abstract class ApiController extends Controller
     /**
      * Validate body content exists.
      *
-     * @param string $body
      * @return void
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    protected function validateBodyExists(string $body): void
+    protected function validateBodyExists(): void
     {
-        if ($body == '') {
+        if (Request::getBody() == '') {
             $this->abort(400, 'Unable to validate body: Missing content');
         }
     }
 
     /**
-     * Validate form URL encoded body.
+     * Validate and return form URL encoded body.
      *
-     * @param string $body
      * @param array $rules
-     * @return void
+     * @return array
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    protected function validateBodyFormEncoded(string $body, array $rules = []): void
+    protected function getFormEncodedBody(array $rules = []): array
     {
 
-        $keys = explode('&', $body);
+        $keys = explode('&', Request::getBody());
 
-        $arr = [];
+        $body = [];
 
         foreach ($keys as $key) {
 
             $val = explode('=', $key, 2);
 
             if (isset($val[1])) {
-                $arr[$val[0]] = $val[1];
+                $body[$val[0]] = $val[1];
             }
 
         }
 
-        $validator = new Validator();
-        $validator->validate($arr, $rules);
+        if (!empty($rules)) {
 
-        if (!$validator->isValid()) {
-            $this->abort(400, 'Unable to validate body: Invalid or missing parameter(s)');
+            $validator = new Validator();
+            $validator->validate($body, $rules);
+
+            if (!$validator->isValid()) {
+                $this->abort(400, 'Unable to validate body: Invalid or missing parameter(s)');
+            }
+
         }
+
+        return $body;
 
     }
 
     /**
-     * Validate JSON body.
+     * Validate and return JSON body.
      *
-     * @param string $body
      * @param array $rules
-     * @return void
+     * @return array
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    protected function validateBodyJson(string $body, array $rules = []): void
+    protected function getJsonBody(array $rules = []): array
     {
 
         $body = json_decode(Request::getBody(), true);
@@ -410,68 +316,48 @@ abstract class ApiController extends Controller
             $this->abort(400, 'Unable to validate body: Invalid or missing JSON');
         }
 
-        $validator = new Validator();
-        $validator->validate($body, $rules);
+        if (!empty($rules)) {
 
-        if (!$validator->isValid()) {
-            $this->abort(400, 'Unable to validate body: Invalid or missing parameter(s)');
+            $validator = new Validator();
+            $validator->validate($body, $rules);
+
+            if (!$validator->isValid()) {
+                $this->abort(400, 'Unable to validate body: Invalid or missing parameter(s)');
+            }
+
         }
+
+        return $body;
 
     }
 
     /**
-     * Validate plaintext body.
+     * Validate and return plaintext body.
      *
-     * @param string $body
      * @param array $rules (Rules with key = body)
-     * @return void
+     * @return string
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    protected function validateBodyText(string $body, array $rules = []): void
+    protected function getTextBody(array $rules = []): string
     {
 
-        $validator = new Validator();
-        $validator->validate([
-            'body' => $body
-        ], $rules);
+        $body = Request::getBody();
 
-        if (!$validator->isValid()) {
-            $this->abort(400, 'Unable to validate body: Invalid or missing parameter(s)');
+        if (!empty($rules)) {
+
+            $validator = new Validator();
+            $validator->validate([
+                'body' => $body
+            ], $rules);
+
+            if (!$validator->isValid()) {
+                $this->abort(400, 'Unable to validate body: Invalid or missing parameter(s)');
+            }
+
         }
 
-    }
-    
-    // -----------------------End OAS -------------------------
-
-    /**
-     * Get URL query parameters.
-     * On error, aborts with 400 HTTP status.
-     *
-     * TODO:
-     * Revisit allowed/required
-     *
-     * @param array $allowed (Allowed keys)
-     * @param array $required (Required keys)
-     * @return array
-     * @throws ApiHttpException
-     * @throws ApiServiceException
-     * @deprecated
-     */
-    protected function getQuery(array $allowed = [], array $required = []): array
-    {
-
-        $query = Request::getQuery();
-
-        if (!empty($allowed) && !empty(Arr::except($query, $allowed))) {
-            $this->abort(400, 'Unable to get query: Invalid key(s)');
-        }
-
-        if (!empty($required) && Arr::isMissing($query, $required)) {
-            $this->abort(400, 'Unable to get query: Missing required key(s)');
-        }
-
-        return $query;
+        return $body;
 
     }
 

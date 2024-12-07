@@ -8,6 +8,7 @@ use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
+use Bayfront\BonesService\Api\Schemas\UserResource;
 use Bayfront\BonesService\Api\Traits\UsesOrmModel;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
@@ -83,22 +84,20 @@ class Users extends PrivateApiController implements CrudControllerInterface
     public function read(array $params): void
     {
 
-        // Check permissions
         if (!$this->user->isAdmin() && Arr::get($params, 'id', '') !== $this->user->getId()) {
-            $this->abort(403, 'Unable to read resource: Insufficient permissions');
+            $this->abort(403);
         }
 
-        // Require headers
+        $this->validatePath($params, [
+            'id' => 'uuid'
+        ]);
 
-        // Validate body
+        $this->validateQuery($this->getFieldParserRules());
 
-        // Function
-
-        // Schema
-        $schema = $this->readOrmResource($this->usersModel, Arr::get($params, 'id', ''), $this->getQuery());
+        $resource = $this->readOrmResource($this->usersModel, Arr::get($params, 'id', ''));
 
         // Response
-        $this->respond(200, $schema, [
+        $this->respond(200, UserResource::create($resource), [
             'Cache-Control' => 'max-age=3600'
         ]);
 

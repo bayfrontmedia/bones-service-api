@@ -2,6 +2,8 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Abstracts;
 
+use Bayfront\Bones\Application\Utilities\Constants;
+use Bayfront\Bones\Exceptions\ConstantAlreadyDefinedException;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -60,6 +62,7 @@ abstract class PrivateApiController extends ApiController
             $authenticator = new TokenAuthenticator($this->rbacService);
 
             try {
+                Constants::define('OPENAPI_SECURITY', self::OPENAPI_SECURITY_HTTP);
                 return $authenticator->authenticate(Request::getHeader('Bearer'), $authenticator::TOKEN_TYPE_ACCESS);
             } catch (InvalidTokenException|TokenDoesNotExistException|UserDoesNotExistException) {
                 $this->abort(403, 'Invalid credentials');
@@ -67,7 +70,7 @@ abstract class PrivateApiController extends ApiController
                 $this->abort(403, 'User is disabled');
             } catch (UserNotVerifiedException) {
                 $this->abort(403, 'User is not verified');
-            } catch (UnexpectedAuthenticationException $e) {
+            } catch (ConstantAlreadyDefinedException|UnexpectedAuthenticationException $e) {
                 $this->abort(500, $e->getMessage());
             }
 
@@ -82,6 +85,7 @@ abstract class PrivateApiController extends ApiController
             }
 
             try {
+                Constants::define('OPENAPI_SECURITY', self::OPENAPI_SECURITY_KEY);
                 return $authenticator->authenticate(Request::getHeader('X-API-Key'), Request::getIp(), $referer);
             } catch (InvalidUserKeyException|UserDoesNotExistException) {
                 $this->abort(403, 'Invalid credentials');
@@ -95,7 +99,7 @@ abstract class PrivateApiController extends ApiController
                 $this->abort(403, 'User is disabled');
             } catch (UserNotVerifiedException) {
                 $this->abort(403, 'User is not verified');
-            } catch (UnexpectedAuthenticationException $e) {
+            } catch (ConstantAlreadyDefinedException|UnexpectedAuthenticationException $e) {
                 $this->abort(500, $e->getMessage());
             }
 

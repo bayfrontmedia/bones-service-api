@@ -13,6 +13,7 @@ use Bayfront\BonesService\Api\Schemas\PermissionResource;
 use Bayfront\BonesService\Api\Traits\Auditable;
 use Bayfront\BonesService\Api\Traits\UsesOrmModel;
 use Bayfront\BonesService\Rbac\Models\PermissionsModel;
+use Bayfront\HttpRequest\Request;
 
 class Permissions extends PrivateApiController implements CrudControllerInterface
 {
@@ -53,24 +54,20 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     public function create(array $params): void
     {
 
-        // Check permissions
-        if (!$this->user->isAdmin()) {
-            $this->abort(403, 'Unable to create resource: Insufficient permissions');
-        }
+        $this->validateIsAdmin($this->user);
 
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
+        $this->validateHeaders(Request::getHeader(), [
+            'Content-Type' => 'required|matches:application/json'
         ]);
 
-        // Validate body
+        /*
+         * TODO:
+         * getAllowedFieldsWrite does not check for required fields
+         */
+        $this->validateBodyJson(Request::getBody(), $this->permissionsModel->getAllowedFieldsWrite());
 
-        // Function
-
-        // Schema
         $resource = $this->createOrmResource($this->permissionsModel, $this->getBody());
 
-        // Response
         $this->respond(201, PermissionResource::create($resource));
 
     }
@@ -81,19 +78,14 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     public function list(array $params): void
     {
 
-        // Check permissions
-        if (!$this->user->isAdmin()) {
-            $this->abort(403, 'Unable to list resource: Insufficient permissions');
-        }
+        $this->validateIsAdmin($this->user);
 
-        // Require headers
+        $this->validateQuery(Request::getQuery(), [ // TODO: Make predefined ORM query parser rules
+            'filter' => 'isJson',
+            'aggregate' => 'isJson'
+        ]);
 
-        // Validate body
-
-        // Function
-
-        // Schema
-        $collection = $this->listOrmResources($this->permissionsModel, $this->getQuery());
+        $collection = $this->listOrmResources($this->permissionsModel, Request::getQuery());
 
         // Response
         $this->respond(200, PermissionCollection::create($collection['list'], $collection['config']), [
@@ -108,21 +100,18 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     public function read(array $params): void
     {
 
-        // Check permissions
-        if (!$this->user->isAdmin()) {
-            $this->abort(403, 'Unable to read resource: Insufficient permissions');
-        }
+        $this->validateIsAdmin($this->user);
 
-        // Require headers
+        $this->validatePath($params, [
+            'id' => 'uuid'
+        ]);
 
-        // Validate body
+        $this->validateQuery(Request::getQuery(), [
+            'fields' => 'isString'
+        ]);
 
-        // Function
+        $resource = $this->readOrmResource($this->permissionsModel, Arr::get($params, 'id', ''), Request::getQuery());
 
-        // Schema
-        $resource = $this->readOrmResource($this->permissionsModel, Arr::get($params, 'id', ''), $this->getQuery());
-
-        // Response
         $this->respond(200, PermissionResource::create($resource), [
             'Cache-Control' => 'max-age=3600'
         ]);
@@ -135,24 +124,20 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     public function update(array $params): void
     {
 
-        // Check permissions
-        if (!$this->user->isAdmin()) {
-            $this->abort(403, 'Unable to update resource: Insufficient permissions');
-        }
+        $this->validateIsAdmin($this->user);
 
-        // Require headers
-        $this->requireHeaders([
-            'Content-Type' => 'application/json',
+        $this->validatePath($params, [
+            'id' => 'uuid'
         ]);
 
-        // Validate body
+        $this->validateHeaders(Request::getHeader(), [
+            'Content-Type' => 'required|matches:application/json'
+        ]);
 
-        // Function
+        $this->validateBodyJson(Request::getBody(), $this->permissionsModel->getAllowedFieldsWrite());
 
-        // Schema
         $resource = $this->updateOrmResource($this->permissionsModel, Arr::get($params, 'id', ''), $this->getBody());
 
-        // Response
         $this->respond(200, PermissionResource::create($resource));
 
     }
@@ -163,19 +148,14 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     public function delete(array $params): void
     {
 
-        // Check permissions
-        if (!$this->user->isAdmin()) {
-            $this->abort(403, 'Unable to delete resource: Insufficient permissions');
-        }
+        $this->validateIsAdmin($this->user);
 
-        // Require headers
+        $this->validatePath($params, [
+            'id' => 'uuid'
+        ]);
 
-        // Validate body
-
-        // Function
         $this->deleteOrmResource($this->permissionsModel, Arr::get($params, 'id'));
 
-        // Response
         $this->respond(204);
 
     }

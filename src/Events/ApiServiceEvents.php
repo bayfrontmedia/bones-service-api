@@ -15,6 +15,7 @@ use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotAcceptableException;
 use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
 use Bayfront\BonesService\Api\Models\ApiModel;
+use Bayfront\BonesService\Api\Utilities\ApiError;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
@@ -50,6 +51,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     public function getSubscriptions(): array
     {
         return [
+            new EventSubscription('api.start', [$this, 'defineErrorLinks']),
             new EventSubscription('rbac.user.created', [$this, 'createUserVerificationRequest'], 10),
             new EventSubscription('api.controller', [$this, 'checkRequiredHeaders'], 5),
             new EventSubscription('api.controller', [$this, 'checkHttps'], 5),
@@ -59,6 +61,16 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
             new EventSubscription('app.cli', [$this, 'scheduleApiJobs'], 10),
             new EventSubscription('app.http', [$this, 'defineRequestId'], 5)
         ];
+    }
+
+    /**
+     * Define API error links.
+     *
+     * @return void
+     */
+    public function defineErrorLinks(): void
+    {
+        ApiError::setLinks($this->apiService->getConfig('errors', []));
     }
 
     /**
@@ -244,7 +256,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     }
 
     /**
-     * Define request UID.
+     * Define request ID.
      * This can be used to identify and trace a single request throughout the application lifecycle.
      *
      * @return void
@@ -252,8 +264,8 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
      */
     public function defineRequestId(): void
     {
-        if ($this->apiService->getConfig('request.uid.enabled') === true && !Constants::isDefined('REQUEST_UID')) {
-            Constants::define('REQUEST_UID', strtolower(Str::uid($this->apiService->getConfig('request.uid.length', 8))));
+        if ($this->apiService->getConfig('request.id.enabled') === true && !Constants::isDefined('REQUEST_ID')) {
+            Constants::define('REQUEST_ID', strtolower(Str::uid($this->apiService->getConfig('request.id.length', 8))));
         }
     }
 

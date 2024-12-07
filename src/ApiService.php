@@ -100,6 +100,8 @@ class ApiService extends Service
      * Possibly condense the rules
      * and move to static utility class.
      *
+     * Can rename ApiError to ApiUtilities?
+     *
      * @param Router $router
      * @return void
      */

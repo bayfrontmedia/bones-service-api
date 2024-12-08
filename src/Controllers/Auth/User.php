@@ -6,6 +6,8 @@ use Bayfront\BonesService\Api\Controllers\Abstracts\AuthApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Models\ApiModel;
+use Bayfront\BonesService\Api\Schemas\UserResource;
+use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\OrmServiceException;
@@ -21,6 +23,8 @@ use Bayfront\BonesService\Rbac\User as RbacUser;
 
 class User extends AuthApiController
 {
+
+    use UsesResourceModel;
 
     /**
      * Authenticate email or abort.
@@ -60,7 +64,24 @@ class User extends AuthApiController
             $this->abort(404);
         }
 
-        // TODO: register
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
+        ]);
+
+        $usersModel = new UsersModel($this->rbacService);
+
+        $body = $this->getResourceBody($usersModel);
+
+        if (isset($body['admin']) || isset($body['enabled'])) {
+            $this->abort(400, 'Unable to validate body: Invalid parameter(s)');
+        }
+
+        $body['admin'] = false;
+        $body['enabled'] = true;
+
+        $resource = $this->createResource($usersModel, $body);
+
+        $this->respond(201, UserResource::create($resource));
 
     }
 

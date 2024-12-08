@@ -131,7 +131,11 @@ class ApiService extends Service
             // Users
             ->get('/users/logout', [Users::class, 'logout'])
             ->get('/users/me', [Users::class, 'me'])
+            ->post('/users', [Users::class, 'create'])
+            ->get('/users', [Users::class, 'list'])
             ->get('/users/{*:id}', [Users::class, 'read'])
+            ->patch('/users/{*:id}', [Users::class, 'update'])
+            ->delete('/users/{*:id}', [Users::class, 'delete'])
             // Tenant roles
             ->post('/tenants/{*:tenant}/roles', [TenantRoles::class, 'create'])
             ->get('/tenants/{*:tenant}/roles', [TenantRoles::class, 'list'])

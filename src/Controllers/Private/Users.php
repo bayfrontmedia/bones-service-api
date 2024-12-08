@@ -8,6 +8,7 @@ use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
+use Bayfront\BonesService\Api\Schemas\UserCollection;
 use Bayfront\BonesService\Api\Schemas\UserResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
@@ -17,6 +18,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
 {
 
     use UsesResourceModel;
+
     protected UsersModel $usersModel;
 
     /**
@@ -66,7 +68,18 @@ class Users extends PrivateApiController implements CrudControllerInterface
      */
     public function create(array $params): void
     {
-        // TODO: Implement create() method.
+
+        $this->validateIsAdmin($this->user);
+
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
+        ]);
+
+        $body = $this->getResourceBody($this->usersModel, true);
+
+        $resource = $this->createResource($this->usersModel, $body);
+
+        $this->respond(201, UserResource::create($resource));
 
     }
 
@@ -75,6 +88,16 @@ class Users extends PrivateApiController implements CrudControllerInterface
      */
     public function list(array $params): void
     {
+
+        $this->validateIsAdmin($this->user);
+
+        $this->validateQuery($this->getQueryParserRules());
+
+        $collection = $this->listResources($this->usersModel);
+
+        $this->respond(200, UserCollection::create($collection['list'], $collection['config']), [
+            'Cache-Control' => 'max-age=3600'
+        ]);
 
     }
 
@@ -108,7 +131,36 @@ class Users extends PrivateApiController implements CrudControllerInterface
      */
     public function update(array $params): void
     {
-        // TODO: Implement update() method.
+
+        if (!$this->user->isAdmin() && Arr::get($params, 'id', '') !== $this->user->getId()) {
+            $this->abort(403);
+        }
+
+        /*
+         * TODO:
+         * If not admin, do not allow fields:
+         * admin
+         * enabled
+         *
+         * If email updated, need to verify
+         * RBAC service may need method ->unverify()
+         * and also need rbac.user.email.updated event
+         */
+
+        $this->validatePath($params, [
+            'id' => 'uuid'
+        ]);
+
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
+        ]);
+
+        $body = $this->getResourceBody($this->usersModel);
+
+        $resource = $this->updateResource($this->usersModel, Arr::get($params, 'id', ''), $body);
+
+        $this->respond(200, UserResource::create($resource));
+
     }
 
     /**
@@ -116,6 +168,17 @@ class Users extends PrivateApiController implements CrudControllerInterface
      */
     public function delete(array $params): void
     {
-        // TODO: Implement delete() method.
+
+        $this->validateIsAdmin($this->user);
+
+        $this->validatePath($params, [
+            'id' => 'uuid'
+        ]);
+
+        $this->deleteResource($this->usersModel, Arr::get($params, 'id', ''));
+
+        $this->respond(204);
+
     }
+
 }

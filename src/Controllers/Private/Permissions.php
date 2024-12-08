@@ -61,7 +61,6 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
 
         $body = $this->getResourceBody($this->permissionsModel, true);
 
-        die('good');
         $resource = $this->createResource($this->permissionsModel, $body);
 
         $this->respond(201, PermissionResource::create($resource));

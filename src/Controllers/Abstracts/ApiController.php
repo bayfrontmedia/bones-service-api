@@ -202,9 +202,8 @@ abstract class ApiController extends Controller
     /**
      * Validate query against a defined set of rules.
      *
-     * TODO:
-     * Since everything is a string, without further processing
-     * it can basically only evaluate whether it exists string related functions (length, etc)
+     * NOTE:
+     * Since the query is a string, only string related validation rules can be applied.
      *
      * @param array $rules
      * @return void
@@ -250,14 +249,6 @@ abstract class ApiController extends Controller
             $this->abort(400, 'Unable to validate headers (' . $field . '): Invalid or missing parameter(s)');
             //$this->abort(400, 'Unable to validate headers: Invalid or missing parameter(s)');
         }
-
-        /*
-         * TODO:
-         * use getMessages() and return for all validation functions
-         *
-         * Instead of abort() throwing an exception, it may instead
-         * create an ErrorResource/Collection schema and return.
-         */
 
     }
 

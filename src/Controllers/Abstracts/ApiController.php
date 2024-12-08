@@ -185,10 +185,16 @@ abstract class ApiController extends Controller
     {
 
         $validator = new Validator();
-        $validator->validate($params, $rules);
+        $validator->validate($params, $rules, false, true);
 
         if (!$validator->isValid()) {
-            $this->abort(400, 'Unable to validate path: Invalid or missing parameter(s)');
+
+            $messages = $validator->getMessages();
+            $field = array_key_first($messages);
+
+            $this->abort(400, 'Unable to validate path (' . $field . '): Invalid or missing parameter(s)');
+            //$this->abort(400, 'Unable to validate path: Invalid or missing parameter(s)');
+
         }
 
     }
@@ -209,10 +215,15 @@ abstract class ApiController extends Controller
     {
 
         $validator = new Validator();
-        $validator->validate(Request::getQuery(), $rules);
+        $validator->validate(Request::getQuery(), $rules, false, true);
 
         if (!$validator->isValid()) {
-            $this->abort(400, 'Unable to validate query: Invalid or missing parameter(s)');
+
+            $messages = $validator->getMessages();
+            $field = array_key_first($messages);
+
+            $this->abort(400, 'Unable to validate query (' . $field . '): Invalid or missing parameter(s)');
+            //$this->abort(400, 'Unable to validate query: Invalid or missing parameter(s)');
         }
 
     }
@@ -229,10 +240,15 @@ abstract class ApiController extends Controller
     {
 
         $validator = new Validator();
-        $validator->validate(Request::getHeader(), $rules);
+        $validator->validate(Request::getHeader(), $rules, false, true);
 
         if (!$validator->isValid()) {
-            $this->abort(400, 'Unable to validate headers: Invalid or missing parameter(s)');
+
+            $messages = $validator->getMessages();
+            $field = array_key_first($messages);
+
+            $this->abort(400, 'Unable to validate headers (' . $field . '): Invalid or missing parameter(s)');
+            //$this->abort(400, 'Unable to validate headers: Invalid or missing parameter(s)');
         }
 
         /*
@@ -287,10 +303,15 @@ abstract class ApiController extends Controller
         if (!empty($rules)) {
 
             $validator = new Validator();
-            $validator->validate($body, $rules);
+            $validator->validate($body, $rules, false, true);
 
             if (!$validator->isValid()) {
-                $this->abort(400, 'Unable to validate body: Invalid or missing parameter(s)');
+
+                $messages = $validator->getMessages();
+                $field = array_key_first($messages);
+
+                $this->abort(400, 'Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
+                //$this->abort(400, 'Unable to validate body: Invalid or missing parameter(s)');
             }
 
         }
@@ -319,10 +340,15 @@ abstract class ApiController extends Controller
         if (!empty($rules)) {
 
             $validator = new Validator();
-            $validator->validate($body, $rules);
+            $validator->validate($body, $rules, false, true);
 
             if (!$validator->isValid()) {
-                $this->abort(400, 'Unable to validate body: Invalid or missing parameter(s)');
+
+                $messages = $validator->getMessages();
+                $field = array_key_first($messages);
+
+                $this->abort(400, 'Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
+                //$this->abort(400, 'Unable to validate body: Invalid or missing parameter(s)');
             }
 
         }
@@ -349,10 +375,15 @@ abstract class ApiController extends Controller
             $validator = new Validator();
             $validator->validate([
                 'body' => $body
-            ], $rules);
+            ], $rules, false, true);
 
             if (!$validator->isValid()) {
-                $this->abort(400, 'Unable to validate body: Invalid or missing parameter(s)');
+
+                $messages = $validator->getMessages();
+                $field = array_key_first($messages);
+
+                $this->abort(400, 'Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
+                //$this->abort(400, 'Unable to validate body: Invalid or missing parameter(s)');
             }
 
         }
@@ -412,7 +443,7 @@ abstract class ApiController extends Controller
     }
 
     /**
-     * Aborts with appropriate API exception based on status code.
+     * Throw API exception based on status code.
      *
      * @param int $status_code
      * @param string $message

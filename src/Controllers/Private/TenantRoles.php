@@ -11,13 +11,13 @@ use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\TenantRolesCollection;
 use Bayfront\BonesService\Api\Schemas\TenantRolesResource;
 use Bayfront\BonesService\Api\Traits\ScopedEndpoint;
-use Bayfront\BonesService\Api\Traits\UsesOrmModel;
+use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
 
 class TenantRoles extends PrivateApiController implements CrudControllerInterface
 {
 
-    use UsesOrmModel, ScopedEndpoint;
+    use UsesResourceModel, ScopedEndpoint;
 
     protected TenantRolesModel $tenantRolesModel;
 
@@ -52,11 +52,11 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->defineScopedFields($this->getJsonBody($this->tenantRolesModel->getAllowedFieldsWrite()), [
+        $body = $this->validateScopedFields($this->getResourceBody($this->tenantRolesModel, true), [
             'tenant' => Arr::get($params, 'tenant', '')
         ]);
 
-        $resource = $this->createOrmResource($this->tenantRolesModel, $body);
+        $resource = $this->createResource($this->tenantRolesModel, $body);
 
         $this->respond(201, TenantRolesResource::create($resource));
 
@@ -78,7 +78,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
 
         $this->validateQuery($this->getQueryParserRules());
 
-        $collection = $this->listOrmResources($this->tenantRolesModel);
+        $collection = $this->listResources($this->tenantRolesModel);
 
         $this->respond(200, TenantRolesCollection::create($collection['list'], $collection['config']), [
             'Cache-Control' => 'max-age=3600'
@@ -103,7 +103,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
 
         $this->validateQuery($this->getFieldParserRules());
 
-        $resource = $this->readOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''));
+        $resource = $this->readResource($this->tenantRolesModel, Arr::get($params, 'id', ''));
 
         $this->respond(200, TenantRolesResource::create($resource), [
             'Cache-Control' => 'max-age=3600'
@@ -131,11 +131,11 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->defineScopedFields($this->getJsonBody($this->tenantRolesModel->getAllowedFieldsWrite()), [
+        $body = $this->validateScopedFields($this->getResourceBody($this->tenantRolesModel), [
             'tenant' => Arr::get($params, 'tenant', '')
         ]);
 
-        $resource = $this->updateOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''), $body);
+        $resource = $this->updateResource($this->tenantRolesModel, Arr::get($params, 'id', ''), $body);
 
         $this->respond(200, TenantRolesResource::create($resource));
 
@@ -156,7 +156,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'id' => 'uuid'
         ]);
 
-        $this->deleteOrmResource($this->tenantRolesModel, Arr::get($params, 'id', ''));
+        $this->deleteResource($this->tenantRolesModel, Arr::get($params, 'id', ''));
 
         $this->respond(204);
 

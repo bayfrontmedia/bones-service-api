@@ -11,13 +11,13 @@ use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\PermissionCollection;
 use Bayfront\BonesService\Api\Schemas\PermissionResource;
 use Bayfront\BonesService\Api\Traits\Auditable;
-use Bayfront\BonesService\Api\Traits\UsesOrmModel;
+use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Rbac\Models\PermissionsModel;
 
 class Permissions extends PrivateApiController implements CrudControllerInterface
 {
 
-    use Auditable, UsesOrmModel;
+    use Auditable, UsesResourceModel;
 
     protected PermissionsModel $permissionsModel;
 
@@ -59,15 +59,10 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        /*
-         * TODO:
-         * getAllowedFieldsWrite does not check for required fields.
-         * This will not matter if using OAS to create these rules.
-         */
+        $body = $this->getResourceBody($this->permissionsModel, true);
 
-        $body = $this->getJsonBody($this->permissionsModel->getAllowedFieldsWrite());
-
-        $resource = $this->createOrmResource($this->permissionsModel, $body);
+        die('good');
+        $resource = $this->createResource($this->permissionsModel, $body);
 
         $this->respond(201, PermissionResource::create($resource));
 
@@ -83,7 +78,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
 
         $this->validateQuery($this->getQueryParserRules());
 
-        $collection = $this->listOrmResources($this->permissionsModel);
+        $collection = $this->listResources($this->permissionsModel);
 
         $this->respond(200, PermissionCollection::create($collection['list'], $collection['config']), [
             'Cache-Control' => 'max-age=3600'
@@ -105,7 +100,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
 
         $this->validateQuery($this->getFieldParserRules());
 
-        $resource = $this->readOrmResource($this->permissionsModel, Arr::get($params, 'id', ''));
+        $resource = $this->readResource($this->permissionsModel, Arr::get($params, 'id', ''));
 
         $this->respond(200, PermissionResource::create($resource), [
             'Cache-Control' => 'max-age=3600'
@@ -129,9 +124,9 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getJsonBody($this->permissionsModel->getAllowedFieldsWrite());
+        $body = $this->getResourceBody($this->permissionsModel);
 
-        $resource = $this->updateOrmResource($this->permissionsModel, Arr::get($params, 'id', ''), $body);
+        $resource = $this->updateResource($this->permissionsModel, Arr::get($params, 'id', ''), $body);
 
         $this->respond(200, PermissionResource::create($resource));
 
@@ -149,7 +144,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
             'id' => 'uuid'
         ]);
 
-        $this->deleteOrmResource($this->permissionsModel, Arr::get($params, 'id'));
+        $this->deleteResource($this->permissionsModel, Arr::get($params, 'id'));
 
         $this->respond(204);
 

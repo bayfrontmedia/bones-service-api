@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Traits;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
@@ -16,8 +17,9 @@ use Bayfront\BonesService\Orm\Models\ResourceModel;
 use Bayfront\BonesService\Orm\Utilities\Parsers\FieldParser;
 use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
 use Bayfront\HttpRequest\Request;
+use Bayfront\Validator\Validator;
 
-trait UsesOrmModel
+trait UsesResourceModel
 {
 
     /**
@@ -46,7 +48,47 @@ trait UsesOrmModel
     }
 
     /**
-     * Create new OrmResource.
+     * Validate and return JSON body from ResourceModel.
+     *
+     * @param ResourceModel $resourceModel
+     * @param bool $require_fields (Check required fields exist?)
+     * @return array
+     * @throws ApiHttpException
+     */
+    protected function getResourceBody(ResourceModel $resourceModel, bool $require_fields = false): array
+    {
+
+        $body = json_decode(Request::getBody(), true);
+
+        if (!$body || !is_array($body)) {
+            throw new BadRequestException('Unable to validate body: Invalid or missing JSON');
+        }
+
+        if ($require_fields === true && Arr::isMissing($body, $resourceModel->getRequiredFields())) {
+            throw new BadRequestException('Unable to validate body: Missing required field(s)');
+        }
+
+        if (!empty($resourceModel->getAllowedFieldsWrite())) {
+
+            $validator = new Validator();
+            $validator->validate($body, $resourceModel->getAllowedFieldsWrite(), false, true);
+
+            if (!$validator->isValid()) {
+                $messages = $validator->getMessages();
+                $field = array_key_first($messages);
+
+                throw new BadRequestException('Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
+                //throw new BadRequestException('Unable to validate body: Invalid or missing parameter(s)');
+            }
+
+        }
+
+        return $body;
+
+    }
+
+    /**
+     * Create new ResourceModel resource.
      *
      * Array keys:
      * - data: Created resource
@@ -57,7 +99,7 @@ trait UsesOrmModel
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    protected function createOrmResource(ResourceModel $resourceModel, array $fields): array
+    protected function createResource(ResourceModel $resourceModel, array $fields): array
     {
 
         try {
@@ -75,7 +117,7 @@ trait UsesOrmModel
     }
 
     /**
-     * List OrmModel resources, including pagination and aggregate of requested.
+     * List ResourceModel resources, including pagination and aggregate of requested.
      *
      * Array keys:
      * - list: Collection list
@@ -86,7 +128,7 @@ trait UsesOrmModel
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    protected function listOrmResources(ResourceModel $resourceModel): array
+    protected function listResources(ResourceModel $resourceModel): array
     {
 
         try {
@@ -124,7 +166,7 @@ trait UsesOrmModel
     }
 
     /**
-     * Read OrmModel resource.
+     * Read ResourceModel resource.
      *
      * Array keys:
      * - data: Resource
@@ -132,11 +174,10 @@ trait UsesOrmModel
      * @param ResourceModel $resourceModel
      * @param mixed $primary_key_id
      * @return array
+     * @throws ApiHttpException
      * @throws ApiServiceException
-     * @throws BadRequestException
-     * @throws NotFoundException
      */
-    protected function readOrmResource(ResourceModel $resourceModel, mixed $primary_key_id): array
+    protected function readResource(ResourceModel $resourceModel, mixed $primary_key_id): array
     {
 
         $parser = new FieldParser(Request::getQuery());
@@ -156,7 +197,7 @@ trait UsesOrmModel
     }
 
     /**
-     * Update OrmModel resource.
+     * Update ResourceModel resource.
      *
      * Array keys:
      * - data: Updated resource
@@ -168,7 +209,7 @@ trait UsesOrmModel
      * @throws ApiHttpException
      * @throws ApiServiceException
      */
-    protected function updateOrmResource(ResourceModel $resourceModel, mixed $primary_key_id, array $fields): array
+    protected function updateResource(ResourceModel $resourceModel, mixed $primary_key_id, array $fields): array
     {
 
         try {
@@ -188,14 +229,14 @@ trait UsesOrmModel
     }
 
     /**
-     * Delete single OrmModel resource.
+     * Delete ResourceModel resource.
      *
      * @param ResourceModel $resourceModel
      * @param mixed $primary_key_id
      * @return bool
      * @throws ApiServiceException
      */
-    protected function deleteOrmResource(ResourceModel $resourceModel, mixed $primary_key_id): bool
+    protected function deleteResource(ResourceModel $resourceModel, mixed $primary_key_id): bool
     {
 
         try {

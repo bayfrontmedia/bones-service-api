@@ -9,14 +9,14 @@ use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\UserResource;
-use Bayfront\BonesService\Api\Traits\UsesOrmModel;
+use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
 
 class Users extends PrivateApiController implements CrudControllerInterface
 {
 
-    use UsesOrmModel;
+    use UsesResourceModel;
     protected UsersModel $usersModel;
 
     /**
@@ -94,7 +94,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
         $this->validateQuery($this->getFieldParserRules());
 
-        $resource = $this->readOrmResource($this->usersModel, Arr::get($params, 'id', ''));
+        $resource = $this->readResource($this->usersModel, Arr::get($params, 'id', ''));
 
         // Response
         $this->respond(200, UserResource::create($resource), [

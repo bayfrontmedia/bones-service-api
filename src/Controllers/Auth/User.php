@@ -8,6 +8,7 @@ use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Models\ApiModel;
 use Bayfront\BonesService\Api\Schemas\UserResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Api\Utilities\ApiError;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\OrmServiceException;
@@ -45,9 +46,9 @@ class User extends AuthApiController
             return $authenticator->authenticate($email, $check_verified);
         } catch (UserDoesNotExistException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent($fail_event, $email);
-            $this->abort(401);
+            ApiError::abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, 'Unexpected error', 0, $e);
+            ApiError::abort(500, 'Unexpected error', 0, $e);
         }
 
     }
@@ -61,7 +62,7 @@ class User extends AuthApiController
     {
 
         if ($this->apiService->getConfig('user.public_registration') !== true) {
-            $this->abort(404);
+            ApiError::abort(404);
         }
 
         $this->validateHeaders([
@@ -73,7 +74,7 @@ class User extends AuthApiController
         $body = $this->getResourceBody($usersModel);
 
         if (isset($body['admin']) || isset($body['enabled'])) {
-            $this->abort(400, 'Unable to validate body: Invalid parameter(s)');
+            ApiError::abort(400, 'Unable to validate body: Invalid parameter(s)');
         }
 
         $body['admin'] = false;
@@ -97,7 +98,7 @@ class User extends AuthApiController
     {
 
         if ($this->apiService->getConfig('user.password_request.enabled') !== true) {
-            $this->abort(404);
+            ApiError::abort(404);
         }
 
         $this->validateHeaders([
@@ -125,9 +126,9 @@ class User extends AuthApiController
 
         } catch (AlreadyExistsException) {
             $this->events->doEvent('api.user.password_request.fail', $body['email']);
-            $this->abort(429);
+            ApiError::abort(429);
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->abort(500, 'Unexpected error', 0, $e);
+            ApiError::abort(500, 'Unexpected error', 0, $e);
         }
 
         $this->events->doEvent('api.user.password_request', $user, $totp);
@@ -147,7 +148,7 @@ class User extends AuthApiController
     {
 
         if ($this->apiService->getConfig('user.password_request.enabled') !== true) {
-            $this->abort(404);
+            ApiError::abort(404);
         }
 
         $this->validateHeaders([
@@ -170,12 +171,12 @@ class User extends AuthApiController
             $totp = $userMetaModel->getTotp($user->getId(), $userMetaModel->totp_meta_key_password);
         } catch (DoesNotExistException) { // Token does not exist
             $this->events->doEvent('api.user.password.fail', $body['email']);
-            $this->abort(401);
+            ApiError::abort(401);
         }
 
         if (!$this->rbacService->hashMatches($totp->getValue(), $body['token'])) { // Invalid token value
             $this->events->doEvent('api.user.password.fail', $body['email']);
-            $this->abort(401);
+            ApiError::abort(401);
         }
 
         // Delete TOTP
@@ -193,7 +194,7 @@ class User extends AuthApiController
             ]);
 
         } catch (OrmServiceException $e) {
-            $this->abort(500, 'Unexpected error', 0, $e);
+            ApiError::abort(500, 'Unexpected error', 0, $e);
         }
 
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_password);
@@ -216,7 +217,7 @@ class User extends AuthApiController
     {
 
         if ($this->apiService->getConfig('user.verification.enabled') === false) {
-            $this->abort(404);
+            ApiError::abort(404);
         }
 
         $this->validateHeaders([
@@ -243,9 +244,9 @@ class User extends AuthApiController
 
         } catch (AlreadyExistsException) {
             $this->events->doEvent('api.user.verification_request.fail', $body['email']);
-            $this->abort(429);
+            ApiError::abort(429);
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->abort(500, 'Unexpected error', 0, $e);
+            ApiError::abort(500, 'Unexpected error', 0, $e);
         }
 
         $this->respond(204);
@@ -264,7 +265,7 @@ class User extends AuthApiController
     {
 
         if ($this->apiService->getConfig('user.verification.enabled') === false) {
-            $this->abort(404);
+            ApiError::abort(404);
         }
 
         $this->validateHeaders([
@@ -292,12 +293,12 @@ class User extends AuthApiController
             $totp = $userMetaModel->getTotp($user->getId(), $userMetaModel->totp_meta_key_verification);
         } catch (DoesNotExistException) {
             $this->events->doEvent('api.user.verification.fail', $body['email']);
-            $this->abort(401);
+            ApiError::abort(401);
         }
 
         if (!$this->rbacService->hashMatches($totp->getValue(), $body['token'])) { // Invalid token value
             $this->events->doEvent('api.user.verification.fail', $body['email']);
-            $this->abort(401);
+            ApiError::abort(401);
         }
 
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_verification);

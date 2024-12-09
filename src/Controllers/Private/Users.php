@@ -11,6 +11,7 @@ use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\UserCollection;
 use Bayfront\BonesService\Api\Schemas\UserResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Api\Utilities\ApiError;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
 
@@ -108,7 +109,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
     {
 
         if (!$this->user->isAdmin() && Arr::get($params, 'id', '') !== $this->user->getId()) {
-            $this->abort(403);
+            ApiError::abort(403);
         }
 
         $this->validatePath($params, [
@@ -133,7 +134,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
     {
 
         if (!$this->user->isAdmin() && Arr::get($params, 'id', '') !== $this->user->getId()) {
-            $this->abort(403);
+            ApiError::abort(403);
         }
 
         /*

@@ -7,6 +7,7 @@ use Bayfront\BonesService\Api\Controllers\Abstracts\AuthApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Schemas\AuthResource;
+use Bayfront\BonesService\Api\Utilities\ApiError;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
@@ -64,7 +65,7 @@ class Auth extends AuthApiController
             ]));
 
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->abort(500, 'Unexpected error', 0, $e);
+            ApiError::abort(500, 'Unexpected error', 0, $e);
         }
 
     }
@@ -80,7 +81,7 @@ class Auth extends AuthApiController
     {
 
         if ($this->apiService->getConfig('auth.password.enabled') !== true) {
-            $this->abort(404);
+            ApiError::abort(404);
         }
 
         $this->validateHeaders([
@@ -98,9 +99,9 @@ class Auth extends AuthApiController
             $user = $authenticator->authenticate($body['email'], $body['password']);
         } catch (UserDoesNotExistException|InvalidPasswordException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent('api.auth.password.fail', $body['email']);
-            $this->abort(401);
+            ApiError::abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, 'Unexpected error', 0, $e);
+            ApiError::abort(500, 'Unexpected error', 0, $e);
         }
 
         if ($this->apiService->getConfig('auth.password.tfa.enabled') === true) {
@@ -120,9 +121,9 @@ class Auth extends AuthApiController
 
             } catch (AlreadyExistsException) { // TFA exists and wait time has not elapsed
                 $this->events->doEvent('api.auth.password.fail', $body['email']);
-                $this->abort(429);
+                ApiError::abort(429);
             } catch (DoesNotExistException|UnexpectedException $e) {
-                $this->abort(500, 'Unexpected error', 0, $e);
+                ApiError::abort(500, 'Unexpected error', 0, $e);
             }
 
             $this->events->doEvent('api.auth.password.tfa', $user, $totp);
@@ -145,7 +146,7 @@ class Auth extends AuthApiController
     {
 
         if ($this->apiService->getConfig('auth.otp.enabled') !== true) {
-            $this->abort(404);
+            ApiError::abort(404);
         }
 
         $this->validateHeaders([
@@ -162,9 +163,9 @@ class Auth extends AuthApiController
             $user = $authenticator->authenticate($body['email']);
         } catch (UserDoesNotExistException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent('api.auth.otp.fail', $body['email']);
-            $this->abort(401);
+            ApiError::abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, 'Unexpected error', 0, $e);
+            ApiError::abort(500, 'Unexpected error', 0, $e);
         }
 
         $userMetaModel = new UserMetaModel($this->rbacService);
@@ -182,9 +183,9 @@ class Auth extends AuthApiController
 
         } catch (AlreadyExistsException) { // OTP exists and wait time has not elapsed
             $this->events->doEvent('api.auth.otp.fail', $body['email']);
-            $this->abort(429);
+            ApiError::abort(429);
         } catch (DoesNotExistException|UnexpectedException $e) {
-            $this->abort(500, 'Unexpected error', 0, $e);
+            ApiError::abort(500, 'Unexpected error', 0, $e);
         }
 
         $this->events->doEvent('api.auth.otp', $user, $totp);
@@ -204,7 +205,7 @@ class Auth extends AuthApiController
 
         if ($this->apiService->getConfig('auth.password.tfa.enabled') === false
             && $this->apiService->getConfig('auth.otp.enabled') === false) {
-            $this->abort(404);
+            ApiError::abort(404);
         }
 
         $this->validateHeaders([
@@ -222,9 +223,9 @@ class Auth extends AuthApiController
             $user = $authenticator->authenticate($body['email'], $body['token']);
         } catch (TotpDoesNotExistException|UserDoesNotExistException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent('api.auth.tfa.fail', $body['email']);
-            $this->abort(401);
+            ApiError::abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, 'Unexpected error', 0, $e);
+            ApiError::abort(500, 'Unexpected error', 0, $e);
         }
 
         $this->respondWithTokens($user);
@@ -242,7 +243,7 @@ class Auth extends AuthApiController
     {
 
         if ($this->apiService->getConfig('auth.refresh.enabled') !== true) {
-            $this->abort(404);
+            ApiError::abort(404);
         }
 
         $this->validateHeaders([
@@ -259,9 +260,9 @@ class Auth extends AuthApiController
             $user = $authenticator->authenticate($body['refresh_token'], $authenticator::TOKEN_TYPE_REFRESH);
         } catch (InvalidTokenException|TokenDoesNotExistException|UserDoesNotExistException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent('api.auth.refresh.fail');
-            $this->abort(401);
+            ApiError::abort(401);
         } catch (UnexpectedAuthenticationException $e) {
-            $this->abort(500, 'Unexpected error', 0, $e);
+            ApiError::abort(500, 'Unexpected error', 0, $e);
         }
 
         $this->respondWithTokens($user);

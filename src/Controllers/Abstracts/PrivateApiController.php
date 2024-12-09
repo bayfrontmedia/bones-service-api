@@ -7,6 +7,7 @@ use Bayfront\Bones\Exceptions\ConstantAlreadyDefinedException;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Utilities\ApiError;
 use Bayfront\BonesService\Rbac\Authenticators\TokenAuthenticator;
 use Bayfront\BonesService\Rbac\Authenticators\UserKeyAuthenticator;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\ExpiredUserKeyException;
@@ -65,13 +66,13 @@ abstract class PrivateApiController extends ApiController
                 Constants::define('OPENAPI_SECURITY', self::OPENAPI_SECURITY_HTTP);
                 return $authenticator->authenticate(Request::getHeader('Bearer'), $authenticator::TOKEN_TYPE_ACCESS);
             } catch (InvalidTokenException|TokenDoesNotExistException|UserDoesNotExistException) {
-                $this->abort(403, 'Invalid credentials');
+                ApiError::abort(403, 'Invalid credentials');
             } catch (UserDisabledException) {
-                $this->abort(403, 'User is disabled');
+                ApiError::abort(403, 'User is disabled');
             } catch (UserNotVerifiedException) {
-                $this->abort(403, 'User is not verified');
+                ApiError::abort(403, 'User is not verified');
             } catch (ConstantAlreadyDefinedException|UnexpectedAuthenticationException $e) {
-                $this->abort(500, $e->getMessage());
+                ApiError::abort(500, $e->getMessage());
             }
 
         } else if ($this->apiService->getConfig('identity.key') === true && Request::hasHeader('X-API-Key')) {
@@ -88,24 +89,24 @@ abstract class PrivateApiController extends ApiController
                 Constants::define('OPENAPI_SECURITY', self::OPENAPI_SECURITY_KEY);
                 return $authenticator->authenticate(Request::getHeader('X-API-Key'), Request::getIp(), $referer);
             } catch (InvalidUserKeyException|UserDoesNotExistException) {
-                $this->abort(403, 'Invalid credentials');
+                ApiError::abort(403, 'Invalid credentials');
             } catch (ExpiredUserKeyException) {
-                $this->abort(403, 'API key is expired');
+                ApiError::abort(403, 'API key is expired');
             } catch (InvalidDomainException) {
-                $this->abort(403, 'Domain not allowed');
+                ApiError::abort(403, 'Domain not allowed');
             } catch (InvalidIpException) {
-                $this->abort(403, 'IP not allowed');
+                ApiError::abort(403, 'IP not allowed');
             } catch (UserDisabledException) {
-                $this->abort(403, 'User is disabled');
+                ApiError::abort(403, 'User is disabled');
             } catch (UserNotVerifiedException) {
-                $this->abort(403, 'User is not verified');
+                ApiError::abort(403, 'User is not verified');
             } catch (ConstantAlreadyDefinedException|UnexpectedAuthenticationException $e) {
-                $this->abort(500, $e->getMessage());
+                ApiError::abort(500, $e->getMessage());
             }
 
         }
 
-        $this->abort(403, 'Missing credentials');
+        ApiError::abort(403, 'Missing credentials');
 
     }
 

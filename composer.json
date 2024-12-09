@@ -31,7 +31,6 @@
     "bayfrontmedia/bones-service-rbac": "@dev",
     "bayfrontmedia/array-schema": "^2.1",
     "bayfrontmedia/leaky-bucket": "^2.2",
-    "bayfrontmedia/openapi-parser": "@dev",
     "bayfrontmedia/php-array-helpers": "^2.0",
     "bayfrontmedia/php-http-request": "^3.1",
     "bayfrontmedia/php-http-response": "^2.0",
@@ -47,13 +46,6 @@
     {
       "type": "path",
       "url": "/Users/John/Documents/dev/github/bayfrontmedia/bones-service-rbac",
-      "options": {
-        "symlink": true
-      }
-    },
-    {
-      "type": "path",
-      "url": "/Users/John/Documents/dev/github/bayfrontmedia/openapi-parser",
       "options": {
         "symlink": true
       }

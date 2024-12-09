@@ -161,11 +161,12 @@ class Users extends PrivateApiController implements CrudControllerInterface
             throw new ForbiddenException();
         }
 
+        if (!$this->user->isAdmin() && isset($params['admin']) || isset($params['enabled'])) {
+            throw new BadRequestException('Unable to update resource: Invalid field(s)');
+        }
+
         /*
          * TODO:
-         * If not admin, do not allow fields:
-         * admin
-         * enabled
          *
          * If email updated, need to verify
          * RBAC service may need method ->unverify()

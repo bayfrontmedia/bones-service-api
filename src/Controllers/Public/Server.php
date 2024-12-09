@@ -39,20 +39,4 @@ class Server extends PublicApiController
 
     }
 
-    /**
-     * Get OpenAPI specification (OAS).
-     *
-     * TODO:
-     * If the API service requires OpenAPI, a config setting would not be needed
-     * as an OpenApiObject can be injected into the API service constructor.
-     *
-     * @return void
-     * @throws ApiServiceException
-     */
-    public function oas(): void
-    {
-        $oas = json_decode(file_get_contents($this->apiService->getConfig('oas')), true);
-        $this->respond(200, $oas);
-    }
-
 }

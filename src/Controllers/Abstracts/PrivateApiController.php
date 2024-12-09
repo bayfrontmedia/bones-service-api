@@ -64,7 +64,6 @@ abstract class PrivateApiController extends ApiController
             $authenticator = new TokenAuthenticator($this->rbacService);
 
             try {
-                Constants::define('OPENAPI_SECURITY', self::OPENAPI_SECURITY_HTTP);
                 return $authenticator->authenticate(Request::getHeader('Bearer'), $authenticator::TOKEN_TYPE_ACCESS);
             } catch (InvalidTokenException|TokenDoesNotExistException|UserDoesNotExistException) {
                 throw new ForbiddenException('Invalid credentials');
@@ -87,7 +86,6 @@ abstract class PrivateApiController extends ApiController
             }
 
             try {
-                Constants::define('OPENAPI_SECURITY', self::OPENAPI_SECURITY_KEY);
                 return $authenticator->authenticate(Request::getHeader('X-API-Key'), Request::getIp(), $referer);
             } catch (InvalidUserKeyException|UserDoesNotExistException) {
                 throw new ForbiddenException('Invalid credentials');

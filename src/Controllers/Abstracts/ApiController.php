@@ -55,12 +55,6 @@ abstract class ApiController extends Controller
     public bool $check_ip_whitelist = true;
     public bool $set_required_headers = true;
 
-    /*
-     * OpenAPI security scheme type
-     */
-    public const OPENAPI_SECURITY_HTTP = 'http';
-    public const OPENAPI_SECURITY_KEY = 'apiKey';
-
     /**
      * Enforce rate limit and set X-RateLimit headers.
      * On error, aborts with 429 HTTP status.

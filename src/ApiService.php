@@ -114,7 +114,6 @@ class ApiService extends Service
         $router
             // Server
             ->get('/server/status', [Server::class, 'status'])
-            ->get('/server/oas', [Server::class, 'oas'])
             // Auth
             ->post('/auth/login', [Auth::class, 'login'])
             ->post('/auth/otp', [Auth::class, 'otp'])

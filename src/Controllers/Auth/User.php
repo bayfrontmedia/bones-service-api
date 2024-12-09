@@ -3,12 +3,15 @@
 namespace Bayfront\BonesService\Api\Controllers\Auth;
 
 use Bayfront\BonesService\Api\Controllers\Abstracts\AuthApiController;
-use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
+use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
+use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
+use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
+use Bayfront\BonesService\Api\Exceptions\Http\UnauthorizedException;
 use Bayfront\BonesService\Api\Models\ApiModel;
 use Bayfront\BonesService\Api\Schemas\UserResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
-use Bayfront\BonesService\Api\Utilities\ApiError;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\OrmServiceException;
@@ -34,8 +37,8 @@ class User extends AuthApiController
      * @param string $fail_event
      * @param bool $check_verified
      * @return RbacUser
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws UnauthorizedException
      */
     private function authenticateEmail(string $email, string $fail_event, bool $check_verified = true): RbacUser
     {
@@ -46,23 +49,25 @@ class User extends AuthApiController
             return $authenticator->authenticate($email, $check_verified);
         } catch (UserDoesNotExistException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent($fail_event, $email);
-            ApiError::abort(401);
+            throw new UnauthorizedException();
         } catch (UnexpectedAuthenticationException $e) {
-            ApiError::abort(500, 'Unexpected error', 0, $e);
+            throw new ApiServiceException('Unexpected error', 0, $e);
         }
 
     }
 
     /**
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws ConflictException
      */
     public function register(): void
     {
 
         if ($this->apiService->getConfig('user.public_registration') !== true) {
-            ApiError::abort(404);
+            throw new NotFoundException();
         }
 
         $this->validateHeaders([
@@ -74,7 +79,7 @@ class User extends AuthApiController
         $body = $this->getResourceBody($usersModel);
 
         if (isset($body['admin']) || isset($body['enabled'])) {
-            ApiError::abort(400, 'Unable to validate body: Invalid parameter(s)');
+            throw new BadRequestException('Unable to validate body: Invalid parameter(s)');
         }
 
         $body['admin'] = false;
@@ -91,14 +96,17 @@ class User extends AuthApiController
      * Executes api.user.password_request event.
      *
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws TooManyRequestsException
+     * @throws UnauthorizedException
      */
     public function passwordRequest(): void
     {
 
         if ($this->apiService->getConfig('user.password_request.enabled') !== true) {
-            ApiError::abort(404);
+            throw new NotFoundException();
         }
 
         $this->validateHeaders([
@@ -126,9 +134,9 @@ class User extends AuthApiController
 
         } catch (AlreadyExistsException) {
             $this->events->doEvent('api.user.password_request.fail', $body['email']);
-            ApiError::abort(429);
+            throw new TooManyRequestsException();
         } catch (DoesNotExistException|UnexpectedException $e) {
-            ApiError::abort(500, 'Unexpected error', 0, $e);
+            throw new ApiServiceException('Unexpected error', 0, $e);
         }
 
         $this->events->doEvent('api.user.password_request', $user, $totp);
@@ -141,14 +149,16 @@ class User extends AuthApiController
      * Executes rbac.user.password.updated event.
      *
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws UnauthorizedException
      */
     public function password(): void
     {
 
         if ($this->apiService->getConfig('user.password_request.enabled') !== true) {
-            ApiError::abort(404);
+            throw new NotFoundException();
         }
 
         $this->validateHeaders([
@@ -171,12 +181,12 @@ class User extends AuthApiController
             $totp = $userMetaModel->getTotp($user->getId(), $userMetaModel->totp_meta_key_password);
         } catch (DoesNotExistException) { // Token does not exist
             $this->events->doEvent('api.user.password.fail', $body['email']);
-            ApiError::abort(401);
+            throw new UnauthorizedException();
         }
 
         if (!$this->rbacService->hashMatches($totp->getValue(), $body['token'])) { // Invalid token value
             $this->events->doEvent('api.user.password.fail', $body['email']);
-            ApiError::abort(401);
+            throw new UnauthorizedException();
         }
 
         // Delete TOTP
@@ -194,7 +204,7 @@ class User extends AuthApiController
             ]);
 
         } catch (OrmServiceException $e) {
-            ApiError::abort(500, 'Unexpected error', 0, $e);
+            throw new ApiServiceException('Unexpected error', 0, $e);
         }
 
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_password);
@@ -210,14 +220,17 @@ class User extends AuthApiController
      * Executes api.user.verification_request event.
      *
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws TooManyRequestsException
+     * @throws UnauthorizedException
      */
     public function verificationRequest(): void
     {
 
         if ($this->apiService->getConfig('user.verification.enabled') === false) {
-            ApiError::abort(404);
+            throw new NotFoundException();
         }
 
         $this->validateHeaders([
@@ -244,9 +257,9 @@ class User extends AuthApiController
 
         } catch (AlreadyExistsException) {
             $this->events->doEvent('api.user.verification_request.fail', $body['email']);
-            ApiError::abort(429);
+            throw new TooManyRequestsException();
         } catch (DoesNotExistException|UnexpectedException $e) {
-            ApiError::abort(500, 'Unexpected error', 0, $e);
+            throw new ApiServiceException('Unexpected error', 0, $e);
         }
 
         $this->respond(204);
@@ -258,14 +271,16 @@ class User extends AuthApiController
      * Executes rbac.user.verified event.
      *
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws UnauthorizedException
      */
     public function verification(): void
     {
 
         if ($this->apiService->getConfig('user.verification.enabled') === false) {
-            ApiError::abort(404);
+            throw new NotFoundException();
         }
 
         $this->validateHeaders([
@@ -293,12 +308,12 @@ class User extends AuthApiController
             $totp = $userMetaModel->getTotp($user->getId(), $userMetaModel->totp_meta_key_verification);
         } catch (DoesNotExistException) {
             $this->events->doEvent('api.user.verification.fail', $body['email']);
-            ApiError::abort(401);
+            throw new UnauthorizedException();
         }
 
         if (!$this->rbacService->hashMatches($totp->getValue(), $body['token'])) { // Invalid token value
             $this->events->doEvent('api.user.verification.fail', $body['email']);
-            ApiError::abort(401);
+            throw new UnauthorizedException();
         }
 
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_verification);

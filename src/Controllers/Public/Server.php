@@ -4,8 +4,8 @@ namespace Bayfront\BonesService\Api\Controllers\Public;
 
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PublicApiController;
-use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Schemas\ServerStatusResource;
 
 class Server extends PublicApiController
@@ -13,8 +13,8 @@ class Server extends PublicApiController
 
     /**
      * @param ApiService $apiService
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws TooManyRequestsException
      */
     public function __construct(ApiService $apiService)
     {
@@ -27,7 +27,6 @@ class Server extends PublicApiController
      *
      * @return void
      * @throws ApiServiceException
-     * @throws ApiHttpException
      */
     public function status(): void
     {
@@ -48,7 +47,6 @@ class Server extends PublicApiController
      * as an OpenApiObject can be injected into the API service constructor.
      *
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
      */
     public function oas(): void

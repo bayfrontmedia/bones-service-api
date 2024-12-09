@@ -5,8 +5,12 @@ namespace Bayfront\BonesService\Api\Controllers\Private;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
-use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
+use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
+use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
+use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
+use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\TenantRolesCollection;
 use Bayfront\BonesService\Api\Schemas\TenantRolesResource;
@@ -24,8 +28,9 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
     /**
      * @param ApiService $apiService
      * @param TenantRolesModel $tenantRolesModel
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws ForbiddenException
+     * @throws TooManyRequestsException
      */
     public function __construct(ApiService $apiService, TenantRolesModel $tenantRolesModel)
     {
@@ -35,6 +40,10 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
 
     /**
      * @inheritDoc
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ConflictException
+     * @throws ForbiddenException
      */
     public function create(array $params): void
     {
@@ -64,6 +73,9 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
 
     /**
      * @inheritDoc
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
      */
     public function list(array $params): void
     {
@@ -88,6 +100,10 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
 
     /**
      * @inheritDoc
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws NotFoundException
      */
     public function read(array $params): void
     {
@@ -113,6 +129,11 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
 
     /**
      * @inheritDoc
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws ConflictException
+     * @throws NotFoundException
      */
     public function update(array $params): void
     {
@@ -143,6 +164,9 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
 
     /**
      * @inheritDoc
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
      */
     public function delete(array $params): void
     {

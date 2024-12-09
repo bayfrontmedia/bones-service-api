@@ -4,10 +4,12 @@ namespace Bayfront\BonesService\Api\Controllers\Auth;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Controllers\Abstracts\AuthApiController;
-use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
+use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
+use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
+use Bayfront\BonesService\Api\Exceptions\Http\UnauthorizedException;
 use Bayfront\BonesService\Api\Schemas\AuthResource;
-use Bayfront\BonesService\Api\Utilities\ApiError;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
@@ -36,7 +38,6 @@ class Auth extends AuthApiController
      *
      * @param User $user
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
      */
     private function respondWithTokens(User $user): void
@@ -65,7 +66,7 @@ class Auth extends AuthApiController
             ]));
 
         } catch (DoesNotExistException|UnexpectedException $e) {
-            ApiError::abort(500, 'Unexpected error', 0, $e);
+            throw new ApiServiceException('Unexpected error', 0, $e);
         }
 
     }
@@ -74,14 +75,17 @@ class Auth extends AuthApiController
      * Authenticate with email + password.
      *
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws TooManyRequestsException
+     * @throws UnauthorizedException
      */
     public function login(): void
     {
 
         if ($this->apiService->getConfig('auth.password.enabled') !== true) {
-            ApiError::abort(404);
+            throw new NotFoundException();
         }
 
         $this->validateHeaders([
@@ -99,9 +103,9 @@ class Auth extends AuthApiController
             $user = $authenticator->authenticate($body['email'], $body['password']);
         } catch (UserDoesNotExistException|InvalidPasswordException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent('api.auth.password.fail', $body['email']);
-            ApiError::abort(401);
+            throw new UnauthorizedException();
         } catch (UnexpectedAuthenticationException $e) {
-            ApiError::abort(500, 'Unexpected error', 0, $e);
+            throw new ApiServiceException('Unexpected error', 0, $e);
         }
 
         if ($this->apiService->getConfig('auth.password.tfa.enabled') === true) {
@@ -121,9 +125,9 @@ class Auth extends AuthApiController
 
             } catch (AlreadyExistsException) { // TFA exists and wait time has not elapsed
                 $this->events->doEvent('api.auth.password.fail', $body['email']);
-                ApiError::abort(429);
+                throw new TooManyRequestsException();
             } catch (DoesNotExistException|UnexpectedException $e) {
-                ApiError::abort(500, 'Unexpected error', 0, $e);
+                throw new ApiServiceException('Unexpected error', 0, $e);
             }
 
             $this->events->doEvent('api.auth.password.tfa', $user, $totp);
@@ -139,14 +143,17 @@ class Auth extends AuthApiController
      * Initiate authentication by creating OTP.
      *
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws TooManyRequestsException
+     * @throws UnauthorizedException
      */
     public function otp(): void
     {
 
         if ($this->apiService->getConfig('auth.otp.enabled') !== true) {
-            ApiError::abort(404);
+            throw new NotFoundException();
         }
 
         $this->validateHeaders([
@@ -163,9 +170,9 @@ class Auth extends AuthApiController
             $user = $authenticator->authenticate($body['email']);
         } catch (UserDoesNotExistException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent('api.auth.otp.fail', $body['email']);
-            ApiError::abort(401);
+            throw new UnauthorizedException();
         } catch (UnexpectedAuthenticationException $e) {
-            ApiError::abort(500, 'Unexpected error', 0, $e);
+            throw new ApiServiceException('Unexpected error', 0, $e);
         }
 
         $userMetaModel = new UserMetaModel($this->rbacService);
@@ -183,9 +190,9 @@ class Auth extends AuthApiController
 
         } catch (AlreadyExistsException) { // OTP exists and wait time has not elapsed
             $this->events->doEvent('api.auth.otp.fail', $body['email']);
-            ApiError::abort(429);
+            throw new TooManyRequestsException();
         } catch (DoesNotExistException|UnexpectedException $e) {
-            ApiError::abort(500, 'Unexpected error', 0, $e);
+            throw new ApiServiceException('Unexpected error', 0, $e);
         }
 
         $this->events->doEvent('api.auth.otp', $user, $totp);
@@ -197,15 +204,17 @@ class Auth extends AuthApiController
      * Authenticate by verifying TFA token.
      *
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws UnauthorizedException
      */
     public function tfa(): void
     {
 
         if ($this->apiService->getConfig('auth.password.tfa.enabled') === false
             && $this->apiService->getConfig('auth.otp.enabled') === false) {
-            ApiError::abort(404);
+            throw new NotFoundException();
         }
 
         $this->validateHeaders([
@@ -223,9 +232,9 @@ class Auth extends AuthApiController
             $user = $authenticator->authenticate($body['email'], $body['token']);
         } catch (TotpDoesNotExistException|UserDoesNotExistException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent('api.auth.tfa.fail', $body['email']);
-            ApiError::abort(401);
+            throw new UnauthorizedException();
         } catch (UnexpectedAuthenticationException $e) {
-            ApiError::abort(500, 'Unexpected error', 0, $e);
+            throw new ApiServiceException('Unexpected error', 0, $e);
         }
 
         $this->respondWithTokens($user);
@@ -236,14 +245,16 @@ class Auth extends AuthApiController
      * Authenticate with refresh token.
      *
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws UnauthorizedException
      */
     public function refresh(): void
     {
 
         if ($this->apiService->getConfig('auth.refresh.enabled') !== true) {
-            ApiError::abort(404);
+            throw new NotFoundException();
         }
 
         $this->validateHeaders([
@@ -260,9 +271,9 @@ class Auth extends AuthApiController
             $user = $authenticator->authenticate($body['refresh_token'], $authenticator::TOKEN_TYPE_REFRESH);
         } catch (InvalidTokenException|TokenDoesNotExistException|UserDoesNotExistException|UserDisabledException|UserNotVerifiedException) {
             $this->events->doEvent('api.auth.refresh.fail');
-            ApiError::abort(401);
+            throw new UnauthorizedException();
         } catch (UnexpectedAuthenticationException $e) {
-            ApiError::abort(500, 'Unexpected error', 0, $e);
+            throw new ApiServiceException('Unexpected error', 0, $e);
         }
 
         $this->respondWithTokens($user);

@@ -5,13 +5,16 @@ namespace Bayfront\BonesService\Api\Controllers\Private;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
-use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
+use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
+use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
+use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
+use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\UserCollection;
 use Bayfront\BonesService\Api\Schemas\UserResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
-use Bayfront\BonesService\Api\Utilities\ApiError;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
 
@@ -25,8 +28,9 @@ class Users extends PrivateApiController implements CrudControllerInterface
     /**
      * @param ApiService $apiService
      * @param UsersModel $usersModel
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws ForbiddenException
+     * @throws TooManyRequestsException
      */
     public function __construct(ApiService $apiService, UsersModel $usersModel)
     {
@@ -40,7 +44,6 @@ class Users extends PrivateApiController implements CrudControllerInterface
      * or if access tokens are not revocable.
      *
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
      */
     public function logout(): void
@@ -54,8 +57,10 @@ class Users extends PrivateApiController implements CrudControllerInterface
      * Read current user.
      *
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws NotFoundException
      */
     public function me(): void
     {
@@ -66,6 +71,10 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
     /**
      * @inheritDoc
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ConflictException
+     * @throws ForbiddenException
      */
     public function create(array $params): void
     {
@@ -86,6 +95,9 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
     /**
      * @inheritDoc
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
      */
     public function list(array $params): void
     {
@@ -104,12 +116,16 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
     /**
      * @inheritDoc
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws NotFoundException
      */
     public function read(array $params): void
     {
 
         if (!$this->user->isAdmin() && Arr::get($params, 'id', '') !== $this->user->getId()) {
-            ApiError::abort(403);
+            throw new ForbiddenException();
         }
 
         $this->validatePath($params, [
@@ -129,12 +145,17 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
     /**
      * @inheritDoc
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ConflictException
+     * @throws ForbiddenException
+     * @throws NotFoundException
      */
     public function update(array $params): void
     {
 
         if (!$this->user->isAdmin() && Arr::get($params, 'id', '') !== $this->user->getId()) {
-            ApiError::abort(403);
+            throw new ForbiddenException();
         }
 
         /*
@@ -166,6 +187,9 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
     /**
      * @inheritDoc
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
      */
     public function delete(array $params): void
     {

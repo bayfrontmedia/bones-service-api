@@ -2,9 +2,6 @@
 
 namespace Bayfront\BonesService\Api\Interfaces;
 
-use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
-use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
-
 interface CrudControllerInterface
 {
 
@@ -13,8 +10,6 @@ interface CrudControllerInterface
      *
      * @param array $params
      * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
      */
     public function create(array $params): void;
 
@@ -23,8 +18,6 @@ interface CrudControllerInterface
      *
      * @param array $params
      * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
      */
     public function list(array $params): void;
 
@@ -33,8 +26,6 @@ interface CrudControllerInterface
      *
      * @param array $params
      * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
      */
     public function read(array $params): void;
 
@@ -43,8 +34,6 @@ interface CrudControllerInterface
      *
      * @param array $params
      * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
      */
     public function update(array $params): void;
 
@@ -53,8 +42,6 @@ interface CrudControllerInterface
      *
      * @param array $params
      * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
      */
     public function delete(array $params): void;
 

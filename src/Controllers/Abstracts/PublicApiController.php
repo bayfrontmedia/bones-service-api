@@ -3,8 +3,8 @@
 namespace Bayfront\BonesService\Api\Controllers\Abstracts;
 
 use Bayfront\BonesService\Api\ApiService;
-use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\HttpRequest\Request;
 
 abstract class PublicApiController extends ApiController
@@ -12,8 +12,8 @@ abstract class PublicApiController extends ApiController
 
     /**
      * @param ApiService $apiService
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws TooManyRequestsException
      */
     public function __construct(ApiService $apiService)
     {

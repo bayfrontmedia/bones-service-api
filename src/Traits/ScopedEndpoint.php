@@ -2,7 +2,6 @@
 
 namespace Bayfront\BonesService\Api\Traits;
 
-use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 
 trait ScopedEndpoint
@@ -18,7 +17,7 @@ trait ScopedEndpoint
      * @param array $array
      * @param array $values
      * @return array
-     * @throws ApiHttpException
+     * @throws BadRequestException
      */
     protected function validateScopedFields(array $array, array $values): array
     {

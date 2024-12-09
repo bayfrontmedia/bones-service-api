@@ -9,10 +9,11 @@ use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Application\Utilities\Helpers;
 use Bayfront\BonesService\Api\ApiService;
-use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
+use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
+use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
+use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Traits\Auditable;
-use Bayfront\BonesService\Api\Utilities\ApiError;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\RbacService;
 use Bayfront\BonesService\Rbac\User;
@@ -67,8 +68,8 @@ abstract class ApiController extends Controller
      * @param string $id
      * @param int $limit
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws TooManyRequestsException
      */
     protected function enforceRateLimit(string $id, int $limit): void
     {
@@ -85,7 +86,7 @@ abstract class ApiController extends Controller
             ]);
 
         } catch (Exception $e) {
-            ApiError::abort(500, $e->getMessage());
+            throw new ApiServiceException($e->getMessage());
         }
 
         try {
@@ -105,10 +106,10 @@ abstract class ApiController extends Controller
                 $this->events->doEvent('api.auth.limit');
             }
 
-            ApiError::abort(429, 'Rate limit exceeded. Try again in ' . $wait . ' seconds');
+            throw new TooManyRequestsException('Rate limit exceeded. Try again in ' . $wait . ' seconds');
 
         } catch (AdapterException $e) {
-            ApiError::abort(500, $e->getMessage());
+            throw new ApiServiceException($e->getMessage());
         }
 
         $this->response->setHeaders([
@@ -124,13 +125,12 @@ abstract class ApiController extends Controller
      *
      * @param User $user
      * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
+     * @throws ForbiddenException
      */
     protected function validateIsAdmin(User $user): void
     {
         if (!$user->isAdmin()) {
-            ApiError::abort(403);
+            throw new ForbiddenException();
         }
     }
 
@@ -141,8 +141,8 @@ abstract class ApiController extends Controller
      * @param string $tenant_id
      * @param array $permission_names
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws ForbiddenException
      */
     protected function validatePermissions(User $user, string $tenant_id, array $permission_names): void
     {
@@ -154,11 +154,11 @@ abstract class ApiController extends Controller
         try {
 
             if (!$user->canDoAll($tenant_id, $permission_names)) {
-                ApiError::abort(403);
+                throw new ForbiddenException();
             }
 
         } catch (UnexpectedException $e) {
-            ApiError::abort(500, 'Unable to verify permissions: Unexpected error', 0, $e);
+            throw new ApiServiceException('Unable to verify permissions: Unexpected error', 0, $e);
         }
 
     }
@@ -169,8 +169,7 @@ abstract class ApiController extends Controller
      * @param array $params
      * @param array $rules
      * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
+     * @throws BadRequestException
      */
     protected function validatePath(array $params, array $rules = []): void
     {
@@ -183,7 +182,7 @@ abstract class ApiController extends Controller
             $messages = $validator->getMessages();
             $field = array_key_first($messages);
 
-            ApiError::abort(400, 'Unable to validate path (' . $field . '): Invalid or missing parameter(s)');
+            throw new BadRequestException('Unable to validate path (' . $field . '): Invalid or missing parameter(s)');
 
         }
 
@@ -197,8 +196,7 @@ abstract class ApiController extends Controller
      *
      * @param array $rules
      * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
+     * @throws BadRequestException
      */
     protected function validateQuery(array $rules = []): void
     {
@@ -211,7 +209,7 @@ abstract class ApiController extends Controller
             $messages = $validator->getMessages();
             $field = array_key_first($messages);
 
-            ApiError::abort(400, 'Unable to validate query (' . $field . '): Invalid or missing parameter(s)');
+            throw new BadRequestException('Unable to validate query (' . $field . '): Invalid or missing parameter(s)');
 
         }
 
@@ -222,8 +220,7 @@ abstract class ApiController extends Controller
      *
      * @param array $rules
      * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
+     * @throws BadRequestException
      */
     protected function validateHeaders(array $rules = []): void
     {
@@ -236,7 +233,7 @@ abstract class ApiController extends Controller
             $messages = $validator->getMessages();
             $field = array_key_first($messages);
 
-            ApiError::abort(400, 'Unable to validate headers (' . $field . '): Invalid or missing parameter(s)');
+            throw new BadRequestException('Unable to validate headers (' . $field . '): Invalid or missing parameter(s)');
 
         }
 
@@ -246,13 +243,12 @@ abstract class ApiController extends Controller
      * Validate body content exists.
      *
      * @return void
-     * @throws ApiHttpException
-     * @throws ApiServiceException
+     * @throws BadRequestException
      */
     protected function validateBodyExists(): void
     {
         if (Request::getBody() == '') {
-            ApiError::abort(400, 'Unable to validate body: Missing content');
+            throw new BadRequestException('Unable to validate body: Missing content');
         }
     }
 
@@ -261,8 +257,7 @@ abstract class ApiController extends Controller
      *
      * @param array $rules
      * @return array
-     * @throws ApiHttpException
-     * @throws ApiServiceException
+     * @throws BadRequestException
      */
     protected function getFormEncodedBody(array $rules = []): array
     {
@@ -291,7 +286,7 @@ abstract class ApiController extends Controller
                 $messages = $validator->getMessages();
                 $field = array_key_first($messages);
 
-                ApiError::abort(400, 'Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
+                throw new BadRequestException('Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
 
             }
 
@@ -306,8 +301,7 @@ abstract class ApiController extends Controller
      *
      * @param array $rules
      * @return array
-     * @throws ApiHttpException
-     * @throws ApiServiceException
+     * @throws BadRequestException
      */
     protected function getJsonBody(array $rules = []): array
     {
@@ -315,7 +309,7 @@ abstract class ApiController extends Controller
         $body = json_decode(Request::getBody(), true);
 
         if (!$body || !is_array($body)) {
-            ApiError::abort(400, 'Unable to validate body: Invalid or missing JSON');
+            throw new BadRequestException('Unable to validate body: Invalid or missing JSON');
         }
 
         if (!empty($rules)) {
@@ -328,7 +322,7 @@ abstract class ApiController extends Controller
                 $messages = $validator->getMessages();
                 $field = array_key_first($messages);
 
-                ApiError::abort(400, 'Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
+                throw new BadRequestException('Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
 
             }
 
@@ -343,8 +337,7 @@ abstract class ApiController extends Controller
      *
      * @param array $rules (Rules with key = body)
      * @return string
-     * @throws ApiHttpException
-     * @throws ApiServiceException
+     * @throws BadRequestException
      */
     protected function getTextBody(array $rules = []): string
     {
@@ -363,7 +356,7 @@ abstract class ApiController extends Controller
                 $messages = $validator->getMessages();
                 $field = array_key_first($messages);
 
-                ApiError::abort(400, 'Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
+                throw new BadRequestException('Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
 
             }
 
@@ -385,7 +378,6 @@ abstract class ApiController extends Controller
      * @param array $data (Data to send)
      * @param array $headers (Key/value pairs of header values to send)
      * @return void
-     * @throws ApiHttpException
      * @throws ApiServiceException
      */
     protected function respond(int $status_code = 200, array $data = [], array $headers = []): void
@@ -402,7 +394,7 @@ abstract class ApiController extends Controller
             }
 
         } catch (InvalidStatusCodeException) {
-            ApiError::abort(500, 'Unable to respond: Invalid status code (' . $status_code . ')');
+            throw new ApiServiceException('Unable to respond: Invalid status code (' . $status_code . ')');
         }
 
         if (in_array(Auditable::class, Helpers::classUses($this))) {

@@ -3,7 +3,6 @@
 namespace Bayfront\BonesService\Api\Traits;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
@@ -53,7 +52,7 @@ trait UsesResourceModel
      * @param ResourceModel $resourceModel
      * @param bool $require_fields (Check required fields exist?)
      * @return array
-     * @throws ApiHttpException
+     * @throws BadRequestException
      */
     protected function getResourceBody(ResourceModel $resourceModel, bool $require_fields = false): array
     {
@@ -78,7 +77,6 @@ trait UsesResourceModel
                 $field = array_key_first($messages);
 
                 throw new BadRequestException('Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
-                //throw new BadRequestException('Unable to validate body: Invalid or missing parameter(s)');
             }
 
         }
@@ -96,8 +94,9 @@ trait UsesResourceModel
      * @param ResourceModel $resourceModel
      * @param array $fields
      * @return array
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ConflictException
      */
     protected function createResource(ResourceModel $resourceModel, array $fields): array
     {
@@ -125,8 +124,8 @@ trait UsesResourceModel
      *
      * @param ResourceModel $resourceModel
      * @return array
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
      */
     protected function listResources(ResourceModel $resourceModel): array
     {
@@ -174,8 +173,9 @@ trait UsesResourceModel
      * @param ResourceModel $resourceModel
      * @param mixed $primary_key_id
      * @return array
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
      */
     protected function readResource(ResourceModel $resourceModel, mixed $primary_key_id): array
     {
@@ -206,8 +206,10 @@ trait UsesResourceModel
      * @param mixed $primary_key_id
      * @param array $fields
      * @return array
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ConflictException
+     * @throws NotFoundException
      */
     protected function updateResource(ResourceModel $resourceModel, mixed $primary_key_id, array $fields): array
     {

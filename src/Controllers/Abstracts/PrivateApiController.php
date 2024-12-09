@@ -5,9 +5,9 @@ namespace Bayfront\BonesService\Api\Controllers\Abstracts;
 use Bayfront\Bones\Application\Utilities\Constants;
 use Bayfront\Bones\Exceptions\ConstantAlreadyDefinedException;
 use Bayfront\BonesService\Api\ApiService;
-use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
-use Bayfront\BonesService\Api\Utilities\ApiError;
+use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
+use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Rbac\Authenticators\TokenAuthenticator;
 use Bayfront\BonesService\Rbac\Authenticators\UserKeyAuthenticator;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\ExpiredUserKeyException;
@@ -30,8 +30,9 @@ abstract class PrivateApiController extends ApiController
 
     /**
      * @param ApiService $apiService
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws ForbiddenException
+     * @throws TooManyRequestsException
      */
     public function __construct(ApiService $apiService)
     {
@@ -52,8 +53,8 @@ abstract class PrivateApiController extends ApiController
      * Identify user using an enabled identification method.
      *
      * @return User
-     * @throws ApiHttpException
      * @throws ApiServiceException
+     * @throws ForbiddenException
      */
     private function identifyUser(): User
     {
@@ -66,13 +67,13 @@ abstract class PrivateApiController extends ApiController
                 Constants::define('OPENAPI_SECURITY', self::OPENAPI_SECURITY_HTTP);
                 return $authenticator->authenticate(Request::getHeader('Bearer'), $authenticator::TOKEN_TYPE_ACCESS);
             } catch (InvalidTokenException|TokenDoesNotExistException|UserDoesNotExistException) {
-                ApiError::abort(403, 'Invalid credentials');
+                throw new ForbiddenException('Invalid credentials');
             } catch (UserDisabledException) {
-                ApiError::abort(403, 'User is disabled');
+                throw new ForbiddenException('User is disabled');
             } catch (UserNotVerifiedException) {
-                ApiError::abort(403, 'User is not verified');
+                throw new ForbiddenException('User is not verified');
             } catch (ConstantAlreadyDefinedException|UnexpectedAuthenticationException $e) {
-                ApiError::abort(500, $e->getMessage());
+                throw new ApiServiceException($e->getMessage());
             }
 
         } else if ($this->apiService->getConfig('identity.key') === true && Request::hasHeader('X-API-Key')) {
@@ -89,24 +90,24 @@ abstract class PrivateApiController extends ApiController
                 Constants::define('OPENAPI_SECURITY', self::OPENAPI_SECURITY_KEY);
                 return $authenticator->authenticate(Request::getHeader('X-API-Key'), Request::getIp(), $referer);
             } catch (InvalidUserKeyException|UserDoesNotExistException) {
-                ApiError::abort(403, 'Invalid credentials');
+                throw new ForbiddenException('Invalid credentials');
             } catch (ExpiredUserKeyException) {
-                ApiError::abort(403, 'API key is expired');
+                throw new ForbiddenException('API key is expired');
             } catch (InvalidDomainException) {
-                ApiError::abort(403, 'Domain not allowed');
+                throw new ForbiddenException('Domain not allowed');
             } catch (InvalidIpException) {
-                ApiError::abort(403, 'IP not allowed');
+                throw new ForbiddenException('IP not allowed');
             } catch (UserDisabledException) {
-                ApiError::abort(403, 'User is disabled');
+                throw new ForbiddenException('User is disabled');
             } catch (UserNotVerifiedException) {
-                ApiError::abort(403, 'User is not verified');
+                throw new ForbiddenException('User is not verified');
             } catch (ConstantAlreadyDefinedException|UnexpectedAuthenticationException $e) {
-                ApiError::abort(500, $e->getMessage());
+                throw new ApiServiceException($e->getMessage());
             }
 
         }
 
-        ApiError::abort(403, 'Missing credentials');
+        throw new ForbiddenException('Missing credentials');
 
     }
 

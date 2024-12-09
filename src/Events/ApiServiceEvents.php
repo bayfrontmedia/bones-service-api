@@ -51,6 +51,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
     {
         return [
             new EventSubscription('rbac.user.created', [$this, 'createUserVerificationRequest'], 10),
+            new EventSubscription('rbac.user.email.updated', [$this, 'recreateUserVerificationRequest'], 10),
             new EventSubscription('api.controller', [$this, 'checkRequiredHeaders'], 5),
             new EventSubscription('api.controller', [$this, 'checkHttps'], 5),
             new EventSubscription('api.controller', [$this, 'checkIpWhitelist'], 5),
@@ -79,6 +80,25 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
         $apiModel = new ApiModel($this->apiService);
         $apiModel->createUserVerificationRequest($user);
+
+    }
+
+    /**
+     * Unverify user and create new user verification request if user verification is enabled.
+     *
+     * @param OrmResource $user
+     * @return void
+     * @throws AlreadyExistsException
+     * @throws DoesNotExistException
+     * @throws UnexpectedException
+     */
+    public function recreateUserVerificationRequest(OrmResource $user): void
+    {
+
+        $usersModel = new UsersModel($this->apiService->rbacService);
+        $usersModel->unverify($user->get('email', ''));
+
+        $this->createUserVerificationRequest($user);
 
     }
 

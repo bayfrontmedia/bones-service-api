@@ -161,23 +161,15 @@ class Users extends PrivateApiController implements CrudControllerInterface
             throw new ForbiddenException();
         }
 
-        if (!$this->user->isAdmin() && isset($params['admin']) || isset($params['enabled'])) {
-            throw new BadRequestException('Unable to update resource: Invalid field(s)');
-        }
-
-        /*
-         * TODO:
-         *
-         * If email updated, need to verify
-         * RBAC service may need method ->unverify()
-         * and also need rbac.user.email.updated event
-         */
-
         $this->validateHeaders([
             'Content-Type' => 'required|matches:application/json'
         ]);
 
         $body = $this->getResourceBody($this->usersModel);
+
+        if (!$this->user->isAdmin() && isset($body['admin']) || isset($body['enabled'])) {
+            throw new BadRequestException('Unable to update resource: Invalid field(s)');
+        }
 
         $resource = $this->updateResource($this->usersModel, $params['id'], $body);
 

@@ -2,7 +2,6 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
-use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -48,13 +47,13 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
     public function create(array $params): void
     {
 
-        $this->validatePermissions($this->user, Arr::get($params, 'tenant', ''), [
-            'roles.create',
-            'roles.read'
-        ]);
-
         $this->validatePath($params, [
             'tenant' => 'uuid'
+        ]);
+
+        $this->validatePermissions($this->user, $params['tenant'], [
+            'roles.create',
+            'roles.read'
         ]);
 
         $this->validateHeaders([
@@ -62,7 +61,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $body = $this->validateScopedFields($this->getResourceBody($this->tenantRolesModel, true), [
-            'tenant' => Arr::get($params, 'tenant', '')
+            'tenant' => $params['tenant']
         ]);
 
         $resource = $this->createResource($this->tenantRolesModel, $body);
@@ -80,12 +79,12 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
     public function list(array $params): void
     {
 
-        $this->validatePermissions($this->user, Arr::get($params, 'tenant', ''), [
-            'roles.read'
-        ]);
-
         $this->validatePath($params, [
             'tenant' => 'uuid'
+        ]);
+
+        $this->validatePermissions($this->user, $params['tenant'], [
+            'roles.read'
         ]);
 
         $this->validateQuery($this->getQueryParserRules());
@@ -108,18 +107,18 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
     public function read(array $params): void
     {
 
-        $this->validatePermissions($this->user, Arr::get($params, 'tenant', ''), [
-            'roles.read'
-        ]);
-
         $this->validatePath($params, [
             'tenant' => 'uuid',
             'id' => 'uuid'
         ]);
 
+        $this->validatePermissions($this->user, $params['tenant'], [
+            'roles.read'
+        ]);
+
         $this->validateQuery($this->getFieldParserRules());
 
-        $resource = $this->readResource($this->tenantRolesModel, Arr::get($params, 'id', ''));
+        $resource = $this->readResource($this->tenantRolesModel, $params['id']);
 
         $this->respond(200, TenantRolesResource::create($resource), [
             'Cache-Control' => 'max-age=3600'
@@ -138,14 +137,14 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
     public function update(array $params): void
     {
 
-        $this->validatePermissions($this->user, Arr::get($params, 'tenant', ''), [
-            'roles.update',
-            'roles.read'
-        ]);
-
         $this->validatePath($params, [
             'tenant' => 'uuid',
             'id' => 'uuid'
+        ]);
+
+        $this->validatePermissions($this->user, $params['tenant'], [
+            'roles.update',
+            'roles.read'
         ]);
 
         $this->validateHeaders([
@@ -153,10 +152,10 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $body = $this->validateScopedFields($this->getResourceBody($this->tenantRolesModel), [
-            'tenant' => Arr::get($params, 'tenant', '')
+            'tenant' => $params['tenant']
         ]);
 
-        $resource = $this->updateResource($this->tenantRolesModel, Arr::get($params, 'id', ''), $body);
+        $resource = $this->updateResource($this->tenantRolesModel, $params['id'], $body);
 
         $this->respond(200, TenantRolesResource::create($resource));
 
@@ -171,16 +170,16 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
     public function delete(array $params): void
     {
 
-        $this->validatePermissions($this->user, Arr::get($params, 'tenant', ''), [
-            'roles.delete'
-        ]);
-
         $this->validatePath($params, [
             'tenant' => 'uuid',
             'id' => 'uuid'
         ]);
 
-        $this->deleteResource($this->tenantRolesModel, Arr::get($params, 'id', ''));
+        $this->validatePermissions($this->user, $params['tenant'], [
+            'roles.delete'
+        ]);
+
+        $this->deleteResource($this->tenantRolesModel, $params['id']);
 
         $this->respond(204);
 

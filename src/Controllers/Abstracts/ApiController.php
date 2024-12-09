@@ -276,6 +276,7 @@ abstract class ApiController extends Controller
 
         }
 
+        /** @noinspection DuplicatedCode */
         if (!empty($rules)) {
 
             $validator = new Validator();
@@ -312,6 +313,7 @@ abstract class ApiController extends Controller
             throw new BadRequestException('Unable to validate body: Invalid or missing JSON');
         }
 
+        /** @noinspection DuplicatedCode */
         if (!empty($rules)) {
 
             $validator = new Validator();

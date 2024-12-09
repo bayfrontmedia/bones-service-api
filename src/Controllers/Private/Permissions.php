@@ -2,7 +2,6 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
-use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -107,15 +106,15 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     public function read(array $params): void
     {
 
-        $this->validateIsAdmin($this->user);
-
         $this->validatePath($params, [
             'id' => 'uuid'
         ]);
 
+        $this->validateIsAdmin($this->user);
+
         $this->validateQuery($this->getFieldParserRules());
 
-        $resource = $this->readResource($this->permissionsModel, Arr::get($params, 'id', ''));
+        $resource = $this->readResource($this->permissionsModel, $params['id']);
 
         $this->respond(200, PermissionResource::create($resource), [
             'Cache-Control' => 'max-age=3600'
@@ -134,11 +133,11 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     public function update(array $params): void
     {
 
-        $this->validateIsAdmin($this->user);
-
         $this->validatePath($params, [
             'id' => 'uuid'
         ]);
+
+        $this->validateIsAdmin($this->user);
 
         $this->validateHeaders([
             'Content-Type' => 'required|matches:application/json'
@@ -146,7 +145,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
 
         $body = $this->getResourceBody($this->permissionsModel);
 
-        $resource = $this->updateResource($this->permissionsModel, Arr::get($params, 'id', ''), $body);
+        $resource = $this->updateResource($this->permissionsModel, $params['id'], $body);
 
         $this->respond(200, PermissionResource::create($resource));
 
@@ -161,13 +160,13 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     public function delete(array $params): void
     {
 
-        $this->validateIsAdmin($this->user);
-
         $this->validatePath($params, [
             'id' => 'uuid'
         ]);
 
-        $this->deleteResource($this->permissionsModel, Arr::get($params, 'id'));
+        $this->validateIsAdmin($this->user);
+
+        $this->deleteResource($this->permissionsModel, $params['id']);
 
         $this->respond(204);
 

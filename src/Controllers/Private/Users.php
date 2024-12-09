@@ -2,7 +2,6 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
-use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -124,17 +123,17 @@ class Users extends PrivateApiController implements CrudControllerInterface
     public function read(array $params): void
     {
 
-        if (!$this->user->isAdmin() && Arr::get($params, 'id', '') !== $this->user->getId()) {
-            throw new ForbiddenException();
-        }
-
         $this->validatePath($params, [
             'id' => 'uuid'
         ]);
 
+        if (!$this->user->isAdmin() && $params['id'] !== $this->user->getId()) {
+            throw new ForbiddenException();
+        }
+
         $this->validateQuery($this->getFieldParserRules());
 
-        $resource = $this->readResource($this->usersModel, Arr::get($params, 'id', ''));
+        $resource = $this->readResource($this->usersModel, $params['id']);
 
         // Response
         $this->respond(200, UserResource::create($resource), [
@@ -154,7 +153,11 @@ class Users extends PrivateApiController implements CrudControllerInterface
     public function update(array $params): void
     {
 
-        if (!$this->user->isAdmin() && Arr::get($params, 'id', '') !== $this->user->getId()) {
+        $this->validatePath($params, [
+            'id' => 'uuid'
+        ]);
+
+        if (!$this->user->isAdmin() && $params['id'] !== $this->user->getId()) {
             throw new ForbiddenException();
         }
 
@@ -169,17 +172,13 @@ class Users extends PrivateApiController implements CrudControllerInterface
          * and also need rbac.user.email.updated event
          */
 
-        $this->validatePath($params, [
-            'id' => 'uuid'
-        ]);
-
         $this->validateHeaders([
             'Content-Type' => 'required|matches:application/json'
         ]);
 
         $body = $this->getResourceBody($this->usersModel);
 
-        $resource = $this->updateResource($this->usersModel, Arr::get($params, 'id', ''), $body);
+        $resource = $this->updateResource($this->usersModel, $params['id'], $body);
 
         $this->respond(200, UserResource::create($resource));
 
@@ -194,13 +193,13 @@ class Users extends PrivateApiController implements CrudControllerInterface
     public function delete(array $params): void
     {
 
-        $this->validateIsAdmin($this->user);
-
         $this->validatePath($params, [
             'id' => 'uuid'
         ]);
 
-        $this->deleteResource($this->usersModel, Arr::get($params, 'id', ''));
+        $this->validateIsAdmin($this->user);
+
+        $this->deleteResource($this->usersModel, $params['id']);
 
         $this->respond(204);
 

@@ -28,8 +28,8 @@ class ApiService extends Service
 
     public EventService $events;
     public FilterService $filters;
-    public RbacService $rbacService;
     public Response $response;
+    public RbacService $rbacService;
     protected array $config;
 
     /**
@@ -38,22 +38,26 @@ class ApiService extends Service
      *
      * @param EventService $events
      * @param FilterService $filters
-     * @param RbacService $rbacService
      * @param Response $response
      * @param Cron $scheduler
+     * @param RbacService $rbacService
      * @param array $config
      * @throws ApiServiceException
      */
 
-    public function __construct(EventService $events, FilterService $filters, RbacService $rbacService, Response $response, Cron $scheduler, array $config)
+    public function __construct(EventService $events, FilterService $filters, Response $response, Cron $scheduler, RbacService $rbacService, array $config)
     {
         $this->events = $events;
         $this->filters = $filters;
-        $this->rbacService = $rbacService;
         $this->response = $response;
+        $this->rbacService = $rbacService;
         $this->config = $config;
 
         parent::__construct($events);
+
+        if (!App::has('Bayfront\LeakyBucket\AdapterInterface')) {
+            throw new ApiServiceException('Unable to start ApiService: Bayfront\LeakyBucket\AdapterInterface not found in container');
+        }
 
         // Enqueue events
 

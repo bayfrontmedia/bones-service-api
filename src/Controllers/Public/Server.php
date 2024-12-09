@@ -32,7 +32,7 @@ class Server extends PublicApiController
     {
 
         $this->respond(200, ServerStatusResource::create([
-            'status' => 'ok'
+            'status' => 'OK'
         ]), [
             'Cache-Control' => 'no-cache, no-store, max-age=0, must-revalidate'
         ]);

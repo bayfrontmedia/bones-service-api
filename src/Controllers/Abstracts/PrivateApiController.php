@@ -2,8 +2,6 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Abstracts;
 
-use Bayfront\Bones\Application\Utilities\Constants;
-use Bayfront\Bones\Exceptions\ConstantAlreadyDefinedException;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
@@ -71,7 +69,7 @@ abstract class PrivateApiController extends ApiController
                 throw new ForbiddenException('User is disabled');
             } catch (UserNotVerifiedException) {
                 throw new ForbiddenException('User is not verified');
-            } catch (ConstantAlreadyDefinedException|UnexpectedAuthenticationException $e) {
+            } catch (UnexpectedAuthenticationException $e) {
                 throw new ApiServiceException($e->getMessage());
             }
 
@@ -99,7 +97,7 @@ abstract class PrivateApiController extends ApiController
                 throw new ForbiddenException('User is disabled');
             } catch (UserNotVerifiedException) {
                 throw new ForbiddenException('User is not verified');
-            } catch (ConstantAlreadyDefinedException|UnexpectedAuthenticationException $e) {
+            } catch (UnexpectedAuthenticationException $e) {
                 throw new ApiServiceException($e->getMessage());
             }
 

@@ -190,13 +190,19 @@ class Users extends PrivateApiController implements CrudControllerInterface
             'id' => 'uuid'
         ]);
 
-        if (!$this->user->isAdmin() && $params['id'] !== $this->user->getId()) {
-            throw new ForbiddenException();
+        if ($this->apiService->getConfig('user.allow_delete') === true) {
+
+            if (!$this->user->isAdmin() && $params['id'] !== $this->user->getId()) {
+                throw new ForbiddenException();
+            }
+
+        } else {
+            $this->validateIsAdmin($this->user);
         }
 
         $this->deleteResource($this->usersModel, $params['id']);
 
-        $this->respond(204);
+        $this->logout(); // Respond with 204
 
     }
 

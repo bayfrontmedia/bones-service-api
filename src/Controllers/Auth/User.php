@@ -66,7 +66,7 @@ class User extends AuthApiController
     public function register(): void
     {
 
-        if ($this->apiService->getConfig('user.public_registration') !== true) {
+        if ($this->apiService->getConfig('user.allow_register') !== true) {
             throw new NotFoundException();
         }
 

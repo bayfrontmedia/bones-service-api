@@ -139,7 +139,7 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
         ]);
 
         $this->validatePermissions($this->user, $params['id'], [
-            'tenant:update'
+            'tenants:update'
         ]);
 
         $this->validateHeaders([
@@ -178,7 +178,7 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
         if ($this->apiService->getConfig('tenant.allow_delete') === true) {
 
             $this->validatePermissions($this->user, $params['id'], [
-                'tenant:delete'
+                'tenants:delete'
             ]);
 
         } else {

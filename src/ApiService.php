@@ -11,6 +11,7 @@ use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\BonesService\Api\Controllers\Auth\Auth;
 use Bayfront\BonesService\Api\Controllers\Auth\User;
 use Bayfront\BonesService\Api\Controllers\Private\Permissions;
+use Bayfront\BonesService\Api\Controllers\Private\TenantInvitations;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
 use Bayfront\BonesService\Api\Controllers\Private\Tenants;
 use Bayfront\BonesService\Api\Controllers\Private\Users;
@@ -146,6 +147,12 @@ class ApiService extends Service
             ->get('/users/{*:id}', [Users::class, 'read'])
             ->patch('/users/{*:id}', [Users::class, 'update'])
             ->delete('/users/{*:id}', [Users::class, 'delete'])
+            // Tenant invitations
+            ->post('/tenants/{*:tenant}/invitations', [TenantInvitations::class, 'create'])
+            ->get('/tenants/{*:tenant}/invitations', [TenantInvitations::class, 'list'])
+            ->get('/tenants/{*:tenant}/invitations/{*:id}', [TenantInvitations::class, 'read'])
+            ->patch('/tenants/{*:tenant}/invitations/{*:id}', [TenantInvitations::class, 'update'])
+            ->delete('/tenants/{*:tenant}/invitations/{*:id}', [TenantInvitations::class, 'delete'])
             // Tenant roles
             ->post('/tenants/{*:tenant}/roles', [TenantRoles::class, 'create'])
             ->get('/tenants/{*:tenant}/roles', [TenantRoles::class, 'list'])

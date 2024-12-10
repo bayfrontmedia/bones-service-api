@@ -9,32 +9,24 @@ use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
-use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
-use Bayfront\BonesService\Api\Schemas\TenantRoleCollection;
-use Bayfront\BonesService\Api\Schemas\TenantRoleResource;
+use Bayfront\BonesService\Api\Schemas\TenantInvitationCollection;
+use Bayfront\BonesService\Api\Schemas\TenantInvitationResource;
 use Bayfront\BonesService\Api\Traits\ScopedEndpoint;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
-use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
+use Bayfront\BonesService\Rbac\Models\TenantInvitationsModel;
 
-class TenantRoles extends PrivateApiController implements CrudControllerInterface
+class TenantInvitations extends PrivateApiController implements CrudControllerInterface
 {
 
     use UsesResourceModel, ScopedEndpoint;
 
-    protected TenantRolesModel $tenantRolesModel;
+    protected TenantInvitationsModel $tenantInvitationsModel;
 
-    /**
-     * @param ApiService $apiService
-     * @param TenantRolesModel $tenantRolesModel
-     * @throws ApiServiceException
-     * @throws ForbiddenException
-     * @throws TooManyRequestsException
-     */
-    public function __construct(ApiService $apiService, TenantRolesModel $tenantRolesModel)
+    public function __construct(ApiService $apiService, TenantInvitationsModel $tenantInvitationsModel)
     {
         parent::__construct($apiService);
-        $this->tenantRolesModel = $tenantRolesModel;
+        $this->tenantInvitationsModel = $tenantInvitationsModel;
     }
 
     /**
@@ -52,21 +44,26 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validatePermissions($this->user, $params['tenant'], [
-            'roles:create',
-            'roles:read'
+            'invitations:create',
+            'invitations:read'
         ]);
 
         $this->validateHeaders([
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->validateScopedFields($this->getResourceBody($this->tenantRolesModel, true), [
+        /*
+         * TODO:
+         * Removing tenant before validating all required fields exist
+         * Also update TenantRoles and any other controller using this
+         */
+        $body = $this->validateScopedFields($this->getResourceBody($this->tenantInvitationsModel, true), [
             'tenant' => $params['tenant']
         ]);
 
-        $resource = $this->createResource($this->tenantRolesModel, $body);
+        $resource = $this->createResource($this->tenantInvitationsModel, $body);
 
-        $this->respond(201, TenantRoleResource::create($resource));
+        $this->respond(201, TenantInvitationResource::create($resource));
 
     }
 
@@ -84,14 +81,14 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validatePermissions($this->user, $params['tenant'], [
-            'roles:read'
+            'invitations:read'
         ]);
 
         $this->validateQuery($this->getQueryParserRules());
 
-        $collection = $this->listResources($this->tenantRolesModel);
+        $collection = $this->listResources($this->tenantInvitationsModel);
 
-        $this->respond(200, TenantRoleCollection::create($collection['list'], $collection['config']), [
+        $this->respond(200, TenantInvitationCollection::create($collection['list'], $collection['config']), [
             'Cache-Control' => 'max-age=3600'
         ]);
 
@@ -113,14 +110,14 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validatePermissions($this->user, $params['tenant'], [
-            'roles:read'
+            'invitations:read'
         ]);
 
         $this->validateQuery($this->getFieldParserRules());
 
-        $resource = $this->readResource($this->tenantRolesModel, $params['id']);
+        $resource = $this->readResource($this->tenantInvitationsModel, $params['id']);
 
-        $this->respond(200, TenantRoleResource::create($resource), [
+        $this->respond(200, TenantInvitationResource::create($resource), [
             'Cache-Control' => 'max-age=3600'
         ]);
 
@@ -142,22 +139,19 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'id' => 'uuid'
         ]);
 
-        $this->validatePermissions($this->user, $params['tenant'], [
-            'roles:update',
-            'roles:read'
-        ]);
+        $this->validateIsAdmin($this->user);
 
         $this->validateHeaders([
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->validateScopedFields($this->getResourceBody($this->tenantRolesModel), [
+        $body = $this->validateScopedFields($this->getResourceBody($this->tenantInvitationsModel), [
             'tenant' => $params['tenant']
         ]);
 
-        $resource = $this->updateResource($this->tenantRolesModel, $params['id'], $body);
+        $resource = $this->updateResource($this->tenantInvitationsModel, $params['id'], $body);
 
-        $this->respond(200, TenantRoleResource::create($resource));
+        $this->respond(200, TenantInvitationResource::create($resource));
 
     }
 
@@ -176,10 +170,10 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validatePermissions($this->user, $params['tenant'], [
-            'roles:delete'
+            'invitations:delete'
         ]);
 
-        $this->deleteResource($this->tenantRolesModel, $params['id']);
+        $this->deleteResource($this->tenantInvitationsModel, $params['id']);
 
         $this->respond(204);
 

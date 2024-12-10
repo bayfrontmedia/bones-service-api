@@ -189,6 +189,11 @@ abstract class ApiController extends Controller
      * NOTE:
      * Since the query is a string, only string related validation rules can be applied.
      *
+     * TODO:
+     * Check this and similar methods to not allow additional fields outside of those defined in rules.
+     * See: UserMeta->read
+     * The query can be manipulated via query parameters when only "fields" should be recognized.
+     *
      * @param array $rules
      * @return void
      * @throws BadRequestException

@@ -15,6 +15,8 @@ use Bayfront\BonesService\Api\Controllers\Private\TenantInvitations;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
 use Bayfront\BonesService\Api\Controllers\Private\Tenants;
 use Bayfront\BonesService\Api\Controllers\Private\TenantTeams;
+use Bayfront\BonesService\Api\Controllers\Private\UserKeys;
+use Bayfront\BonesService\Api\Controllers\Private\UserMeta;
 use Bayfront\BonesService\Api\Controllers\Private\Users;
 use Bayfront\BonesService\Api\Controllers\Public\Server;
 use Bayfront\BonesService\Api\Events\ApiServiceDevEvents;
@@ -158,6 +160,18 @@ class ApiService extends Service
             ->get('/tenants/{*:tenant}/teams/{*:id}', [TenantTeams::class, 'read'])
             ->patch('/tenants/{*:tenant}/teams/{*:id}', [TenantTeams::class, 'update'])
             ->delete('/tenants/{*:tenant}/teams/{*:id}', [TenantTeams::class, 'delete'])
+            // User keys
+            ->post('/users/{*:user}/keys', [UserKeys::class, 'create'])
+            ->get('/users/{*:user}/keys', [UserKeys::class, 'list'])
+            ->get('/users/{*:user}/keys/{*:id}', [UserKeys::class, 'read'])
+            ->patch('/users/{*:user}/keys/{*:id}', [UserKeys::class, 'update'])
+            ->delete('/users/{*:user}/keys/{*:id}', [UserKeys::class, 'delete'])
+            // User meta
+            ->post('/users/{*:user}/meta', [UserMeta::class, 'create'])
+            ->get('/users/{*:user}/meta', [UserMeta::class, 'list'])
+            ->get('/users/{*:user}/meta/{*:id}', [UserMeta::class, 'read'])
+            ->patch('/users/{*:user}/meta/{*:id}', [UserMeta::class, 'update'])
+            ->delete('/users/{*:user}/meta/{*:id}', [UserMeta::class, 'delete'])
             // Users
             ->get('/users/logout', [Users::class, 'logout'])
             ->get('/users/me', [Users::class, 'me'])

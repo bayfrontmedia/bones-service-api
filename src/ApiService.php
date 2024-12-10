@@ -14,6 +14,7 @@ use Bayfront\BonesService\Api\Controllers\Private\Permissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantInvitations;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
 use Bayfront\BonesService\Api\Controllers\Private\Tenants;
+use Bayfront\BonesService\Api\Controllers\Private\TenantTeams;
 use Bayfront\BonesService\Api\Controllers\Private\Users;
 use Bayfront\BonesService\Api\Controllers\Public\Server;
 use Bayfront\BonesService\Api\Events\ApiServiceDevEvents;
@@ -127,28 +128,12 @@ class ApiService extends Service
             ->post('/user/password', [User::class, 'password'])
             ->post('/user/verification-request', [User::class, 'verificationRequest'])
             ->post('/user/verification', [User::class, 'verification'])
-            // Tenants
-            ->post('/tenants', [Tenants::class, 'create'])
-            ->get('/tenants', [Tenants::class, 'list'])
-            ->get('/tenants/{*:id}', [Tenants::class, 'read'])
-            ->patch('/tenants/{*:id}', [Tenants::class, 'update'])
-            ->delete('/tenants/{*:id}', [Tenants::class, 'delete'])
             // Permissions
             ->post('/permissions', [Permissions::class, 'create'])
             ->get('/permissions', [Permissions::class, 'list'])
             ->get('/permissions/{*:id}', [Permissions::class, 'read'])
             ->patch('/permissions/{*:id}', [Permissions::class, 'update'])
             ->delete('/permissions/{*:id}', [Permissions::class, 'delete'])
-            // Users
-            ->get('/users/logout', [Users::class, 'logout'])
-            ->get('/users/me', [Users::class, 'me'])
-            ->get('/users/me/invitations', [Users::class, 'listInvitations'])
-            ->post('/users/me/invitations', [Users::class, 'acceptInvitation'])
-            ->post('/users', [Users::class, 'create'])
-            ->get('/users', [Users::class, 'list'])
-            ->get('/users/{*:id}', [Users::class, 'read'])
-            ->patch('/users/{*:id}', [Users::class, 'update'])
-            ->delete('/users/{*:id}', [Users::class, 'delete'])
             // Tenant invitations
             ->post('/tenants/{*:tenant}/invitations', [TenantInvitations::class, 'create'])
             ->get('/tenants/{*:tenant}/invitations', [TenantInvitations::class, 'list'])
@@ -160,7 +145,30 @@ class ApiService extends Service
             ->get('/tenants/{*:tenant}/roles', [TenantRoles::class, 'list'])
             ->get('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'read'])
             ->patch('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'update'])
-            ->delete('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'delete']);
+            ->delete('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'delete'])
+            // Tenants
+            ->post('/tenants', [Tenants::class, 'create'])
+            ->get('/tenants', [Tenants::class, 'list'])
+            ->get('/tenants/{*:id}', [Tenants::class, 'read'])
+            ->patch('/tenants/{*:id}', [Tenants::class, 'update'])
+            ->delete('/tenants/{*:id}', [Tenants::class, 'delete'])
+            // Tenant teams
+            ->post('/tenants/{*:tenant}/teams', [TenantTeams::class, 'create'])
+            ->get('/tenants/{*:tenant}/teams', [TenantTeams::class, 'list'])
+            ->get('/tenants/{*:tenant}/teams/{*:id}', [TenantTeams::class, 'read'])
+            ->patch('/tenants/{*:tenant}/teams/{*:id}', [TenantTeams::class, 'update'])
+            ->delete('/tenants/{*:tenant}/teams/{*:id}', [TenantTeams::class, 'delete'])
+            // Users
+            ->get('/users/logout', [Users::class, 'logout'])
+            ->get('/users/me', [Users::class, 'me'])
+            ->get('/users/me/invitations', [Users::class, 'listInvitations'])
+            ->post('/users/me/invitations', [Users::class, 'acceptInvitation'])
+            ->post('/users', [Users::class, 'create'])
+            ->get('/users', [Users::class, 'list'])
+            ->get('/users/{*:id}', [Users::class, 'read'])
+            ->patch('/users/{*:id}', [Users::class, 'update'])
+            ->delete('/users/{*:id}', [Users::class, 'delete']);
+
     }
 
 }

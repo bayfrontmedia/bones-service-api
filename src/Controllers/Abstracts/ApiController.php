@@ -261,7 +261,22 @@ abstract class ApiController extends Controller
     protected function validateFieldsExist(array $array, array $keys): void
     {
         if (Arr::isMissing($array, $keys)) {
-            throw new BadRequestException('Unable to validate body: Missing required field(s)');
+            throw new BadRequestException('Bad request: Missing required field(s)');
+        }
+    }
+
+    /**
+     * @param array $array
+     * @param array $keys
+     * @return void
+     * @throws BadRequestException
+     */
+    protected function validateFieldsDoNotExist(array $array, array $keys): void
+    {
+        foreach ($keys as $key) {
+            if (isset($array[$key])) {
+                throw new BadRequestException('Bad request: Invalid field (' . $key . ')');
+            }
         }
     }
 

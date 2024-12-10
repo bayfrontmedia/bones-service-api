@@ -141,9 +141,22 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
             'Content-Type' => 'required|matches:application/json'
         ]);
 
+        // TODO: Option 1
+
+        $body = $this->getJsonBody($this->tenantInvitationsModel->getAllowedFieldsWrite(), false);
+        $this->validateFieldsDoNotExist($body, [
+            'tenant'
+        ]);
+
+        $body['tenant'] = $params['tenant'];
+
+        // TODO: Option 2
+
         $body = $this->getPartialJsonBody($this->tenantInvitationsModel->getAllowedFieldsWrite(), false, [
             'tenant' => $params['tenant']
         ]);
+
+        //
 
         $resource = $this->updateResource($this->tenantInvitationsModel, $params['id'], $body);
 

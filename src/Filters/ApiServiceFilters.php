@@ -63,8 +63,8 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
         $meta_field = $this->apiService->getConfig('request.meta.field', 'meta');
 
         if ($this->apiService->getConfig('request.meta.enabled') === true
-            && Request::getQuery($meta_field) == 'true'
-            && in_array(App::environment(), $this->apiService->getConfig('request.meta.env', []))) {
+            && in_array(App::environment(), $this->apiService->getConfig('request.meta.env', []))
+            && Request::getQuery($meta_field) == 'true') {
 
             $data[$meta_field] = array_merge((array)Arr::get($data, $meta_field, []), $this->apiService->filters->doFilter('api.response.meta', [
                 'version' => $this->apiService->getConfig('version', ''),

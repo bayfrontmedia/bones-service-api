@@ -48,7 +48,9 @@ trait UsesResourceModel
      * Exists in ApiController
      */
     protected abstract function validateFieldsExist(array $array, array $keys): void;
+
     protected abstract function validateFieldsDoNotExist(array $array, array $keys): void;
+
     protected abstract function getJsonBody(array $rules = [], bool $allow_other = false): array;
 
     /**

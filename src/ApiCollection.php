@@ -17,6 +17,4 @@ class ApiCollection
         $this->ormCollection = $ormCollection;
     }
 
-
-
 }

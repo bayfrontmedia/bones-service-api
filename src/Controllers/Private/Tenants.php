@@ -36,16 +36,17 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
      * Domain is always transformed to a lowercase URL-friendly slug.
      *
      * @inheritDoc
+     * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
      * @throws ConflictException
-     * @throws NotFoundException
+     * @throws ForbiddenException
      */
     public function create(array $params): void
     {
 
         if (!$this->user->isAdmin() && $this->apiService->getConfig('tenant.allow_create') !== true) {
-            throw new NotFoundException();
+            throw new ForbiddenException();
         }
 
         $this->validateHeaders([

@@ -287,16 +287,16 @@ abstract class ApiController extends Controller
      *
      * @param array $body
      * @param array $rules
-     * @param bool $allow_other
+     * @param bool $allow_other_fields
      * @return array
      * @throws BadRequestException
      */
-    private function processRules(array $body, array $rules, bool $allow_other): array
+    private function processRules(array $body, array $rules, bool $allow_other_fields): array
     {
 
-        if (!empty($rules) && $allow_other === false) {
+        if (!empty($rules) && $allow_other_fields === false) {
             if (!empty(Arr::except($body, array_keys($rules)))) {
-                throw new BadRequestException('Unable to validate body: Invalid parameter(s)');
+                throw new BadRequestException('Unable to validate body: Invalid field(s)');
             }
         }
 
@@ -310,7 +310,7 @@ abstract class ApiController extends Controller
                 $messages = $validator->getMessages();
                 $field = array_key_first($messages);
 
-                throw new BadRequestException('Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
+                throw new BadRequestException('Unable to validate body: Invalid or missing field (' . $field . ')');
 
             }
 
@@ -390,12 +390,7 @@ abstract class ApiController extends Controller
             ], $rules, false, true);
 
             if (!$validator->isValid()) {
-
-                $messages = $validator->getMessages();
-                $field = array_key_first($messages);
-
-                throw new BadRequestException('Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
-
+                throw new BadRequestException('Unable to validate body: Invalid body value');
             }
 
         }

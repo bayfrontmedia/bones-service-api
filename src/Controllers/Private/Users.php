@@ -84,9 +84,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getJsonBody($this->usersModel->getAllowedFieldsWrite(), false);
-
-        $this->validateFieldsExist($body, $this->usersModel->getRequiredFields());
+        $body = $this->getResourceBody($this->usersModel, true);
 
         $resource = $this->createResource($this->usersModel, $body);
 
@@ -145,6 +143,8 @@ class Users extends PrivateApiController implements CrudControllerInterface
     }
 
     /**
+     * Non-admin users cannot define admin or enabled fields.
+     *
      * @inheritDoc
      * @throws ApiServiceException
      * @throws BadRequestException
@@ -167,9 +167,10 @@ class Users extends PrivateApiController implements CrudControllerInterface
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getJsonBody($this->usersModel->getAllowedFieldsWrite(), false);
+        $body = $this->getResourceBody($this->usersModel);
 
-        if (!$this->user->isAdmin() && isset($body['admin']) || isset($body['enabled'])) {
+        if (!$this->user->isAdmin() &&
+            (isset($body['admin']) || isset($body['enabled']))) {
             throw new BadRequestException('Unable to update resource: Invalid field(s)');
         }
 

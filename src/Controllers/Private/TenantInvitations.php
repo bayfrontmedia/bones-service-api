@@ -42,7 +42,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
             'tenant' => 'uuid'
         ]);
 
-        $this->validatePermissions($this->user, $params['tenant'], [
+        $this->validateHasPermissions($this->user, $params['tenant'], [
             'invitations:create',
             'invitations:read'
         ]);
@@ -51,11 +51,9 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getPartialJsonBody($this->tenantInvitationsModel->getAllowedFieldsWrite(), false, [
+        $body = $this->getResourceBody($this->tenantInvitationsModel, true, [
             'tenant' => $params['tenant']
         ]);
-
-        $this->validateFieldsExist($body, $this->tenantInvitationsModel->getRequiredFields());
 
         $resource = $this->createResource($this->tenantInvitationsModel, $body);
 
@@ -76,7 +74,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
             'tenant' => 'uuid'
         ]);
 
-        $this->validatePermissions($this->user, $params['tenant'], [
+        $this->validateHasPermissions($this->user, $params['tenant'], [
             'invitations:read'
         ]);
 
@@ -105,7 +103,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
             'id' => 'uuid'
         ]);
 
-        $this->validatePermissions($this->user, $params['tenant'], [
+        $this->validateHasPermissions($this->user, $params['tenant'], [
             'invitations:read'
         ]);
 
@@ -141,22 +139,9 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        // TODO: Option 1
-
-        $body = $this->getJsonBody($this->tenantInvitationsModel->getAllowedFieldsWrite(), false);
-        $this->validateFieldsDoNotExist($body, [
-            'tenant'
-        ]);
-
-        $body['tenant'] = $params['tenant'];
-
-        // TODO: Option 2
-
-        $body = $this->getPartialJsonBody($this->tenantInvitationsModel->getAllowedFieldsWrite(), false, [
+        $body = $this->getResourceBody($this->tenantInvitationsModel, false, [
             'tenant' => $params['tenant']
         ]);
-
-        //
 
         $resource = $this->updateResource($this->tenantInvitationsModel, $params['id'], $body);
 
@@ -178,7 +163,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
             'id' => 'uuid'
         ]);
 
-        $this->validatePermissions($this->user, $params['tenant'], [
+        $this->validateHasPermissions($this->user, $params['tenant'], [
             'invitations:delete'
         ]);
 

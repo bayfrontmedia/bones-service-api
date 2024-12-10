@@ -67,9 +67,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getJsonBody($this->permissionsModel->getAllowedFieldsWrite(), false);
-
-        $this->validateFieldsExist($body, $this->permissionsModel->getRequiredFields());
+        $body = $this->getResourceBody($this->permissionsModel, true);
 
         $resource = $this->createResource($this->permissionsModel, $body);
 
@@ -145,7 +143,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getJsonBody($this->permissionsModel->getAllowedFieldsWrite(), false);
+        $body = $this->getResourceBody($this->permissionsModel);
 
         $resource = $this->updateResource($this->permissionsModel, $params['id'], $body);
 

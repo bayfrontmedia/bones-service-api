@@ -44,6 +44,43 @@ trait UsesResourceModel
         ];
     }
 
+    /*
+     * Exists in ApiController
+     */
+    protected abstract function validateFieldsExist(array $array, array $keys): void;
+    protected abstract function validateFieldsDoNotExist(array $array, array $keys): void;
+    protected abstract function getJsonBody(array $rules = [], bool $allow_other = false): array;
+
+    /**
+     * Get only and validate writable fields from body.
+     * Optionally ensure all required fields exist (on create).
+     * Optionally ensure predefined values do not exist, then set their value,
+     * helpful when values are set by path parameters.
+     *
+     * @param ResourceModel $resourceModel
+     * @param bool $validate_required_fields
+     * @param array $defined_values
+     * @return array
+     * @throws BadRequestException
+     */
+    protected function getResourceBody(ResourceModel $resourceModel, bool $validate_required_fields = false, array $defined_values = []): array
+    {
+
+        $body = $this->getJsonBody($resourceModel->getAllowedFieldsWrite());
+
+        if (!empty($defined_values)) {
+            $this->validateFieldsDoNotExist($body, $defined_values);
+            $body = array_merge($body, $defined_values);
+        }
+
+        if ($validate_required_fields === true) {
+            $this->validateFieldsExist($body, $resourceModel->getRequiredFields());
+        }
+
+        return $body;
+
+    }
+
     /**
      * Create new ResourceModel resource.
      *
@@ -82,15 +119,36 @@ trait UsesResourceModel
      * - config: Schema configuration array
      *
      * @param ResourceModel $resourceModel
+     * @param array $query_filter (Additional filters to apply to query)
      * @return array
      * @throws ApiServiceException
      * @throws BadRequestException
      */
-    protected function listResources(ResourceModel $resourceModel): array
+    protected function listResources(ResourceModel $resourceModel, array $query_filter = []): array
     {
 
+        $query = Request::getQuery();
+
+        if (!empty($query_filter)) {
+
+            if (isset($query['filter'])) {
+
+                $filter = json_decode($query['filter'], true);
+
+                if ($filter) {
+                    $query['filter'] = json_encode(array_merge($filter, $query_filter));
+                } else {
+                    $query['filter'] = json_encode($query_filter);
+                }
+
+            } else {
+                $query['filter'] = json_encode($query_filter);
+            }
+
+        }
+
         try {
-            $parser = new QueryParser(Request::getQuery());
+            $parser = new QueryParser($query);
             $collection = $resourceModel->list($parser);
         } catch (InvalidRequestException $e) {
             throw new BadRequestException('Unable to list resource: Invalid request', 0, $e);

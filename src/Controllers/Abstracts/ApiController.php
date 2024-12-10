@@ -139,7 +139,7 @@ abstract class ApiController extends Controller
      * @throws ApiServiceException
      * @throws ForbiddenException
      */
-    protected function validatePermissions(User $user, string $tenant_id, array $permission_names): void
+    protected function validateHasPermissions(User $user, string $tenant_id, array $permission_names): void
     {
 
         if ($user->isAdmin()) {
@@ -240,7 +240,7 @@ abstract class ApiController extends Controller
      * @return void
      * @throws BadRequestException
      */
-    protected function validateBodyExists(): void
+    protected function validateHasBody(): void
     {
         if (Request::getBody() == '') {
             throw new BadRequestException('Unable to validate body: Missing content');
@@ -248,7 +248,7 @@ abstract class ApiController extends Controller
     }
 
     /**
-     * Validate body array contains all fields.
+     * Validate array contains all fields.
      *
      * Helpful when validation rules do not include "required",
      * such as with a ResourceModel.
@@ -266,6 +266,8 @@ abstract class ApiController extends Controller
     }
 
     /**
+     * Validate array does not contain any fields.
+     *
      * @param array $array
      * @param array $keys
      * @return void
@@ -281,13 +283,52 @@ abstract class ApiController extends Controller
     }
 
     /**
-     * Validate and return form URL encoded body.
+     * Process rules and return body.
      *
+     * @param array $body
      * @param array $rules
+     * @param bool $allow_other
      * @return array
      * @throws BadRequestException
      */
-    protected function getFormEncodedBody(array $rules = []): array
+    private function processRules(array $body, array $rules, bool $allow_other): array
+    {
+
+        if (!empty($rules) && $allow_other === false) {
+            if (!empty(Arr::except($body, array_keys($rules)))) {
+                throw new BadRequestException('Unable to validate body: Invalid parameter(s)');
+            }
+        }
+
+        if (!empty($rules)) {
+
+            $validator = new Validator();
+            $validator->validate($body, $rules, false, true);
+
+            if (!$validator->isValid()) {
+
+                $messages = $validator->getMessages();
+                $field = array_key_first($messages);
+
+                throw new BadRequestException('Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
+
+            }
+
+        }
+
+        return $body;
+
+    }
+
+    /**
+     * Validate and return form URL encoded body.
+     *
+     * @param array $rules
+     * @param bool $allow_other (Allow other keys not defined in rules)
+     * @return array
+     * @throws BadRequestException
+     */
+    protected function getFormEncodedBody(array $rules = [], bool $allow_other = false): array
     {
 
         $keys = explode('&', Request::getBody());
@@ -304,24 +345,7 @@ abstract class ApiController extends Controller
 
         }
 
-        /** @noinspection DuplicatedCode */
-        if (!empty($rules)) {
-
-            $validator = new Validator();
-            $validator->validate($body, $rules, false, true);
-
-            if (!$validator->isValid()) {
-
-                $messages = $validator->getMessages();
-                $field = array_key_first($messages);
-
-                throw new BadRequestException('Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
-
-            }
-
-        }
-
-        return $body;
+        return $this->processRules($body, $rules, $allow_other);
 
     }
 
@@ -333,7 +357,7 @@ abstract class ApiController extends Controller
      * @return array
      * @throws BadRequestException
      */
-    protected function getJsonBody(array $rules = [], bool $allow_other = true): array
+    protected function getJsonBody(array $rules = [], bool $allow_other = false): array
     {
 
         $body = json_decode(Request::getBody(), true);
@@ -342,60 +366,7 @@ abstract class ApiController extends Controller
             throw new BadRequestException('Unable to validate body: Invalid or missing JSON');
         }
 
-        if (!empty($rules) && $allow_other === false) {
-            if (!empty(Arr::except($body, array_keys($rules)))) {
-                throw new BadRequestException('Unable to validate body: Invalid parameter(s)');
-            }
-        }
-
-        /** @noinspection DuplicatedCode */
-        if (!empty($rules)) {
-
-            $validator = new Validator();
-            $validator->validate($body, $rules, false, true);
-
-            if (!$validator->isValid()) {
-
-                $messages = $validator->getMessages();
-                $field = array_key_first($messages);
-
-                throw new BadRequestException('Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
-
-            }
-
-        }
-
-        return $body;
-
-    }
-
-    /**
-     * Ensure defined values do not exist in the body, then set their value.
-     *
-     * Helpful when creating or updating a resource where
-     * values are set by path parameters instead of the body.
-     *
-     * TODO:
-     * Remove this and make method validateFieldsDoNotExist
-     *
-     * @param array $rules
-     * @param bool $allow_other
-     * @param array $defined_values
-     * @return array
-     * @throws BadRequestException
-     */
-    protected function getPartialJsonBody(array $rules, bool $allow_other = true, array $defined_values = []): array
-    {
-
-        $body = $this->getJsonBody($rules, $allow_other);
-
-        foreach (array_keys($defined_values) as $field) {
-            if (isset($body[$field])) {
-                throw new BadRequestException('Bad request: Invalid field (' . $field . ')');
-            }
-        }
-
-        return array_merge($body, $defined_values);
+        return $this->processRules($body, $rules, $allow_other);
 
     }
 

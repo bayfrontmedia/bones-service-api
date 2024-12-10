@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -15,6 +16,7 @@ use Bayfront\BonesService\Api\Schemas\TenantResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\TenantsModel;
+use Bayfront\StringHelpers\Str;
 
 class Tenants extends PrivateApiController implements CrudControllerInterface
 {
@@ -30,8 +32,8 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
     }
 
     /**
-     * TODO:
-     * May need to restrict or slugify "domain"
+     * Non-admin users cannot define owner, domain or enabled values.
+     * Domain is always transformed to a lowercase URL-friendly slug.
      *
      * @inheritDoc
      * @throws ApiServiceException
@@ -50,17 +52,19 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getJsonBody($this->tenantsModel->getAllowedFieldsWrite(), false);
+        if ($this->user->isAdmin()) {
 
-        $this->validateFieldsExist($body, $this->tenantsModel->getRequiredFields());
+            $body = $this->getResourceBody($this->tenantsModel, true);
 
-        if (!$this->user->isAdmin()) {
+        } else {
 
-            if ($body['owner'] != $this->user->getId() || isset($body['enabled'])) {
-                throw new BadRequestException('Unable to create resource: Invalid field(s)');
-            }
+            $body = $this->getResourceBody($this->tenantsModel, true, [
+                'owner' => $this->user->getId(),
+                'domain' => Str::random(16, Str::RANDOM_TYPE_ALPHANUMERIC), // Temp placeholder
+                'enabled' => $this->apiService->getConfig('tenant.auto_enabled', true)
+            ]);
 
-            $body['enabled'] = true;
+            $body['domain'] = $body['name'];
 
         }
 
@@ -71,26 +75,42 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
     }
 
     /**
-     * TODO:
-     * How do users see tenants they belong to?
-     * May need to build custom list query.
+     * Non-admin users can only return tenants they belong to.
      *
      * @inheritDoc
+     * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws ForbiddenException
+     * @throws UnexpectedException
      */
     public function list(array $params): void
     {
 
-        $this->validateIsAdmin($this->user);
+        /*
+         * No permission restrictions.
+         * Users can always read tenants they belong to.
+         */
 
         $this->validateQuery($this->getQueryParserRules());
 
-        $collection = $this->listResources($this->tenantsModel);
+        $query_filter = [];
+
+        if (!$this->user->isAdmin()) { // Restrict non-admins to only return tenants they belong to
+
+            $query_filter = [
+                [
+                    'id' => [
+                        'in' => implode(',', Arr::pluck($this->user->getTenants(), 'id'))
+                    ]
+                ]
+            ];
+
+        }
+
+        $collection = $this->listResources($this->tenantsModel, $query_filter);
 
         $this->respond(200, TenantCollection::create($collection['list'], $collection['config']), [
-            'Cache-Control' => 'max-age=3600'
+            'Cache-Control' => 'max-age=3600' // TODO: What to do with cache-control?
         ]);
 
     }
@@ -126,6 +146,9 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
     }
 
     /**
+     * Non-admin users cannot update domain or enabled values.
+     * Domain is always transformed to a lowercase URL-friendly slug.
+     *
      * @inheritDoc
      * @throws ApiServiceException
      * @throws BadRequestException
@@ -140,21 +163,22 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
             'id' => 'uuid'
         ]);
 
-        $this->validatePermissions($this->user, $params['id'], [
-            'tenants:update'
+        $this->validateHasPermissions($this->user, $params['id'], [
+            'tenant:update'
         ]);
 
         $this->validateHeaders([
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getJsonBody($this->tenantsModel->getAllowedFieldsWrite(), false);
-
         /*
          * RBAC service will not allow owner to be updated if not already in tenant
          */
 
-        if (!$this->user->isAdmin() && (isset($body['domain']) || isset($body['enabled']))) {
+        $body = $this->getResourceBody($this->tenantsModel);
+
+        if (!$this->user->isAdmin() &&
+            (isset($body['domain']) || isset($body['enabled']))) {
             throw new BadRequestException('Unable to update resource: Invalid field(s)');
         }
 
@@ -179,8 +203,8 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
 
         if ($this->apiService->getConfig('tenant.allow_delete') === true) {
 
-            $this->validatePermissions($this->user, $params['id'], [
-                'tenants:delete'
+            $this->validateHasPermissions($this->user, $params['id'], [
+                'tenant:delete'
             ]);
 
         } else {

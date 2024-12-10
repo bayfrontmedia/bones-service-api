@@ -76,7 +76,7 @@ class User extends AuthApiController
 
         $usersModel = new UsersModel($this->rbacService);
 
-        $body = $this->getPartialJsonBody($usersModel->getAllowedFieldsWrite(), false, [
+        $body = $this->getResourceBody($usersModel, true, [
             'admin' => false,
             'enabled' => true
         ]);

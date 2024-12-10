@@ -50,7 +50,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'tenant' => 'uuid'
         ]);
 
-        $this->validatePermissions($this->user, $params['tenant'], [
+        $this->validateHasPermissions($this->user, $params['tenant'], [
             'roles:create',
             'roles:read'
         ]);
@@ -59,11 +59,9 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getPartialJsonBody($this->tenantRolesModel->getAllowedFieldsWrite(), false, [
+        $body = $this->getResourceBody($this->tenantRolesModel, true, [
             'tenant' => $params['tenant']
         ]);
-
-        $this->validateFieldsExist($body, $this->tenantRolesModel->getRequiredFields());
 
         $resource = $this->createResource($this->tenantRolesModel, $body);
 
@@ -84,7 +82,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'tenant' => 'uuid'
         ]);
 
-        $this->validatePermissions($this->user, $params['tenant'], [
+        $this->validateHasPermissions($this->user, $params['tenant'], [
             'roles:read'
         ]);
 
@@ -113,7 +111,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'id' => 'uuid'
         ]);
 
-        $this->validatePermissions($this->user, $params['tenant'], [
+        $this->validateHasPermissions($this->user, $params['tenant'], [
             'roles:read'
         ]);
 
@@ -143,7 +141,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'id' => 'uuid'
         ]);
 
-        $this->validatePermissions($this->user, $params['tenant'], [
+        $this->validateHasPermissions($this->user, $params['tenant'], [
             'roles:update',
             'roles:read'
         ]);
@@ -152,7 +150,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getPartialJsonBody($this->tenantRolesModel->getAllowedFieldsWrite(), false, [
+        $body = $this->getResourceBody($this->tenantRolesModel, false, [
             'tenant' => $params['tenant']
         ]);
 
@@ -176,7 +174,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'id' => 'uuid'
         ]);
 
-        $this->validatePermissions($this->user, $params['tenant'], [
+        $this->validateHasPermissions($this->user, $params['tenant'], [
             'roles:delete'
         ]);
 

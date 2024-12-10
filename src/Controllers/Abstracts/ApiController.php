@@ -130,6 +130,7 @@ abstract class ApiController extends Controller
 
     /**
      * Validate user has required permissions.
+     * Admin users have no restrictions.
      *
      * @param User $user
      * @param string $tenant_id
@@ -247,6 +248,24 @@ abstract class ApiController extends Controller
     }
 
     /**
+     * Validate body array contains all fields.
+     *
+     * Helpful when validation rules do not include "required",
+     * such as with a ResourceModel.
+     *
+     * @param array $array
+     * @param array $keys
+     * @return void
+     * @throws BadRequestException
+     */
+    protected function validateFieldsExist(array $array, array $keys): void
+    {
+        if (Arr::isMissing($array, $keys)) {
+            throw new BadRequestException('Unable to validate body: Missing required field(s)');
+        }
+    }
+
+    /**
      * Validate and return form URL encoded body.
      *
      * @param array $rules
@@ -295,16 +314,23 @@ abstract class ApiController extends Controller
      * Validate and return JSON body.
      *
      * @param array $rules
+     * @param bool $allow_other (Allow other keys not defined in rules)
      * @return array
      * @throws BadRequestException
      */
-    protected function getJsonBody(array $rules = []): array
+    protected function getJsonBody(array $rules = [], bool $allow_other = true): array
     {
 
         $body = json_decode(Request::getBody(), true);
 
         if (!$body || !is_array($body)) {
             throw new BadRequestException('Unable to validate body: Invalid or missing JSON');
+        }
+
+        if (!empty($rules) && $allow_other === false) {
+            if (!empty(Arr::except($body, array_keys($rules)))) {
+                throw new BadRequestException('Unable to validate body: Invalid parameter(s)');
+            }
         }
 
         /** @noinspection DuplicatedCode */
@@ -325,6 +351,36 @@ abstract class ApiController extends Controller
         }
 
         return $body;
+
+    }
+
+    /**
+     * Ensure defined values do not exist in the body, then set their value.
+     *
+     * Helpful when creating or updating a resource where
+     * values are set by path parameters instead of the body.
+     *
+     * TODO:
+     * Remove this and make method validateFieldsDoNotExist
+     *
+     * @param array $rules
+     * @param bool $allow_other
+     * @param array $defined_values
+     * @return array
+     * @throws BadRequestException
+     */
+    protected function getPartialJsonBody(array $rules, bool $allow_other = true, array $defined_values = []): array
+    {
+
+        $body = $this->getJsonBody($rules, $allow_other);
+
+        foreach (array_keys($defined_values) as $field) {
+            if (isset($body[$field])) {
+                throw new BadRequestException('Bad request: Invalid field (' . $field . ')');
+            }
+        }
+
+        return array_merge($body, $defined_values);
 
     }
 

@@ -76,14 +76,10 @@ class User extends AuthApiController
 
         $usersModel = new UsersModel($this->rbacService);
 
-        $body = $this->getResourceBody($usersModel);
-
-        if (isset($body['admin']) || isset($body['enabled'])) {
-            throw new BadRequestException('Unable to validate body: Invalid parameter(s)');
-        }
-
-        $body['admin'] = false;
-        $body['enabled'] = true;
+        $body = $this->getPartialJsonBody($usersModel->getAllowedFieldsWrite(), false, [
+            'admin' => false,
+            'enabled' => true
+        ]);
 
         $resource = $this->createResource($usersModel, $body);
 

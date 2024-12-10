@@ -12,14 +12,13 @@ use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\TenantInvitationCollection;
 use Bayfront\BonesService\Api\Schemas\TenantInvitationResource;
-use Bayfront\BonesService\Api\Traits\ScopedEndpoint;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Rbac\Models\TenantInvitationsModel;
 
 class TenantInvitations extends PrivateApiController implements CrudControllerInterface
 {
 
-    use UsesResourceModel, ScopedEndpoint;
+    use UsesResourceModel;
 
     protected TenantInvitationsModel $tenantInvitationsModel;
 
@@ -52,14 +51,11 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        /*
-         * TODO:
-         * Removing tenant before validating all required fields exist
-         * Also update TenantRoles and any other controller using this
-         */
-        $body = $this->validateScopedFields($this->getResourceBody($this->tenantInvitationsModel, true), [
+        $body = $this->getPartialJsonBody($this->tenantInvitationsModel->getAllowedFieldsWrite(), false, [
             'tenant' => $params['tenant']
         ]);
+
+        $this->validateFieldsExist($body, $this->tenantInvitationsModel->getRequiredFields());
 
         $resource = $this->createResource($this->tenantInvitationsModel, $body);
 
@@ -145,7 +141,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->validateScopedFields($this->getResourceBody($this->tenantInvitationsModel), [
+        $body = $this->getPartialJsonBody($this->tenantInvitationsModel->getAllowedFieldsWrite(), false, [
             'tenant' => $params['tenant']
         ]);
 

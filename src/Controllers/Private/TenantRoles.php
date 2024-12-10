@@ -13,14 +13,13 @@ use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\TenantRoleCollection;
 use Bayfront\BonesService\Api\Schemas\TenantRoleResource;
-use Bayfront\BonesService\Api\Traits\ScopedEndpoint;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
 
 class TenantRoles extends PrivateApiController implements CrudControllerInterface
 {
 
-    use UsesResourceModel, ScopedEndpoint;
+    use UsesResourceModel;
 
     protected TenantRolesModel $tenantRolesModel;
 
@@ -60,9 +59,11 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->validateScopedFields($this->getResourceBody($this->tenantRolesModel, true), [
+        $body = $this->getPartialJsonBody($this->tenantRolesModel->getAllowedFieldsWrite(), false, [
             'tenant' => $params['tenant']
         ]);
+
+        $this->validateFieldsExist($body, $this->tenantRolesModel->getRequiredFields());
 
         $resource = $this->createResource($this->tenantRolesModel, $body);
 
@@ -151,7 +152,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->validateScopedFields($this->getResourceBody($this->tenantRolesModel), [
+        $body = $this->getPartialJsonBody($this->tenantRolesModel->getAllowedFieldsWrite(), false, [
             'tenant' => $params['tenant']
         ]);
 

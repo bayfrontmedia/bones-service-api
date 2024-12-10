@@ -50,7 +50,9 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getResourceBody($this->tenantsModel, true);
+        $body = $this->getJsonBody($this->tenantsModel->getAllowedFieldsWrite(), false);
+
+        $this->validateFieldsExist($body, $this->tenantsModel->getRequiredFields());
 
         if (!$this->user->isAdmin()) {
 
@@ -146,7 +148,7 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getResourceBody($this->tenantsModel);
+        $body = $this->getJsonBody($this->tenantsModel->getAllowedFieldsWrite(), false);
 
         /*
          * RBAC service will not allow owner to be updated if not already in tenant

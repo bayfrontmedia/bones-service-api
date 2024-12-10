@@ -2,7 +2,6 @@
 
 namespace Bayfront\BonesService\Api\Traits;
 
-use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
@@ -16,7 +15,6 @@ use Bayfront\BonesService\Orm\Models\ResourceModel;
 use Bayfront\BonesService\Orm\Utilities\Parsers\FieldParser;
 use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
 use Bayfront\HttpRequest\Request;
-use Bayfront\Validator\Validator;
 
 trait UsesResourceModel
 {
@@ -44,45 +42,6 @@ trait UsesResourceModel
             'filter' => 'isJson',
             'aggregate' => 'isJson'
         ];
-    }
-
-    /**
-     * Validate and return JSON body from ResourceModel.
-     *
-     * @param ResourceModel $resourceModel
-     * @param bool $require_fields (Check required fields exist?)
-     * @return array
-     * @throws BadRequestException
-     */
-    protected function getResourceBody(ResourceModel $resourceModel, bool $require_fields = false): array
-    {
-
-        $body = json_decode(Request::getBody(), true);
-
-        if (!$body || !is_array($body)) {
-            throw new BadRequestException('Unable to validate body: Invalid or missing JSON');
-        }
-
-        if ($require_fields === true && Arr::isMissing($body, $resourceModel->getRequiredFields())) {
-            throw new BadRequestException('Unable to validate body: Missing required field(s)');
-        }
-
-        if (!empty($resourceModel->getAllowedFieldsWrite())) {
-
-            $validator = new Validator();
-            $validator->validate($body, $resourceModel->getAllowedFieldsWrite(), false, true);
-
-            if (!$validator->isValid()) {
-                $messages = $validator->getMessages();
-                $field = array_key_first($messages);
-
-                throw new BadRequestException('Unable to validate body (' . $field . '): Invalid or missing parameter(s)');
-            }
-
-        }
-
-        return $body;
-
     }
 
     /**

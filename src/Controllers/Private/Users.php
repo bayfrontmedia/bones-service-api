@@ -11,9 +11,11 @@ use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
 use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
+use Bayfront\BonesService\Api\Schemas\TenantInvitationCollection;
 use Bayfront\BonesService\Api\Schemas\UserCollection;
 use Bayfront\BonesService\Api\Schemas\UserResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
 
@@ -201,6 +203,35 @@ class Users extends PrivateApiController implements CrudControllerInterface
         $this->deleteResource($this->usersModel, $params['id']);
 
         $this->logout(); // Respond with 204
+
+    }
+
+    /**
+     * List all user invitations.
+     * The query is not parsed.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     */
+    public function listInvitations(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'id' => 'uuid'
+        ]);
+
+        if (!$this->user->isAdmin() && $params['id'] !== $this->user->getId()) {
+            throw new ForbiddenException();
+        }
+
+        try {
+            $this->respond(200, TenantInvitationCollection::create($this->user->getTenantInvitations()));
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage(), $e);
+        }
 
     }
 

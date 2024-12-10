@@ -147,6 +147,7 @@ class ApiService extends Service
             ->get('/users/{*:id}', [Users::class, 'read'])
             ->patch('/users/{*:id}', [Users::class, 'update'])
             ->delete('/users/{*:id}', [Users::class, 'delete'])
+            ->get('/users/{*:id}/invitations', [Users::class, 'listInvitations'])
             // Tenant invitations
             ->post('/tenants/{*:tenant}/invitations', [TenantInvitations::class, 'create'])
             ->get('/tenants/{*:tenant}/invitations', [TenantInvitations::class, 'list'])

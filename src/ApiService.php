@@ -142,12 +142,13 @@ class ApiService extends Service
             // Users
             ->get('/users/logout', [Users::class, 'logout'])
             ->get('/users/me', [Users::class, 'me'])
+            ->get('/users/me/invitations', [Users::class, 'listInvitations'])
+            ->post('/users/me/invitations', [Users::class, 'acceptInvitation'])
             ->post('/users', [Users::class, 'create'])
             ->get('/users', [Users::class, 'list'])
             ->get('/users/{*:id}', [Users::class, 'read'])
             ->patch('/users/{*:id}', [Users::class, 'update'])
             ->delete('/users/{*:id}', [Users::class, 'delete'])
-            ->get('/users/{*:id}/invitations', [Users::class, 'listInvitations'])
             // Tenant invitations
             ->post('/tenants/{*:tenant}/invitations', [TenantInvitations::class, 'create'])
             ->get('/tenants/{*:tenant}/invitations', [TenantInvitations::class, 'list'])

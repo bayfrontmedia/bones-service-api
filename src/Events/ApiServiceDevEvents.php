@@ -33,7 +33,8 @@ class ApiServiceDevEvents extends EventSubscriber implements EventSubscriberInte
             new EventSubscription('rbac.user.password.updated', [$this, 'passwordUpdated'], 10),
             new EventSubscription('api.user.verification_request', [$this, 'verificationRequest'], 10),
             new EventSubscription('rbac.user.verified', [$this, 'userVerified'], 10),
-            new EventSubscription('rbac.tenant.invitation.created', [$this, 'invitationCreated'], 10)
+            new EventSubscription('rbac.tenant.invitation.created', [$this, 'invitationCreated'], 10),
+            new EventSubscription('rbac.tenant.invitation.accepted', [$this, 'invitationAccepted'], 10)
         ];
     }
 
@@ -151,6 +152,24 @@ class ApiServiceDevEvents extends EventSubscriber implements EventSubscriberInte
         $this->apiService->response->sendJson([
             'event' => 'rbac.tenant.invitation.created',
             'invitation' => $tenantInvitation->read()
+        ]);
+
+        die;
+
+    }
+
+    /**
+     * @param OrmResource $user
+     * @param string $tenant_id
+     * @return void
+     */
+    #[NoReturn] public function invitationAccepted(OrmResource $user, string $tenant_id): void
+    {
+
+        $this->apiService->response->sendJson([
+            'event' => 'rbac.tenant.invitation.accepted',
+            'user' => $user->read(),
+            'tenant_id' => $tenant_id
         ]);
 
         die;

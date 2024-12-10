@@ -15,7 +15,10 @@ use Bayfront\BonesService\Api\Schemas\TenantInvitationCollection;
 use Bayfront\BonesService\Api\Schemas\UserCollection;
 use Bayfront\BonesService\Api\Schemas\UserResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
+use Bayfront\BonesService\Orm\Exceptions\InvalidFieldException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
+use Bayfront\BonesService\Rbac\Models\TenantInvitationsModel;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
 
@@ -68,6 +71,57 @@ class Users extends PrivateApiController implements CrudControllerInterface
         $this->read([
             'id' => $this->user->getId()
         ]);
+    }
+
+    /**
+     * List all invitations for current user.
+     * The query is not parsed.
+     *
+     * @return void
+     * @throws ApiServiceException
+     */
+    public function listInvitations(): void
+    {
+
+        try {
+            $this->respond(200, TenantInvitationCollection::create($this->user->getTenantInvitations()));
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage(), $e);
+        }
+
+    }
+
+    /**
+     * Accept tenant invitation.
+     *
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     */
+    public function acceptInvitation(): void
+    {
+
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
+        ]);
+
+        $body = $this->getJsonBody([
+            'tenant_id' => 'required|uuid'
+        ]);
+
+        $tenantInvitationsModel = new TenantInvitationsModel($this->rbacService);
+
+        try {
+            $tenantInvitationsModel->accept($this->user->getEmail(), $body['tenant_id']);
+        } catch (DoesNotExistException) {
+            throw new NotFoundException();
+        } catch (InvalidFieldException|UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage(), 0, $e);
+        }
+
+        $this->respond(204);
+
     }
 
     /**
@@ -203,35 +257,6 @@ class Users extends PrivateApiController implements CrudControllerInterface
         $this->deleteResource($this->usersModel, $params['id']);
 
         $this->logout(); // Respond with 204
-
-    }
-
-    /**
-     * List all user invitations.
-     * The query is not parsed.
-     *
-     * @param array $params
-     * @return void
-     * @throws ApiServiceException
-     * @throws BadRequestException
-     * @throws ForbiddenException
-     */
-    public function listInvitations(array $params): void
-    {
-
-        $this->validatePath($params, [
-            'id' => 'uuid'
-        ]);
-
-        if (!$this->user->isAdmin() && $params['id'] !== $this->user->getId()) {
-            throw new ForbiddenException();
-        }
-
-        try {
-            $this->respond(200, TenantInvitationCollection::create($this->user->getTenantInvitations()));
-        } catch (UnexpectedException $e) {
-            throw new ApiServiceException($e->getMessage(), $e);
-        }
 
     }
 

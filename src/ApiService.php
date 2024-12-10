@@ -12,6 +12,7 @@ use Bayfront\BonesService\Api\Controllers\Auth\Auth;
 use Bayfront\BonesService\Api\Controllers\Auth\User;
 use Bayfront\BonesService\Api\Controllers\Private\Permissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
+use Bayfront\BonesService\Api\Controllers\Private\Tenants;
 use Bayfront\BonesService\Api\Controllers\Private\Users;
 use Bayfront\BonesService\Api\Controllers\Public\Server;
 use Bayfront\BonesService\Api\Events\ApiServiceDevEvents;
@@ -125,6 +126,12 @@ class ApiService extends Service
             ->post('/user/password', [User::class, 'password'])
             ->post('/user/verification-request', [User::class, 'verificationRequest'])
             ->post('/user/verification', [User::class, 'verification'])
+            // Tenants
+            ->post('/tenants', [Tenants::class, 'create'])
+            ->get('/tenants', [Tenants::class, 'list'])
+            ->get('/tenants/{*:id}', [Tenants::class, 'read'])
+            ->patch('/tenants/{*:id}', [Tenants::class, 'update'])
+            ->delete('/tenants/{*:id}', [Tenants::class, 'delete'])
             // Permissions
             ->post('/permissions', [Permissions::class, 'create'])
             ->get('/permissions', [Permissions::class, 'list'])

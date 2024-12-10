@@ -90,9 +90,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
 
         $collection = $this->listResources($this->tenantRolesModel);
 
-        $this->respond(200, TenantRoleCollection::create($collection['list'], $collection['config']), [
-            'Cache-Control' => 'max-age=3600'
-        ]);
+        $this->respond(200, TenantRoleCollection::create($collection['list'], $collection['config']));
 
     }
 
@@ -119,9 +117,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
 
         $resource = $this->readResource($this->tenantRolesModel, $params['id']);
 
-        $this->respond(200, TenantRoleResource::create($resource), [
-            'Cache-Control' => 'max-age=3600'
-        ]);
+        $this->respond(200, TenantRoleResource::create($resource));
 
     }
 

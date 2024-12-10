@@ -107,9 +107,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
         $collection = $this->listResources($this->usersModel);
 
-        $this->respond(200, UserCollection::create($collection['list'], $collection['config']), [
-            'Cache-Control' => 'max-age=3600'
-        ]);
+        $this->respond(200, UserCollection::create($collection['list'], $collection['config']));
 
     }
 
@@ -135,10 +133,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
         $resource = $this->readResource($this->usersModel, $params['id']);
 
-        // Response
-        $this->respond(200, UserResource::create($resource), [
-            'Cache-Control' => 'max-age=3600'
-        ]);
+        $this->respond(200, UserResource::create($resource));
 
     }
 

@@ -90,9 +90,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
 
         $collection = $this->listResources($this->permissionsModel);
 
-        $this->respond(200, PermissionCollection::create($collection['list'], $collection['config']), [
-            'Cache-Control' => 'max-age=3600'
-        ]);
+        $this->respond(200, PermissionCollection::create($collection['list'], $collection['config']));
 
     }
 
@@ -116,9 +114,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
 
         $resource = $this->readResource($this->permissionsModel, $params['id']);
 
-        $this->respond(200, PermissionResource::create($resource), [
-            'Cache-Control' => 'max-age=3600'
-        ]);
+        $this->respond(200, PermissionResource::create($resource));
 
     }
 

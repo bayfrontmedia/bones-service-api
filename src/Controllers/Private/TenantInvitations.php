@@ -82,9 +82,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
 
         $collection = $this->listResources($this->tenantInvitationsModel);
 
-        $this->respond(200, TenantInvitationCollection::create($collection['list'], $collection['config']), [
-            'Cache-Control' => 'max-age=3600'
-        ]);
+        $this->respond(200, TenantInvitationCollection::create($collection['list'], $collection['config']));
 
     }
 
@@ -111,9 +109,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
 
         $resource = $this->readResource($this->tenantInvitationsModel, $params['id']);
 
-        $this->respond(200, TenantInvitationResource::create($resource), [
-            'Cache-Control' => 'max-age=3600'
-        ]);
+        $this->respond(200, TenantInvitationResource::create($resource));
 
     }
 

@@ -110,9 +110,7 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
 
         $collection = $this->listResources($this->tenantsModel, $query_filter);
 
-        $this->respond(200, TenantCollection::create($collection['list'], $collection['config']), [
-            'Cache-Control' => 'max-age=3600' // TODO: What to do with cache-control?
-        ]);
+        $this->respond(200, TenantCollection::create($collection['list'], $collection['config']));
 
     }
 
@@ -139,10 +137,7 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
 
         $resource = $this->readResource($this->tenantsModel, $params['id']);
 
-        // Response
-        $this->respond(200, TenantResource::create($resource), [
-            'Cache-Control' => 'max-age=3600'
-        ]);
+        $this->respond(200, TenantResource::create($resource));
 
     }
 

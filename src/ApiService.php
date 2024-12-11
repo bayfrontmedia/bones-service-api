@@ -17,6 +17,10 @@ use Bayfront\BonesService\Api\Controllers\Private\TenantRolePermissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
 use Bayfront\BonesService\Api\Controllers\Private\Tenants;
 use Bayfront\BonesService\Api\Controllers\Private\TenantTeams;
+use Bayfront\BonesService\Api\Controllers\Private\TenantUserMeta;
+use Bayfront\BonesService\Api\Controllers\Private\TenantUserRoles;
+use Bayfront\BonesService\Api\Controllers\Private\TenantUsers;
+use Bayfront\BonesService\Api\Controllers\Private\TenantUserTeams;
 use Bayfront\BonesService\Api\Controllers\Private\UserKeys;
 use Bayfront\BonesService\Api\Controllers\Private\UserMeta;
 use Bayfront\BonesService\Api\Controllers\Private\Users;
@@ -161,6 +165,27 @@ class ApiService extends Service
             ->get('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'read'])
             ->patch('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'update'])
             ->delete('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'delete'])
+            // Tenant users
+            ->post('/tenants/{*:tenant}/users', [TenantUsers::class, 'create'])
+            ->get('/tenants/{*:tenant}/users', [TenantUsers::class, 'list'])
+            ->get('/tenants/{*:tenant}/users/{*:id}', [TenantUsers::class, 'read'])
+            ->delete('/tenants/{*:tenant}/users/{*:id}', [TenantUsers::class, 'delete'])
+            // Tenant user meta
+            ->post('/tenants/{*:tenant}/users/{*:user}/meta', [TenantUserMeta::class, 'create'])
+            ->get('/tenants/{*:tenant}/users/{*:user}/meta', [TenantUserMeta::class, 'list'])
+            ->get('/tenants/{*:tenant}/users/{*:user}/meta/{*:id}', [TenantUserMeta::class, 'read'])
+            ->patch('/tenants/{*:tenant}/users/{*:user}/meta/{*:id}', [TenantUserMeta::class, 'update'])
+            ->delete('/tenants/{*:tenant}/users/{*:user}/meta/{*:id}', [TenantUserMeta::class, 'delete'])
+            // Tenant user roles
+            ->post('/tenants/{*:tenant}/users/{*:user}/roles', [TenantUserRoles::class, 'create'])
+            ->get('/tenants/{*:tenant}/users/{*:user}/roles', [TenantUserRoles::class, 'list'])
+            ->get('/tenants/{*:tenant}/users/{*:user}/roles/{*:id}', [TenantUserRoles::class, 'read'])
+            ->delete('/tenants/{*:tenant}/users/{*:user}/roles/{*:id}', [TenantUserRoles::class, 'delete'])
+            // Tenant user teams
+            ->post('/tenants/{*:tenant}/users/{*:user}/teams', [TenantUserTeams::class, 'create'])
+            ->get('/tenants/{*:tenant}/users/{*:user}/teams', [TenantUserTeams::class, 'list'])
+            ->get('/tenants/{*:tenant}/users/{*:user}/teams/{*:id}', [TenantUserTeams::class, 'read'])
+            ->delete('/tenants/{*:tenant}/users/{*:user}/teams/{*:id}', [TenantUserTeams::class, 'delete'])
             // Tenants
             ->post('/tenants', [Tenants::class, 'create'])
             ->get('/tenants', [Tenants::class, 'list'])

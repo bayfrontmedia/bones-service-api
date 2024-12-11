@@ -47,7 +47,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid'
+            'tenant' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -79,7 +79,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid'
+            'tenant' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -105,8 +105,8 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'id' => 'uuid'
+            'tenant' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -133,8 +133,8 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'id' => 'uuid'
+            'tenant' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -166,8 +166,8 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'id' => 'uuid'
+            'tenant' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [

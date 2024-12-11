@@ -126,7 +126,7 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'id' => 'uuid'
+            'id' => 'required|uuid'
         ]);
 
         if (!$this->user->isAdmin() && !$this->user->inTenant($params['id'])) {
@@ -156,7 +156,7 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'id' => 'uuid'
+            'id' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['id'], [
@@ -194,7 +194,7 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'id' => 'uuid'
+            'id' => 'required|uuid'
         ]);
 
         if ($this->apiService->getConfig('tenant.allow_delete') === true) {

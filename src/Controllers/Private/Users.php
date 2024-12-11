@@ -178,7 +178,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'id' => 'uuid'
+            'id' => 'required|uuid'
         ]);
 
         if (!$this->user->isAdmin() && $params['id'] !== $this->user->getId()) {
@@ -207,7 +207,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'id' => 'uuid'
+            'id' => 'required|uuid'
         ]);
 
         if (!$this->user->isAdmin() && $params['id'] !== $this->user->getId()) {
@@ -241,7 +241,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'id' => 'uuid'
+            'id' => 'required|uuid'
         ]);
 
         if ($this->apiService->getConfig('user.allow_delete') === true) {

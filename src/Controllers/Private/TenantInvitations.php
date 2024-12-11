@@ -39,7 +39,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid'
+            'tenant' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -71,7 +71,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid'
+            'tenant' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -97,8 +97,8 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'id' => 'uuid'
+            'tenant' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -125,8 +125,8 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'id' => 'uuid'
+            'tenant' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         $this->validateIsAdmin($this->user);
@@ -155,8 +155,8 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'id' => 'uuid'
+            'tenant' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [

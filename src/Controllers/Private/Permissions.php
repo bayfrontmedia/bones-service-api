@@ -101,7 +101,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     {
 
         $this->validatePath($params, [
-            'id' => 'uuid'
+            'id' => 'required|uuid'
         ]);
 
         $this->validateQuery($this->getFieldParserRules());
@@ -124,7 +124,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     {
 
         $this->validatePath($params, [
-            'id' => 'uuid'
+            'id' => 'required|uuid'
         ]);
 
         $this->validateIsAdmin($this->user);
@@ -151,7 +151,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     {
 
         $this->validatePath($params, [
-            'id' => 'uuid'
+            'id' => 'required|uuid'
         ]);
 
         $this->validateIsAdmin($this->user);

@@ -39,7 +39,7 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid'
+            'tenant' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -71,7 +71,7 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'user' => 'uuid'
+            'user' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -97,8 +97,8 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'id' => 'uuid'
+            'tenant' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -125,13 +125,13 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'id' => 'uuid'
+            'tenant' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
             'meta:update',
-            'meta.read'
+            'meta:read'
         ]);
 
         $this->validateHeaders([
@@ -158,8 +158,8 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'id' => 'uuid'
+            'tenant' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [

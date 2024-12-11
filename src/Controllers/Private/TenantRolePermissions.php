@@ -39,8 +39,8 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'role' => 'uuid'
+            'tenant' => 'required|uuid',
+            'role' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -72,8 +72,8 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'role' => 'uuid'
+            'tenant' => 'required|uuid',
+            'role' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -107,8 +107,9 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'role' => 'uuid'
+            'tenant' => 'required|uuid',
+            'role' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -151,8 +152,9 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
     {
 
         $this->validatePath($params, [
-            'tenant' => 'uuid',
-            'role' => 'uuid'
+            'tenant' => 'required|uuid',
+            'role' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
@@ -172,4 +174,5 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
         $this->respond(204);
 
     }
+
 }

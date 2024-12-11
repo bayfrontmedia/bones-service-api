@@ -39,7 +39,7 @@ class UserMeta extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'user' => 'uuid'
+            'user' => 'required|uuid'
         ]);
 
         if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
@@ -70,7 +70,7 @@ class UserMeta extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'user' => 'uuid'
+            'user' => 'required|uuid'
         ]);
 
         if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
@@ -104,8 +104,8 @@ class UserMeta extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'user' => 'uuid',
-            'id' => 'uuid'
+            'user' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
@@ -142,8 +142,8 @@ class UserMeta extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'user' => 'uuid',
-            'id' => 'uuid'
+            'user' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
@@ -182,8 +182,8 @@ class UserMeta extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'user' => 'uuid',
-            'id' => 'uuid'
+            'user' => 'required|uuid',
+            'id' => 'required|uuid'
         ]);
 
         if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {

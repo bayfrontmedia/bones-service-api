@@ -44,7 +44,7 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'user:meta:create'
+            'tenant_user_meta:create'
         ]);
 
         $this->validateHeaders([
@@ -76,7 +76,7 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'user:meta:read'
+            'tenant_user_meta:read'
         ]);
 
         $this->validateQuery($this->getQueryParserRules());
@@ -112,7 +112,7 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'user:meta:read'
+            'tenant_user_meta:read'
         ]);
 
         $this->validateQuery($this->getFieldParserRules());
@@ -151,7 +151,7 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'user:meta:update'
+            'tenant_user_meta:update'
         ]);
 
         $this->validateHeaders([
@@ -184,7 +184,7 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'user:meta:delete'
+            'tenant_user_meta:delete'
         ]);
 
         $this->deleteResource($this->tenantUserMetaModel, $params['id']);

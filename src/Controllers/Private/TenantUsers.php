@@ -13,6 +13,7 @@ use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\TenantUserCollection;
 use Bayfront\BonesService\Api\Schemas\TenantUserResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\TenantUsersModel;
 
 class TenantUsers extends PrivateApiController implements CrudControllerInterface
@@ -63,6 +64,7 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
      * @throws ApiServiceException
      * @throws BadRequestException
      * @throws ForbiddenException
+     * @throws UnexpectedException
      */
     public function list(array $params): void
     {
@@ -71,9 +73,9 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
             'tenant' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'users:read'
-        ]);
+        if (!$this->user->inTenant($params['tenant'])) {
+            throw new ForbiddenException();
+        }
 
         $this->validateQuery($this->getQueryParserRules());
 
@@ -97,6 +99,7 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
      * @throws BadRequestException
      * @throws ForbiddenException
      * @throws NotFoundException
+     * @throws UnexpectedException
      */
     public function read(array $params): void
     {
@@ -106,9 +109,9 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
             'id' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'users:read'
-        ]);
+        if (!$this->user->inTenant($params['tenant'])) {
+            throw new ForbiddenException();
+        }
 
         $this->validateQuery($this->getFieldParserRules());
 
@@ -151,7 +154,7 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'users:delete'
+            'tenant_users:delete'
         ]);
 
         if ($this->filteredResourceExists($this->tenantUsersModel, $params['id'], [

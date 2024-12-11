@@ -43,8 +43,8 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'invitations:create',
-            'invitations:read'
+            'tenant_invitations:create',
+            'tenant_invitations:read'
         ]);
 
         $this->validateHeaders([
@@ -75,7 +75,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'invitations:read'
+            'tenant_invitations:read'
         ]);
 
         $this->validateQuery($this->getQueryParserRules());
@@ -102,7 +102,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'invitations:read'
+            'tenant_invitations:read'
         ]);
 
         $this->validateQuery($this->getFieldParserRules());
@@ -160,7 +160,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'invitations:delete'
+            'tenant_invitations:delete'
         ]);
 
         $this->deleteResource($this->tenantInvitationsModel, $params['id']);

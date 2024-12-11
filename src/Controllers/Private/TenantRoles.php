@@ -51,8 +51,8 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'roles:create',
-            'roles:read'
+            'tenant_roles:create',
+            'tenant_roles:read'
         ]);
 
         $this->validateHeaders([
@@ -83,7 +83,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'roles:read'
+            'tenant_roles:read'
         ]);
 
         $this->validateQuery($this->getQueryParserRules());
@@ -110,7 +110,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'roles:read'
+            'tenant_roles:read'
         ]);
 
         $this->validateQuery($this->getFieldParserRules());
@@ -138,8 +138,8 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'roles:update',
-            'roles:read'
+            'tenant_roles:update',
+            'tenant_roles:read'
         ]);
 
         $this->validateHeaders([
@@ -171,7 +171,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'roles:delete'
+            'tenant_roles:delete'
         ]);
 
         $this->deleteResource($this->tenantRolesModel, $params['id']);

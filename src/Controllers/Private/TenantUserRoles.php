@@ -44,10 +44,9 @@ class TenantUserRoles extends PrivateApiController implements CrudControllerInte
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'roles:update',
-            'users.update',
-            'roles:read',
-            'users:read'
+            'tenant_roles:update',
+            'tenant_users:update',
+            'tenant_roles:read'
         ]);
 
         $this->validateHeaders([
@@ -79,8 +78,7 @@ class TenantUserRoles extends PrivateApiController implements CrudControllerInte
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'roles:read',
-            'users:read'
+            'tenant_roles:read'
         ]);
 
         $this->validateQuery($this->getQueryParserRules());
@@ -116,8 +114,7 @@ class TenantUserRoles extends PrivateApiController implements CrudControllerInte
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'roles:read',
-            'users:read'
+            'tenant_roles:read'
         ]);
 
         $this->validateQuery($this->getFieldParserRules());
@@ -162,8 +159,8 @@ class TenantUserRoles extends PrivateApiController implements CrudControllerInte
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'roles:update',
-            'users:update'
+            'tenant_roles:update',
+            'tenant_users:update'
         ]);
 
         if ($this->filteredResourceExists($this->tenantUserRolesModel, $params['id'], [

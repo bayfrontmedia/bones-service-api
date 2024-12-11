@@ -44,10 +44,9 @@ class TenantUserTeams extends PrivateApiController implements CrudControllerInte
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'teams:update',
-            'users.update',
-            'teams:read',
-            'users:read'
+            'tenant_teams:update',
+            'tenant_users.update',
+            'tenant_teams:read'
         ]);
 
         $this->validateHeaders([
@@ -79,8 +78,7 @@ class TenantUserTeams extends PrivateApiController implements CrudControllerInte
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'teams:read',
-            'users:read'
+            'tenant_teams:read'
         ]);
 
         $this->validateQuery($this->getQueryParserRules());
@@ -116,8 +114,7 @@ class TenantUserTeams extends PrivateApiController implements CrudControllerInte
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'teams:read',
-            'users:read'
+            'tenant_teams:read'
         ]);
 
         $this->validateQuery($this->getFieldParserRules());
@@ -162,8 +159,8 @@ class TenantUserTeams extends PrivateApiController implements CrudControllerInte
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'teams:update',
-            'users:update'
+            'tenant_teams:update',
+            'tenant_users:update'
         ]);
 
         if ($this->filteredResourceExists($this->tenantUserTeamsModel, $params['id'], [

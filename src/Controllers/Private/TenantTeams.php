@@ -51,8 +51,8 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'teams:create',
-            'teams:read'
+            'tenant_teams:create',
+            'tenant_teams:read'
         ]);
 
         $this->validateHeaders([
@@ -83,7 +83,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'teams:read'
+            'tenant_teams:read'
         ]);
 
         $this->validateQuery($this->getQueryParserRules());
@@ -110,7 +110,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'teams:read'
+            'tenant_teams:read'
         ]);
 
         $this->validateQuery($this->getFieldParserRules());
@@ -138,8 +138,8 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'teams:update',
-            'teams:read'
+            'tenant_teams:update',
+            'tenant_teams:read'
         ]);
 
         $this->validateHeaders([
@@ -171,7 +171,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'teams:delete'
+            'tenant_teams:delete'
         ]);
 
         $this->deleteResource($this->tenantTeamsModel, $params['id']);

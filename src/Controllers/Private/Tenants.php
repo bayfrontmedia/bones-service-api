@@ -189,6 +189,7 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
      * @throws ApiServiceException
      * @throws BadRequestException
      * @throws ForbiddenException
+     * @throws UnexpectedException
      */
     public function delete(array $params): void
     {
@@ -199,9 +200,9 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
 
         if ($this->apiService->getConfig('tenant.allow_delete') === true) {
 
-            $this->validateHasPermissions($this->user, $params['id'], [
-                'tenant:delete'
-            ]);
+            if (!$this->user->isAdmin() && !$this->user->ownsTenant($params['id'])) {
+                throw new ForbiddenException();
+            }
 
         } else {
             $this->validateIsAdmin($this->user);

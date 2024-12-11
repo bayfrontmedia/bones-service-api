@@ -8,6 +8,7 @@ use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
+use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\UserKeyCollection;
 use Bayfront\BonesService\Api\Schemas\UserKeyResource;
@@ -95,30 +96,112 @@ class UserKeys extends PrivateApiController implements CrudControllerInterface
     /**
      * @inheritDoc
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws NotFoundException
      */
     public function read(array $params): void
     {
-        // TODO: Implement read() method.
-        $this->respond(200, ['todo']);
+
+        $this->validatePath($params, [
+            'user' => 'uuid',
+            'id' => 'uuid'
+        ]);
+
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+            throw new ForbiddenException();
+        }
+
+        $this->validateQuery($this->getFieldParserRules());
+
+        if (!$this->filteredResourceExists($this->userKeysModel, $params['id'], [
+            [
+                'user' => [
+                    'eq' => $params['user']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
+
+        $resource = $this->readResource($this->userKeysModel, $params['id']);
+
+        $this->respond(200, UserKeyResource::create($resource));
+
     }
 
     /**
      * @inheritDoc
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws ConflictException
+     * @throws NotFoundException
      */
     public function update(array $params): void
     {
-        // TODO: Implement update() method.
-        $this->respond(200, ['todo']);
+
+        $this->validatePath($params, [
+            'user' => 'uuid',
+            'id' => 'uuid'
+        ]);
+
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+            throw new ForbiddenException();
+        }
+
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
+        ]);
+
+        if (!$this->filteredResourceExists($this->userKeysModel, $params['id'], [
+            [
+                'user' => [
+                    'eq' => $params['user']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
+
+        $body = $this->getResourceBody($this->userKeysModel);
+
+        $resource = $this->updateResource($this->userKeysModel, $params['id'], $body);
+
+        $this->respond(200, UserKeyResource::create($resource));
+
     }
 
     /**
      * @inheritDoc
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
      */
     public function delete(array $params): void
     {
-        // TODO: Implement delete() method.
-        $this->respond(200, ['todo']);
+
+        $this->validatePath($params, [
+            'user' => 'uuid',
+            'id' => 'uuid'
+        ]);
+
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+            throw new ForbiddenException();
+        }
+
+        if ($this->filteredResourceExists($this->userKeysModel, $params['id'], [
+            [
+                'user' => [
+                    'eq' => $params['user']
+                ]
+            ]
+        ])) {
+            $this->deleteResource($this->userKeysModel, $params['id']);
+        }
+
+        $this->respond(204);
+
     }
+
 }

@@ -10,6 +10,7 @@ use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidFieldException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
+use Bayfront\BonesService\Orm\Exceptions\OrmServiceException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Orm\Models\ResourceModel;
 use Bayfront\BonesService\Orm\Utilities\Parsers\FieldParser;
@@ -265,6 +266,46 @@ trait UsesResourceModel
         } catch (UnexpectedException $e) {
             throw new ApiServiceException('Unable to delete resource: Unexpected error', 0, $e);
         }
+
+    }
+
+    /**
+     * Does filtered resource exist?
+     *
+     * TODO:
+     * Update RBAC service for scoped models to have their own
+     * methods so as to avoid the extra database query.
+     *
+     * @param ResourceModel $resourceModel
+     * @param mixed $primary_key
+     * @param array $query_filter
+     * @return bool
+     * @throws ApiServiceException
+     */
+    protected function filteredResourceExists(ResourceModel $resourceModel, mixed $primary_key, array $query_filter = []): bool
+    {
+
+        $query_filter = array_merge($query_filter, [
+            [
+                $resourceModel->getPrimaryKey() => [
+                    'eq' => $primary_key
+                ]
+            ]
+        ]);
+
+        $query = [
+            'fields' => $resourceModel->getPrimaryKey(),
+            'filter' => $query_filter,
+            'limit' => 1
+        ];
+
+        try {
+            $result = $resourceModel->list(new QueryParser($query), true);
+        } catch (OrmServiceException $e) {
+            throw new ApiServiceException($e->getmessage());
+        }
+
+        return $result->getCount() > 0;
 
     }
 

@@ -2,7 +2,6 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
-use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -95,11 +94,6 @@ class UserMeta extends PrivateApiController implements CrudControllerInterface
     }
 
     /**
-     * TODO:
-     * Update query to list and add filter where user = $params['user']
-     *
-     * This method will currently return meta for any user.
-     *
      * @inheritDoc
      * @throws ApiServiceException
      * @throws BadRequestException
@@ -120,42 +114,15 @@ class UserMeta extends PrivateApiController implements CrudControllerInterface
 
         $this->validateQuery($this->getFieldParserRules());
 
-        //
-
-        /*
-         * TODO:
-         * Need to find a better way to see if the resource exists
-         * that matches user and id (scoped).
-         * This will be used by read, update and delete.
-         *
-         * Possibly create an API model, but this would force an
-         * additional query without making a native ORM function.
-         */
-
-        $query_filter = [
+        if (!$this->filteredResourceExists($this->userMetaModel, $params['id'], [
             [
                 'user' => [
                     'eq' => $params['user']
                 ]
-            ],
-            [
-                'id' => [
-                    'eq' => $params['id']
-                ]
             ]
-        ];
-
-        $collection = $this->listResources($this->userMetaModel, $query_filter);
-
-        if (!isset($collection['list'][0])) {
+        ])) {
             throw new NotFoundException();
         }
-
-        $this->respond(200, UserMetaResource::create($collection['list'][0]));
-
-        die;
-
-        //
 
         $resource = $this->readResource($this->userMetaModel, $params['id']);
 
@@ -166,20 +133,75 @@ class UserMeta extends PrivateApiController implements CrudControllerInterface
     /**
      * @inheritDoc
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws ConflictException
+     * @throws NotFoundException
      */
     public function update(array $params): void
     {
-        // TODO: Implement update() method.
-        $this->respond(200, ['todo']);
+
+        $this->validatePath($params, [
+            'user' => 'uuid',
+            'id' => 'uuid'
+        ]);
+
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+            throw new ForbiddenException();
+        }
+
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
+        ]);
+
+        if (!$this->filteredResourceExists($this->userMetaModel, $params['id'], [
+            [
+                'user' => [
+                    'eq' => $params['user']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
+
+        $body = $this->getResourceBody($this->userMetaModel);
+
+        $resource = $this->updateResource($this->userMetaModel, $params['id'], $body);
+
+        $this->respond(200, UserMetaResource::create($resource));
+
     }
 
     /**
      * @inheritDoc
      * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
      */
     public function delete(array $params): void
     {
-        // TODO: Implement delete() method.
-        $this->respond(200, ['todo']);
+
+        $this->validatePath($params, [
+            'user' => 'uuid',
+            'id' => 'uuid'
+        ]);
+
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+            throw new ForbiddenException();
+        }
+
+        if ($this->filteredResourceExists($this->userMetaModel, $params['id'], [
+            [
+                'user' => [
+                    'eq' => $params['user']
+                ]
+            ]
+        ])) {
+            $this->deleteResource($this->userMetaModel, $params['id']);
+        }
+
+        $this->respond(204);
+
     }
+
 }

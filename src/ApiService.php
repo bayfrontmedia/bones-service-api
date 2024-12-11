@@ -13,6 +13,7 @@ use Bayfront\BonesService\Api\Controllers\Auth\User;
 use Bayfront\BonesService\Api\Controllers\Private\Permissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantInvitations;
 use Bayfront\BonesService\Api\Controllers\Private\TenantMeta;
+use Bayfront\BonesService\Api\Controllers\Private\TenantRolePermissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
 use Bayfront\BonesService\Api\Controllers\Private\Tenants;
 use Bayfront\BonesService\Api\Controllers\Private\TenantTeams;
@@ -149,6 +150,11 @@ class ApiService extends Service
             ->get('/tenants/{*:tenant}/meta/{*:id}', [TenantMeta::class, 'read'])
             ->patch('/tenants/{*:tenant}/meta/{*:id}', [TenantMeta::class, 'update'])
             ->delete('/tenants/{*:tenant}/meta/{*:id}', [TenantMeta::class, 'delete'])
+            // Tenant role permissions
+            ->post('/tenants/{*:tenant}/roles/{*:role}/permissions', [TenantRolePermissions::class, 'create'])
+            ->get('/tenants/{*:tenant}/roles/{*:role}/permissions', [TenantRolePermissions::class, 'list'])
+            ->get('/tenants/{*:tenant}/roles/{*:role}/permissions/{*:id}', [TenantRolePermissions::class, 'read'])
+            ->delete('/tenants/{*:tenant}/roles/{*:role}/permissions/{*:id}', [TenantRolePermissions::class, 'delete'])
             // Tenant roles
             ->post('/tenants/{*:tenant}/roles', [TenantRoles::class, 'create'])
             ->get('/tenants/{*:tenant}/roles', [TenantRoles::class, 'list'])

@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -13,9 +14,16 @@ use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\PermissionCollection;
 use Bayfront\BonesService\Api\Schemas\PermissionResource;
+use Bayfront\BonesService\Api\Schemas\TenantRoleCollection;
 use Bayfront\BonesService\Api\Traits\Auditable;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
+use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
+use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
 use Bayfront\BonesService\Rbac\Models\PermissionsModel;
+use Bayfront\BonesService\Rbac\Models\TenantRolePermissionsModel;
+use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
 
 class Permissions extends PrivateApiController implements CrudControllerInterface
 {
@@ -159,6 +167,79 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
         $this->deleteResource($this->permissionsModel, $params['id']);
 
         $this->respond(204);
+
+    }
+
+    /**
+     * List roles with permission.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws DoesNotExistException
+     * @throws ForbiddenException
+     * @throws UnexpectedException
+     */
+    public function listRoles(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'id' => 'required|uuid'
+        ]);
+
+        $this->validateIsAdmin($this->user);
+
+        $this->validateQuery($this->getQueryParserRules());
+
+        // Get array of role ID's
+
+        $tenantRolePermissionsModel = new TenantRolePermissionsModel($this->rbacService);
+
+        try {
+
+            $rolePermissionsCollection = $tenantRolePermissionsModel->list(new QueryParser([
+                'fields' => 'role',
+                'filter' => [
+                    [
+                        'permission' => [
+                            'eq' => $params['id']
+                        ]
+                    ]
+                ]
+            ]));
+
+        } catch (InvalidRequestException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
+
+        $role_ids = Arr::pluck($rolePermissionsCollection->list(), 'role');
+
+        // Check permission exists if no role ID's found
+
+        if (empty($role_ids)) {
+
+            if (!$this->permissionsModel->exists($params['id'])) {
+                throw new DoesNotExistException();
+            }
+
+        }
+
+        // List roles
+
+        $tenantRolesModel = new TenantRolesModel($this->rbacService);
+
+        $query_filter = [
+            [
+                'id' => [
+                    'in' => implode(',', $role_ids)
+                ]
+            ]
+        ];
+
+        $collection = $this->listResources($tenantRolesModel, $query_filter);
+
+        $this->respond(200, TenantRoleCollection::create($collection['list'], $collection['config']));
 
     }
 

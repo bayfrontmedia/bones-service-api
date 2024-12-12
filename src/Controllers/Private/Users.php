@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -11,14 +12,19 @@ use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
 use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
+use Bayfront\BonesService\Api\Schemas\TenantCollection;
 use Bayfront\BonesService\Api\Schemas\TenantInvitationCollection;
 use Bayfront\BonesService\Api\Schemas\UserCollection;
 use Bayfront\BonesService\Api\Schemas\UserResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidFieldException;
+use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
+use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
 use Bayfront\BonesService\Rbac\Models\TenantInvitationsModel;
+use Bayfront\BonesService\Rbac\Models\TenantsModel;
+use Bayfront\BonesService\Rbac\Models\TenantUsersModel;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
 
@@ -71,24 +77,6 @@ class Users extends PrivateApiController implements CrudControllerInterface
         $this->read([
             'id' => $this->user->getId()
         ]);
-    }
-
-    /**
-     * List all invitations for current user.
-     * The query is not parsed.
-     *
-     * @return void
-     * @throws ApiServiceException
-     */
-    public function listInvitations(): void
-    {
-
-        try {
-            $this->respond(200, TenantInvitationCollection::create($this->user->getTenantInvitations()));
-        } catch (UnexpectedException $e) {
-            throw new ApiServiceException($e->getMessage(), $e);
-        }
-
     }
 
     /**
@@ -257,6 +245,144 @@ class Users extends PrivateApiController implements CrudControllerInterface
         $this->deleteResource($this->usersModel, $params['id']);
 
         $this->logout(); // Respond with 204
+
+    }
+
+    /**
+     * List user's tenant invitations.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws DoesNotExistException
+     * @throws ForbiddenException
+     * @throws UnexpectedException
+     */
+    public function listInvitations(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'id' => 'required|uuid'
+        ]);
+
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+            throw new ForbiddenException();
+        }
+
+        if ($params['id'] == $this->user->getId()) {
+
+            $email = $this->user->getEmail();
+
+        } else {
+
+            try {
+
+                $user = $this->usersModel->read($params['id'], [
+                    'email'
+                ]);
+
+            } catch (InvalidRequestException $e) {
+                throw new ApiServiceException($e->getMessage());
+            }
+
+            $email = Arr::get($user, 'email', '');
+
+        }
+
+        $this->validateQuery($this->getQueryParserRules());
+
+        $query_filter = [
+            [
+                'email' => [
+                    'eq' => $email
+                ]
+            ]
+        ];
+
+        $tenantInvitationsModel = new TenantInvitationsModel($this->rbacService);
+
+        $collection = $this->listResources($tenantInvitationsModel, $query_filter);
+
+        $this->respond(200, TenantInvitationCollection::create($collection['list'], $collection['config']));
+
+    }
+
+    /**
+     * List tenants user belongs to.
+     *
+     * TODO:
+     * If this returns a TenantUsersCollection, it would save 1-2 queries.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws DoesNotExistException
+     * @throws ForbiddenException
+     * @throws UnexpectedException
+     */
+    public function listTenants(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'id' => 'required|uuid'
+        ]);
+
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+            throw new ForbiddenException();
+        }
+
+        $this->validateQuery($this->getQueryParserRules());
+
+        // Get array of tenant ID's
+
+        $tenantUsersModel = new TenantUsersModel($this->rbacService);
+
+        try {
+
+            $tenantsCollection = $tenantUsersModel->list(new QueryParser([
+                'fields' => 'tenant.id', // TODO: Just get tenant
+                'filter' => [
+                    [
+                        'user' => [
+                            'eq' => $params['id']
+                        ]
+                    ]
+                ]
+            ]));
+
+        } catch (InvalidRequestException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
+
+        $tenant_ids = Arr::pluck($tenantsCollection->list(), 'tenant.id');
+
+        // Check user exists if no tenant ID's found
+
+        if (empty($tenant_ids)) {
+
+            if (!$this->usersModel->exists($params['id'])) {
+                throw new DoesNotExistException();
+            }
+
+        }
+
+        // List tenants
+
+        $tenantsModel = new TenantsModel($this->rbacService);
+
+        $query_filter = [
+            [
+                'id' => [
+                    'in' => implode(',', $tenant_ids)
+                ]
+            ]
+        ];
+
+        $collection = $this->listResources($tenantsModel, $query_filter);
+
+        $this->respond(200, TenantCollection::create($collection['list'], $collection['config']));
 
     }
 

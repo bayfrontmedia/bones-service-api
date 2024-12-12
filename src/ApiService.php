@@ -142,6 +142,7 @@ class ApiService extends Service
             ->get('/permissions/{*:id}', [Permissions::class, 'read'])
             ->patch('/permissions/{*:id}', [Permissions::class, 'update'])
             ->delete('/permissions/{*:id}', [Permissions::class, 'delete'])
+            ->get('/permissions/{*:id}/roles', [Permissions::class, 'listRoles'])
             // Tenant invitations
             ->post('/tenants/{*:tenant}/invitations', [TenantInvitations::class, 'create'])
             ->get('/tenants/{*:tenant}/invitations', [TenantInvitations::class, 'list'])
@@ -212,13 +213,16 @@ class ApiService extends Service
             // Users
             ->get('/users/logout', [Users::class, 'logout'])
             ->get('/users/me', [Users::class, 'me'])
-            ->get('/users/me/invitations', [Users::class, 'listInvitations'])
+
             ->post('/users/me/invitations', [Users::class, 'acceptInvitation'])
             ->post('/users', [Users::class, 'create'])
             ->get('/users', [Users::class, 'list'])
             ->get('/users/{*:id}', [Users::class, 'read'])
             ->patch('/users/{*:id}', [Users::class, 'update'])
-            ->delete('/users/{*:id}', [Users::class, 'delete']);
+            ->delete('/users/{*:id}', [Users::class, 'delete'])
+            ->get('/users/{*:id}/invitations', [Users::class, 'listInvitations'])
+            ->get('/users/{*:id}/tenants', [Users::class, 'listTenants'])
+        ;
 
     }
 

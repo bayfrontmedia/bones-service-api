@@ -225,6 +225,16 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
             'Content-Type' => 'required|matches:application/json'
         ]);
 
+        if (!$this->filteredResourceExists($this->tenantUserMetaModel, $params['id'], [
+            [
+                'tenant_user' => [
+                    'eq' => $params['tenant_user']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
+
         $body = $this->getResourceBody($this->tenantUserMetaModel, false, [
             'tenant_user' => $params['tenant_user']
         ]);
@@ -272,7 +282,15 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
 
         }
 
-        $this->deleteResource($this->tenantUserMetaModel, $params['id']);
+        if ($this->filteredResourceExists($this->tenantUserMetaModel, $params['id'], [
+            [
+                'tenant_user' => [
+                    'eq' => $params['tenant_user']
+                ]
+            ]
+        ])) {
+            $this->deleteResource($this->tenantUserMetaModel, $params['id']);
+        }
 
         $this->respond(204);
 

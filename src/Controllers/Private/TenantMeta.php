@@ -70,7 +70,7 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
     {
 
         $this->validatePath($params, [
-            'user' => 'required|uuid'
+            'tenant' => 'required|uuid'
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [

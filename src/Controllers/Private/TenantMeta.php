@@ -43,8 +43,7 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_meta:create',
-            'tenant_meta:read'
+            'tenant_meta:create'
         ]);
 
         $this->validateHeaders([
@@ -130,8 +129,7 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_meta:update',
-            'tenant_meta:read'
+            'tenant_meta:update'
         ]);
 
         $this->validateHeaders([

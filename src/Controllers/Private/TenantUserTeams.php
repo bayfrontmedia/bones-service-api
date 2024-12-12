@@ -13,6 +13,7 @@ use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\TenantUserTeamCollection;
 use Bayfront\BonesService\Api\Schemas\TenantUserTeamResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\TenantUserTeamsModel;
 
 class TenantUserTeams extends PrivateApiController implements CrudControllerInterface
@@ -44,9 +45,8 @@ class TenantUserTeams extends PrivateApiController implements CrudControllerInte
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_teams:update',
             'tenant_users.update',
-            'tenant_teams:read'
+            'tenant_teams:update'
         ]);
 
         $this->validateHeaders([
@@ -77,9 +77,17 @@ class TenantUserTeams extends PrivateApiController implements CrudControllerInte
             'tenant_user' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_teams:read'
-        ]);
+        try {
+
+            if (!$this->user->canDoAll($params['tenant'], [
+                    'tenant_teams:read'
+                ]) && $this->user->getTenantUserId($params['tenant']) != $params['tenant_user']) {
+                throw new ForbiddenException();
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
 
         $this->validateQuery($this->getQueryParserRules());
 
@@ -113,9 +121,17 @@ class TenantUserTeams extends PrivateApiController implements CrudControllerInte
             'id' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_teams:read'
-        ]);
+        try {
+
+            if (!$this->user->canDoAll($params['tenant'], [
+                    'tenant_teams:read'
+                ]) && $this->user->getTenantUserId($params['tenant']) != $params['tenant_user']) {
+                throw new ForbiddenException();
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
 
         $this->validateQuery($this->getFieldParserRules());
 
@@ -159,8 +175,8 @@ class TenantUserTeams extends PrivateApiController implements CrudControllerInte
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_teams:update',
-            'tenant_users:update'
+            'tenant_users:update',
+            'tenant_teams:update'
         ]);
 
         if ($this->filteredResourceExists($this->tenantUserTeamsModel, $params['id'], [

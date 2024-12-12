@@ -146,7 +146,6 @@ class ApiService extends Service
             ->post('/tenants/{*:tenant}/invitations', [TenantInvitations::class, 'create'])
             ->get('/tenants/{*:tenant}/invitations', [TenantInvitations::class, 'list'])
             ->get('/tenants/{*:tenant}/invitations/{*:id}', [TenantInvitations::class, 'read'])
-            ->patch('/tenants/{*:tenant}/invitations/{*:id}', [TenantInvitations::class, 'update'])
             ->delete('/tenants/{*:tenant}/invitations/{*:id}', [TenantInvitations::class, 'delete'])
             // Tenant meta
             ->post('/tenants/{*:tenant}/meta', [TenantMeta::class, 'create'])

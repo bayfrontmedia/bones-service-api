@@ -64,7 +64,6 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
      * @throws ApiServiceException
      * @throws BadRequestException
      * @throws ForbiddenException
-     * @throws UnexpectedException
      */
     public function list(array $params): void
     {
@@ -73,8 +72,14 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
             'tenant' => 'required|uuid'
         ]);
 
-        if (!$this->user->inTenant($params['tenant'])) {
-            throw new ForbiddenException();
+        try {
+
+            if (!$this->user->inTenant($params['tenant'])) {
+                throw new ForbiddenException();
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
         }
 
         $this->validateQuery($this->getQueryParserRules());
@@ -99,7 +104,6 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
      * @throws BadRequestException
      * @throws ForbiddenException
      * @throws NotFoundException
-     * @throws UnexpectedException
      */
     public function read(array $params): void
     {
@@ -109,8 +113,14 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
             'id' => 'required|uuid'
         ]);
 
-        if (!$this->user->inTenant($params['tenant'])) {
-            throw new ForbiddenException();
+        try {
+
+            if (!$this->user->inTenant($params['tenant'])) {
+                throw new ForbiddenException();
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
         }
 
         $this->validateQuery($this->getFieldParserRules());

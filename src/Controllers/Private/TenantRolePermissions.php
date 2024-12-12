@@ -13,6 +13,7 @@ use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\TenantRolePermissionCollection;
 use Bayfront\BonesService\Api\Schemas\TenantRolePermissionResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\TenantRolePermissionsModel;
 
 class TenantRolePermissions extends PrivateApiController implements CrudControllerInterface
@@ -44,8 +45,7 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_roles:update',
-            'tenant_roles.read'
+            'tenant_roles:update'
         ]);
 
         $this->validateHeaders([
@@ -64,6 +64,7 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
 
     /**
      * @inheritDoc
+     * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
      * @throws ForbiddenException
@@ -76,9 +77,17 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
             'role' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_roles:read'
-        ]);
+        try {
+
+            if (!$this->user->canDoAll($params['tenant'], [
+                    'tenant_roles:read'
+                ]) && !$this->user->hasRole($params['tenant'], $params['role'])) {
+                throw new ForbiddenException();
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
 
         $this->validateQuery($this->getQueryParserRules());
 
@@ -112,9 +121,17 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
             'id' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_roles:read'
-        ]);
+        try {
+
+            if (!$this->user->canDoAll($params['tenant'], [
+                    'tenant_roles:read'
+                ]) && !$this->user->hasRole($params['tenant'], $params['role'])) {
+                throw new ForbiddenException();
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
 
         $this->validateQuery($this->getFieldParserRules());
 

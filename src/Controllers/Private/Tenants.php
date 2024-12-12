@@ -82,7 +82,6 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
      * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws UnexpectedException
      */
     public function list(array $params): void
     {
@@ -98,13 +97,19 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
 
         if (!$this->user->isAdmin()) { // Restrict non-admins to only return tenants they belong to
 
-            $query_filter = [
-                [
-                    'id' => [
-                        'in' => implode(',', Arr::pluck($this->user->getTenants(), 'id'))
+            try {
+
+                $query_filter = [
+                    [
+                        'id' => [
+                            'in' => implode(',', Arr::pluck($this->user->getTenants(), 'id'))
+                        ]
                     ]
-                ]
-            ];
+                ];
+
+            } catch (UnexpectedException $e) {
+                throw new ApiServiceException($e->getMessage());
+            }
 
         }
 
@@ -120,7 +125,6 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
      * @throws BadRequestException
      * @throws ForbiddenException
      * @throws NotFoundException
-     * @throws UnexpectedException
      */
     public function read(array $params): void
     {
@@ -129,8 +133,14 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
             'id' => 'required|uuid'
         ]);
 
-        if (!$this->user->isAdmin() && !$this->user->inTenant($params['id'])) {
-            throw new ForbiddenException();
+        try {
+
+            if (!$this->user->isAdmin() && !$this->user->inTenant($params['id'])) {
+                throw new ForbiddenException();
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
         }
 
         $this->validateQuery($this->getFieldParserRules());
@@ -189,7 +199,6 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
      * @throws ApiServiceException
      * @throws BadRequestException
      * @throws ForbiddenException
-     * @throws UnexpectedException
      */
     public function delete(array $params): void
     {
@@ -200,9 +209,15 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
 
         if ($this->apiService->getConfig('tenant.allow_delete') === true) {
 
-            if (!$this->user->isAdmin() && !$this->user->ownsTenant($params['id'])) {
-                throw new ForbiddenException();
-            }
+           try {
+
+               if (!$this->user->isAdmin() && !$this->user->ownsTenant($params['id'])) {
+                   throw new ForbiddenException();
+               }
+
+           } catch (UnexpectedException $e) {
+               throw new ApiServiceException($e->getMessage());
+           }
 
         } else {
             $this->validateIsAdmin($this->user);

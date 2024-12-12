@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -14,6 +15,7 @@ use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\TenantRoleCollection;
 use Bayfront\BonesService\Api\Schemas\TenantRoleResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
 
 class TenantRoles extends PrivateApiController implements CrudControllerInterface
@@ -51,8 +53,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_roles:create',
-            'tenant_roles:read'
+            'tenant_roles:create'
         ]);
 
         $this->validateHeaders([
@@ -71,9 +72,9 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
 
     /**
      * @inheritDoc
+     * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws ForbiddenException
      */
     public function list(array $params): void
     {
@@ -82,13 +83,31 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'tenant' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_roles:read'
-        ]);
+        $query_filter = [];
+
+        try {
+
+            if (!$this->user->canDoAll($params['tenant'], [
+                'tenant_roles:read'
+            ])) {
+
+                $query_filter = [
+                    [
+                        'id' => [
+                            'in' => implode(',', Arr::pluck($this->user->getRoles($params['tenant']), 'id'))
+                        ]
+                    ]
+                ];
+
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
 
         $this->validateQuery($this->getQueryParserRules());
 
-        $collection = $this->listResources($this->tenantRolesModel);
+        $collection = $this->listResources($this->tenantRolesModel, $query_filter);
 
         $this->respond(200, TenantRoleCollection::create($collection['list'], $collection['config']));
 
@@ -96,6 +115,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
 
     /**
      * @inheritDoc
+     * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
      * @throws ForbiddenException
@@ -109,9 +129,17 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'id' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_roles:read'
-        ]);
+        try {
+
+            if (!$this->user->canDoAll($params['tenant'], [
+                    'tenant_roles:read'
+                ]) && !$this->user->hasRole($params['tenant'], $params['id'])) {
+                throw new ForbiddenException();
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
 
         $this->validateQuery($this->getFieldParserRules());
 
@@ -138,8 +166,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_roles:update',
-            'tenant_roles:read'
+            'tenant_roles:update'
         ]);
 
         $this->validateHeaders([

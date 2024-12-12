@@ -44,7 +44,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
             'tenant_invitations:create',
-            'tenant_invitations:read'
+            'tenant_roles:read'
         ]);
 
         $this->validateHeaders([
@@ -75,7 +75,8 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_invitations:read'
+            'tenant_invitations:read',
+            'tenant_roles:read'
         ]);
 
         $this->validateQuery($this->getQueryParserRules());
@@ -102,7 +103,8 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_invitations:read'
+            'tenant_invitations:read',
+            'tenant_roles:read'
         ]);
 
         $this->validateQuery($this->getFieldParserRules());
@@ -115,34 +117,10 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
 
     /**
      * @inheritDoc
-     * @throws ApiServiceException
-     * @throws BadRequestException
-     * @throws ForbiddenException
-     * @throws ConflictException
-     * @throws NotFoundException
      */
     public function update(array $params): void
     {
-
-        $this->validatePath($params, [
-            'tenant' => 'required|uuid',
-            'id' => 'required|uuid'
-        ]);
-
-        $this->validateIsAdmin($this->user);
-
-        $this->validateHeaders([
-            'Content-Type' => 'required|matches:application/json'
-        ]);
-
-        $body = $this->getResourceBody($this->tenantInvitationsModel, false, [
-            'tenant' => $params['tenant']
-        ]);
-
-        $resource = $this->updateResource($this->tenantInvitationsModel, $params['id'], $body);
-
-        $this->respond(200, TenantInvitationResource::create($resource));
-
+        // Non-routed
     }
 
     /**

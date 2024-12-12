@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -14,6 +15,7 @@ use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\TenantTeamsCollection;
 use Bayfront\BonesService\Api\Schemas\TenantTeamsResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\TenantTeamsModel;
 
 class TenantTeams extends PrivateApiController implements CrudControllerInterface
@@ -51,8 +53,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_teams:create',
-            'tenant_teams:read'
+            'tenant_teams:create'
         ]);
 
         $this->validateHeaders([
@@ -71,9 +72,9 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
 
     /**
      * @inheritDoc
+     * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws ForbiddenException
      */
     public function list(array $params): void
     {
@@ -82,13 +83,31 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
             'tenant' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_teams:read'
-        ]);
+        $query_filter = [];
+
+        try {
+
+            if (!$this->user->canDoAll($params['tenant'], [
+                'tenant_teams:read'
+            ])) {
+
+                $query_filter = [
+                    [
+                        'id' => [
+                            'in' => implode(',', Arr::pluck($this->user->getTeams($params['tenant']), 'id'))
+                        ]
+                    ]
+                ];
+
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
 
         $this->validateQuery($this->getQueryParserRules());
 
-        $collection = $this->listResources($this->tenantTeamsModel);
+        $collection = $this->listResources($this->tenantTeamsModel, $query_filter);
 
         $this->respond(200, TenantTeamsCollection::create($collection['list'], $collection['config']));
 
@@ -109,9 +128,17 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
             'id' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_teams:read'
-        ]);
+        try {
+
+            if (!$this->user->canDoAll($params['tenant'], [
+                    'tenant_teams:read'
+                ]) && !$this->user->inTeam($params['tenant'], $params['id'])) {
+                throw new ForbiddenException();
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
 
         $this->validateQuery($this->getFieldParserRules());
 
@@ -138,8 +165,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_teams:update',
-            'tenant_teams:read'
+            'tenant_teams:update'
         ]);
 
         $this->validateHeaders([

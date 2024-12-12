@@ -13,6 +13,7 @@ use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\TenantUserMetaCollection;
 use Bayfront\BonesService\Api\Schemas\TenantUserMetaResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\TenantUserMetaModel;
 
 class TenantUserMeta extends PrivateApiController implements CrudControllerInterface
@@ -43,9 +44,27 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
             'tenant_user' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_user_meta:create'
-        ]);
+        if ($this->apiService->getConfig('tenant.user_meta.manage_self') === true) {
+
+            try {
+
+                if (!$this->user->canDoAll($params['tenant'], [
+                        'tenant_user_meta:create'
+                    ]) && $this->user->getTenantUserId($params['tenant']) != $params['tenant_user']) {
+                    throw new ForbiddenException();
+                }
+
+            } catch (UnexpectedException $e) {
+                throw new ApiServiceException($e->getMessage());
+            }
+
+        } else {
+
+            $this->validateHasPermissions($this->user, $params['tenant'], [
+                'tenant_user_meta:create'
+            ]);
+
+        }
 
         $this->validateHeaders([
             'Content-Type' => 'required|matches:application/json'
@@ -58,6 +77,40 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
         $resource = $this->createResource($this->tenantUserMetaModel, $body);
 
         $this->respond(201, TenantUserMetaResource::create($resource));
+
+    }
+
+    /**
+     * @param string $tenant
+     * @param string $tenant_user
+     * @return void
+     * @throws ApiServiceException
+     * @throws ForbiddenException
+     */
+    private function validateCanRead(string $tenant, string $tenant_user): void
+    {
+
+        if ($this->apiService->getConfig('tenant.user_meta.manage_self') === true) {
+
+            try {
+
+                if (!$this->user->canDoAll($tenant, [
+                        'tenant_user_meta:read'
+                    ]) && $this->user->getTenantUserId($tenant) != $tenant_user) {
+                    throw new ForbiddenException();
+                }
+
+            } catch (UnexpectedException $e) {
+                throw new ApiServiceException($e->getMessage());
+            }
+
+        } else {
+
+            $this->validateHasPermissions($this->user, $tenant, [
+                'tenant_user_meta:read'
+            ]);
+
+        }
 
     }
 
@@ -75,9 +128,7 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
             'tenant_user' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_user_meta:read'
-        ]);
+        $this->validateCanRead($params['tenant'], $params['tenant_user']);
 
         $this->validateQuery($this->getQueryParserRules());
 
@@ -111,9 +162,7 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
             'id' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_user_meta:read'
-        ]);
+        $this->validateCanRead($params['tenant'], $params['tenant_user']);
 
         $this->validateQuery($this->getFieldParserRules());
 
@@ -150,9 +199,27 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
             'id' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_user_meta:update'
-        ]);
+        if ($this->apiService->getConfig('tenant.user_meta.manage_self') === true) {
+
+            try {
+
+                if (!$this->user->canDoAll($params['tenant'], [
+                        'tenant_user_meta:update'
+                    ]) && $this->user->getTenantUserId($params['tenant']) != $params['tenant_user']) {
+                    throw new ForbiddenException();
+                }
+
+            } catch (UnexpectedException $e) {
+                throw new ApiServiceException($e->getMessage());
+            }
+
+        } else {
+
+            $this->validateHasPermissions($this->user, $params['tenant'], [
+                'tenant_user_meta:update'
+            ]);
+
+        }
 
         $this->validateHeaders([
             'Content-Type' => 'required|matches:application/json'
@@ -183,9 +250,27 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
             'id' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_user_meta:delete'
-        ]);
+        if ($this->apiService->getConfig('tenant.user_meta.manage_self') === true) {
+
+            try {
+
+                if (!$this->user->canDoAll($params['tenant'], [
+                        'tenant_user_meta:delete'
+                    ]) && $this->user->getTenantUserId($params['tenant']) != $params['tenant_user']) {
+                    throw new ForbiddenException();
+                }
+
+            } catch (UnexpectedException $e) {
+                throw new ApiServiceException($e->getMessage());
+            }
+
+        } else {
+
+            $this->validateHasPermissions($this->user, $params['tenant'], [
+                'tenant_user_meta:delete'
+            ]);
+
+        }
 
         $this->deleteResource($this->tenantUserMetaModel, $params['id']);
 

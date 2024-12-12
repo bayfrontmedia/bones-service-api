@@ -311,9 +311,6 @@ class Users extends PrivateApiController implements CrudControllerInterface
     /**
      * List tenants user belongs to.
      *
-     * TODO:
-     * If this returns a TenantUsersCollection, it would save 1-2 queries.
-     *
      * @param array $params
      * @return void
      * @throws ApiServiceException
@@ -342,7 +339,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
         try {
 
             $tenantsCollection = $tenantUsersModel->list(new QueryParser([
-                'fields' => 'tenant.id', // TODO: Just get tenant
+                'fields' => 'tenant',
                 'filter' => [
                     [
                         'user' => [
@@ -356,7 +353,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
             throw new ApiServiceException($e->getMessage());
         }
 
-        $tenant_ids = Arr::pluck($tenantsCollection->list(), 'tenant.id');
+        $tenant_ids = Arr::pluck($tenantsCollection->list(), 'tenant');
 
         // Check user exists if no tenant ID's found
 

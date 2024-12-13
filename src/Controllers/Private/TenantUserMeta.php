@@ -130,7 +130,7 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
 
         $this->validateCanRead($params['tenant'], $params['tenant_user']);
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         $query_filter = [
             [

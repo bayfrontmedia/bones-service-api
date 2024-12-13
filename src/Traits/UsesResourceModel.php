@@ -272,10 +272,6 @@ trait UsesResourceModel
     /**
      * Does filtered resource exist?
      *
-     * TODO:
-     * Update RBAC service for scoped models to have their own
-     * methods so as to avoid the extra database query.
-     *
      * @param ResourceModel $resourceModel
      * @param mixed $primary_key
      * @param array $query_filter

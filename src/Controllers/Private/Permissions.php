@@ -91,7 +91,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     public function list(array $params): void
     {
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         $collection = $this->listResources($this->permissionsModel);
 
@@ -190,7 +190,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
 
         $this->validateIsAdmin($this->user);
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         // Get array of role ID's
 

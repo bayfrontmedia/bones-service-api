@@ -111,7 +111,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             throw new ApiServiceException($e->getMessage());
         }
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         $collection = $this->listResources($this->tenantRolesModel, $query_filter);
 
@@ -236,7 +236,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'tenant_roles:read'
         ]);
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         // Get array of tenant user ID's
 

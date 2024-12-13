@@ -79,7 +79,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
             'tenant_roles:read'
         ]);
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         $collection = $this->listResources($this->tenantInvitationsModel);
 

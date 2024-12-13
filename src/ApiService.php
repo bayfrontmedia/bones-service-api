@@ -127,15 +127,15 @@ class ApiService extends Service
             ->get('/server/status', [Server::class, 'status'])
             // Auth
             ->post('/auth/login', [Auth::class, 'login'])
-            ->post('/auth/otp', [Auth::class, 'otp'])
-            ->post('/auth/tfa', [Auth::class, 'tfa'])
+            ->post('/auth/otp', [Auth::class, 'createOtp'])
+            ->post('/auth/tfa', [Auth::class, 'verifyTfa'])
             ->post('/auth/refresh', [Auth::class, 'refresh'])
             // User
             ->post('/user/register', [User::class, 'register'])
             ->post('/user/password-request', [User::class, 'passwordRequest'])
-            ->post('/user/password', [User::class, 'password'])
+            ->post('/user/password', [User::class, 'resetPassword'])
             ->post('/user/verification-request', [User::class, 'verificationRequest'])
-            ->post('/user/verification', [User::class, 'verification'])
+            ->post('/user/verify', [User::class, 'verify'])
             // Permissions
             ->post('/permissions', [Permissions::class, 'create'])
             ->get('/permissions', [Permissions::class, 'list'])

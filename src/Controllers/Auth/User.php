@@ -150,7 +150,7 @@ class User extends AuthApiController
      * @throws NotFoundException
      * @throws UnauthorizedException
      */
-    public function password(): void
+    public function resetPassword(): void
     {
 
         if ($this->apiService->getConfig('user.password_request.enabled') !== true) {
@@ -272,7 +272,7 @@ class User extends AuthApiController
      * @throws NotFoundException
      * @throws UnauthorizedException
      */
-    public function verification(): void
+    public function verify(): void
     {
 
         if ($this->apiService->getConfig('user.verification.enabled') === false) {

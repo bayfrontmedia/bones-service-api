@@ -111,7 +111,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
             throw new ApiServiceException($e->getMessage());
         }
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         $collection = $this->listResources($this->tenantTeamsModel, $query_filter);
 
@@ -235,7 +235,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
             'tenant_teams:read'
         ]);
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         // Get array of tenant user ID's
 

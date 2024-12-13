@@ -89,7 +89,7 @@ class TenantUserTeams extends PrivateApiController implements CrudControllerInte
             throw new ApiServiceException($e->getMessage());
         }
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         $query_filter = [
             [

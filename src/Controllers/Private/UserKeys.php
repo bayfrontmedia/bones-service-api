@@ -77,7 +77,7 @@ class UserKeys extends PrivateApiController implements CrudControllerInterface
             throw new ForbiddenException();
         }
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         $query_filter = [
             [

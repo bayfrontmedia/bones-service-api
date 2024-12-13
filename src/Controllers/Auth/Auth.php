@@ -149,7 +149,7 @@ class Auth extends AuthApiController
      * @throws TooManyRequestsException
      * @throws UnauthorizedException
      */
-    public function otp(): void
+    public function createOtp(): void
     {
 
         if ($this->apiService->getConfig('auth.otp.enabled') !== true) {
@@ -209,7 +209,7 @@ class Auth extends AuthApiController
      * @throws NotFoundException
      * @throws UnauthorizedException
      */
-    public function tfa(): void
+    public function verifyTfa(): void
     {
 
         if ($this->apiService->getConfig('auth.password.tfa.enabled') === false

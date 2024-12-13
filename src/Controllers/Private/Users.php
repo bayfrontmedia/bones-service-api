@@ -114,7 +114,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
         $this->validateIsAdmin($this->user);
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         $collection = $this->listResources($this->usersModel);
 
@@ -315,7 +315,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
         $email = $this->getEmail($params['id']);
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         $query_filter = [
             [
@@ -355,7 +355,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
             throw new ForbiddenException();
         }
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         // Get array of tenant ID's
 

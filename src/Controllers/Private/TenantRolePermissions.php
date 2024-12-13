@@ -89,7 +89,7 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
             throw new ApiServiceException($e->getMessage());
         }
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         $query_filter = [
             [

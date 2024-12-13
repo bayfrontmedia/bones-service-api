@@ -91,7 +91,7 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
          * Users can always read tenants they belong to.
          */
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         $query_filter = [];
 

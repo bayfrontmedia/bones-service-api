@@ -77,7 +77,7 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
             'tenant_meta:read'
         ]);
 
-        $this->validateQuery($this->getQueryParserRules());
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         $collection = $this->listResources($this->tenantMetaModel);
 

@@ -189,20 +189,24 @@ abstract class ApiController extends Controller
      * NOTE:
      * Since the query is a string, only string related validation rules can be applied.
      *
-     * TODO:
-     * Check this and similar methods to not allow additional fields outside of those defined in rules.
-     * See: UserMeta->read
-     * The query can be manipulated via query parameters when only "fields" should be recognized.
-     *
      * @param array $rules
+     * @param bool $allow_other (Allow other keys not defined in rules)
      * @return void
      * @throws BadRequestException
      */
-    protected function validateQuery(array $rules = []): void
+    protected function validateQuery(array $rules = [], bool $allow_other = false): void
     {
 
+        $query = Request::getQuery();
+
+        if (!empty($rules) && $allow_other === false) {
+            if (!empty(Arr::except($query, array_keys($rules)))) {
+                throw new BadRequestException('Unable to validate query: Invalid field(s)');
+            }
+        }
+
         $validator = new Validator();
-        $validator->validate(Request::getQuery(), $rules, false, true);
+        $validator->validate($query, $rules, false, true);
 
         if (!$validator->isValid()) {
 
@@ -292,14 +296,14 @@ abstract class ApiController extends Controller
      *
      * @param array $body
      * @param array $rules
-     * @param bool $allow_other_fields
+     * @param bool $allow_other (Allow other keys not defined in rules)
      * @return array
      * @throws BadRequestException
      */
-    private function processRules(array $body, array $rules, bool $allow_other_fields): array
+    private function processRules(array $body, array $rules, bool $allow_other): array
     {
 
-        if (!empty($rules) && $allow_other_fields === false) {
+        if (!empty($rules) && $allow_other === false) {
             if (!empty(Arr::except($body, array_keys($rules)))) {
                 throw new BadRequestException('Unable to validate body: Invalid field(s)');
             }

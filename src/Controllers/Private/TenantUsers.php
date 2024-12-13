@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -10,10 +11,16 @@ use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
+use Bayfront\BonesService\Api\Schemas\PermissionCollection;
 use Bayfront\BonesService\Api\Schemas\TenantUserCollection;
 use Bayfront\BonesService\Api\Schemas\TenantUserResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
+use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
+use Bayfront\BonesService\Rbac\Models\PermissionsModel;
+use Bayfront\BonesService\Rbac\Models\TenantRolePermissionsModel;
+use Bayfront\BonesService\Rbac\Models\TenantUserRolesModel;
 use Bayfront\BonesService\Rbac\Models\TenantUsersModel;
 
 class TenantUsers extends PrivateApiController implements CrudControllerInterface
@@ -178,6 +185,105 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
         }
 
         $this->respond(204);
+
+    }
+
+    /**
+     * List tenant user permissions.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws UnexpectedException
+     */
+    public function listPermissions(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'tenant' => 'required|uuid',
+            'id' => 'required|uuid'
+        ]);
+
+        $this->validateHasPermissions($this->user, $params['tenant'], [
+            'tenant_roles:read'
+        ]);
+
+        $this->validateQuery($this->getQueryParserRules());
+
+        // Get array of role ID's
+
+        $tenantUserRolesModel = new TenantUserRolesModel($this->rbacService);
+
+        try {
+
+            $rolesCollection = $tenantUserRolesModel->list(new QueryParser([
+                'fields' => 'role',
+                'filter' => [
+                    [
+                        'tenant_user' => [
+                            'eq' => $params['id']
+                        ]
+                    ]
+                ]
+            ]), true);
+
+        } catch (InvalidRequestException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
+
+        $role_ids = Arr::pluck($rolesCollection->list(), 'role');
+
+        // Check user exists if no role ID's found
+
+        if (empty($role_ids)) {
+
+            if (!$this->tenantUsersModel->tenantUserInTenant($params['tenant'], $params['id'])) {
+                throw new NotFoundException();
+            }
+
+        }
+
+        // Get array of permission ID's
+
+        $tenantRolePermissionsModel = new TenantRolePermissionsModel($this->rbacService);
+
+        try {
+
+            $rolePermissionsCollection = $tenantRolePermissionsModel->list(new QueryParser([
+                'fields' => 'permission',
+                'filter' => [
+                    [
+                        'role' => [
+                            'in' => implode(',', $role_ids)
+                        ]
+                    ]
+                ]
+            ]), true);
+
+        } catch (InvalidRequestException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
+
+        $permission_ids = array_unique(Arr::pluck($rolePermissionsCollection->list(), 'permission'));
+
+        // List permissions
+
+        $permissionsModel = new PermissionsModel($this->rbacService);
+
+        $query_filter = [
+            [
+                'id' => [
+                    'in' => implode(',', $permission_ids)
+                ]
+            ]
+        ];
+
+        $collection = $this->listResources($permissionsModel, $query_filter);
+
+        $this->respond(200, PermissionCollection::create($collection['list'], $collection['config']));
 
     }
 

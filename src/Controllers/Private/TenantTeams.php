@@ -14,9 +14,15 @@ use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\TenantTeamsCollection;
 use Bayfront\BonesService\Api\Schemas\TenantTeamsResource;
+use Bayfront\BonesService\Api\Schemas\TenantUserCollection;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
+use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
+use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
 use Bayfront\BonesService\Rbac\Models\TenantTeamsModel;
+use Bayfront\BonesService\Rbac\Models\TenantUsersModel;
+use Bayfront\BonesService\Rbac\Models\TenantUserTeamsModel;
 
 class TenantTeams extends PrivateApiController implements CrudControllerInterface
 {
@@ -203,6 +209,82 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
         $this->deleteResource($this->tenantTeamsModel, $params['id']);
 
         $this->respond(204);
+
+    }
+
+    /**
+     * List tenant users who belong to team.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws DoesNotExistException
+     * @throws ForbiddenException
+     * @throws UnexpectedException
+     */
+    public function listUsers(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'tenant' => 'required|uuid',
+            'id' => 'required|uuid'
+        ]);
+
+        $this->validateHasPermissions($this->user, $params['tenant'], [
+            'tenant_teams:read'
+        ]);
+
+        $this->validateQuery($this->getQueryParserRules());
+
+        // Get array of tenant user ID's
+
+        $tenantUserTeamsModel = new TenantUserTeamsModel($this->rbacService);
+
+        try {
+
+            $teamsCollection = $tenantUserTeamsModel->list(new QueryParser([
+                'fields' => 'tenant_user',
+                'filter' => [
+                    [
+                        'team' => [
+                            'eq' => $params['id']
+                        ]
+                    ]
+                ]
+            ]), true);
+
+        } catch (InvalidRequestException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
+
+        $user_ids = Arr::pluck($teamsCollection->list(), 'tenant_user');
+
+        // Check team exists if no user ID's found
+
+        if (empty($user_ids)) {
+
+            if (!$this->tenantTeamsModel->exists($params['id'])) {
+                throw new DoesNotExistException();
+            }
+
+        }
+
+        // List users
+
+        $tenantUsersModel = new TenantUsersModel($this->rbacService);
+
+        $query_filter = [
+            [
+                'id' => [
+                    'in' => implode(',', $user_ids)
+                ]
+            ]
+        ];
+
+        $collection = $this->listResources($tenantUsersModel, $query_filter);
+
+        $this->respond(200, TenantUserCollection::create($collection['list'], $collection['config']));
 
     }
 

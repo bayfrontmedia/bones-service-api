@@ -207,7 +207,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
                         ]
                     ]
                 ]
-            ]));
+            ]), true);
 
         } catch (InvalidRequestException $e) {
             throw new ApiServiceException($e->getMessage());

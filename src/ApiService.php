@@ -165,11 +165,13 @@ class ApiService extends Service
             ->get('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'read'])
             ->patch('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'update'])
             ->delete('/tenants/{*:tenant}/roles/{*:id}', [TenantRoles::class, 'delete'])
+            ->get('/tenants/{*:tenant}/roles/{*:id}/users', [TenantRoles::class, 'listUsers'])
             // Tenant users
             ->post('/tenants/{*:tenant}/users', [TenantUsers::class, 'create'])
             ->get('/tenants/{*:tenant}/users', [TenantUsers::class, 'list'])
             ->get('/tenants/{*:tenant}/users/{*:id}', [TenantUsers::class, 'read'])
             ->delete('/tenants/{*:tenant}/users/{*:id}', [TenantUsers::class, 'delete'])
+            ->get('/tenants/{*:tenant}/users/{*:id}/permissions', [TenantUsers::class, 'listPermissions'])
             // Tenant user meta
             ->post('/tenants/{*:tenant}/users/{*:tenant_user}/meta', [TenantUserMeta::class, 'create'])
             ->get('/tenants/{*:tenant}/users/{*:tenant_user}/meta', [TenantUserMeta::class, 'list'])
@@ -198,6 +200,7 @@ class ApiService extends Service
             ->get('/tenants/{*:tenant}/teams/{*:id}', [TenantTeams::class, 'read'])
             ->patch('/tenants/{*:tenant}/teams/{*:id}', [TenantTeams::class, 'update'])
             ->delete('/tenants/{*:tenant}/teams/{*:id}', [TenantTeams::class, 'delete'])
+            ->get('/tenants/{*:tenant}/teams/{*:id}/users', [TenantTeams::class, 'listUsers'])
             // User keys
             ->post('/users/{*:user}/keys', [UserKeys::class, 'create'])
             ->get('/users/{*:user}/keys', [UserKeys::class, 'list'])
@@ -213,14 +216,13 @@ class ApiService extends Service
             // Users
             ->get('/users/logout', [Users::class, 'logout'])
             ->get('/users/me', [Users::class, 'me'])
-
-            ->post('/users/me/invitations', [Users::class, 'acceptInvitation'])
             ->post('/users', [Users::class, 'create'])
             ->get('/users', [Users::class, 'list'])
             ->get('/users/{*:id}', [Users::class, 'read'])
             ->patch('/users/{*:id}', [Users::class, 'update'])
             ->delete('/users/{*:id}', [Users::class, 'delete'])
             ->get('/users/{*:id}/invitations', [Users::class, 'listInvitations'])
+            ->post('/users/{*:user}/invitations/{*:id}', [Users::class, 'acceptInvitation'])
             ->get('/users/{*:id}/tenants', [Users::class, 'listTenants'])
         ;
 

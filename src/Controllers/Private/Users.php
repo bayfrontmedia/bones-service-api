@@ -80,39 +80,6 @@ class Users extends PrivateApiController implements CrudControllerInterface
     }
 
     /**
-     * Accept tenant invitation.
-     *
-     * @return void
-     * @throws ApiServiceException
-     * @throws BadRequestException
-     * @throws NotFoundException
-     */
-    public function acceptInvitation(): void
-    {
-
-        $this->validateHeaders([
-            'Content-Type' => 'required|matches:application/json'
-        ]);
-
-        $body = $this->getJsonBody([
-            'tenant_id' => 'required|uuid'
-        ]);
-
-        $tenantInvitationsModel = new TenantInvitationsModel($this->rbacService);
-
-        try {
-            $tenantInvitationsModel->accept($this->user->getEmail(), $body['tenant_id']);
-        } catch (DoesNotExistException) {
-            throw new NotFoundException();
-        } catch (InvalidFieldException|UnexpectedException $e) {
-            throw new ApiServiceException($e->getMessage(), 0, $e);
-        }
-
-        $this->respond(204);
-
-    }
-
-    /**
      * @inheritDoc
      * @throws ApiServiceException
      * @throws BadRequestException
@@ -249,15 +216,91 @@ class Users extends PrivateApiController implements CrudControllerInterface
     }
 
     /**
+     * Get email from user ID, checking current user before querying.
+     *
+     * @param string $user_id
+     * @return string
+     * @throws ApiServiceException
+     * @throws NotFoundException
+     */
+    private function getEmail(string $user_id): string
+    {
+
+        if ($user_id == $this->user->getId()) {
+
+            return $this->user->getEmail();
+
+        } else {
+
+            try {
+
+                // Checks user exists
+
+                $user = $this->usersModel->read($user_id, [
+                    'email'
+                ]);
+
+            } catch (DoesNotExistException) {
+                throw new NotFoundException();
+            } catch (InvalidRequestException|UnexpectedException $e) {
+                throw new ApiServiceException($e->getMessage());
+            }
+
+            return Arr::get($user, 'email', '');
+
+        }
+
+    }
+
+    /**
+     * Accept tenant invitation.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    public function acceptInvitation(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'user' => 'required|uuid',
+            'id' => 'required|uuid'
+        ]);
+
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+            throw new ForbiddenException();
+        }
+
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
+        ]);
+
+        $tenantInvitationsModel = new TenantInvitationsModel($this->rbacService);
+
+        try {
+            $tenantInvitationsModel->acceptFromId($params['id']);
+        } catch (DoesNotExistException) {
+            throw new NotFoundException();
+        } catch (InvalidFieldException|UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage(), 0, $e);
+        }
+
+        $this->respond(204);
+
+    }
+
+    /**
      * List user's tenant invitations.
      *
      * @param array $params
      * @return void
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws DoesNotExistException
      * @throws ForbiddenException
-     * @throws UnexpectedException
+     * @throws NotFoundException
      */
     public function listInvitations(array $params): void
     {
@@ -270,25 +313,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
             throw new ForbiddenException();
         }
 
-        if ($params['id'] == $this->user->getId()) {
-
-            $email = $this->user->getEmail();
-
-        } else {
-
-            try {
-
-                $user = $this->usersModel->read($params['id'], [
-                    'email'
-                ]);
-
-            } catch (InvalidRequestException $e) {
-                throw new ApiServiceException($e->getMessage());
-            }
-
-            $email = Arr::get($user, 'email', '');
-
-        }
+        $email = $this->getEmail($params['id']);
 
         $this->validateQuery($this->getQueryParserRules());
 
@@ -347,7 +372,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
                         ]
                     ]
                 ]
-            ]));
+            ]), true);
 
         } catch (InvalidRequestException $e) {
             throw new ApiServiceException($e->getMessage());

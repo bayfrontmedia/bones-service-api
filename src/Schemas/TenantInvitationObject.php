@@ -20,8 +20,7 @@ class TenantInvitationObject implements SchemaInterface
             'role',
             'expires_at',
             'created_at',
-            'updated_at',
-            'deleted_at'
+            'updated_at'
         ];
 
         return Arr::order(Arr::only($array, $keys), $keys);

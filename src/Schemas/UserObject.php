@@ -21,8 +21,7 @@ class UserObject implements SchemaInterface
             'enabled',
             'created_at',
             'updated_at',
-            'verified_at',
-            'deleted_at'
+            'verified_at'
         ];
 
         return Arr::order(Arr::only($array, $keys), $keys);

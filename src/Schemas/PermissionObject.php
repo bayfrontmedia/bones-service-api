@@ -18,8 +18,7 @@ class PermissionObject implements SchemaInterface
             'name',
             'description',
             'created_at',
-            'updated_at',
-            'deleted_at'
+            'updated_at'
         ];
 
         return Arr::order(Arr::only($array, $keys), $keys);

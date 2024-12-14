@@ -17,6 +17,7 @@ use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\TenantsModel;
 use Bayfront\StringHelpers\Str;
+use Bayfront\Validator\Validator;
 
 class Tenants extends PrivateApiController implements CrudControllerInterface
 {
@@ -66,6 +67,21 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
             ]);
 
             $body['domain'] = $body['name'];
+
+        }
+
+        $meta_rules = $this->apiService->getConfig('meta.tenant', []);
+
+        /** @noinspection DuplicatedCode */
+        if (isset($body['meta']) && is_array($body['meta']) && !empty($meta_rules)) {
+
+            $validator = new Validator();
+
+            $validator->validate(Arr::dot($body['meta']), $meta_rules, false, true);
+
+            if (!empty(Arr::except(Arr::dot($body['meta']), array_keys($meta_rules))) || !$validator->isValid()) {
+                throw new BadRequestException('Unable to create resource: Invalid meta field(s)');
+            }
 
         }
 
@@ -186,6 +202,21 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
         if (!$this->user->isAdmin() &&
             (isset($body['domain']) || isset($body['enabled']))) {
             throw new BadRequestException('Unable to update resource: Invalid field(s)');
+        }
+
+        $meta_rules = $this->apiService->getConfig('meta.tenant', []);
+
+        /** @noinspection DuplicatedCode */
+        if (isset($body['meta']) && is_array($body['meta']) && !empty($meta_rules)) {
+
+            $validator = new Validator();
+
+            $validator->validate(Arr::dot($body['meta']), $meta_rules, false, true);
+
+            if (!empty(Arr::except(Arr::dot($body['meta']), array_keys($meta_rules))) || !$validator->isValid()) {
+                throw new BadRequestException('Unable to update resource: Invalid meta field(s)');
+            }
+
         }
 
         $resource = $this->updateResource($this->tenantsModel, $params['id'], $body);

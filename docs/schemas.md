@@ -26,9 +26,9 @@ The following schemas are added by this service:
 - [TenantRolePermissionObject](#tenantrolepermissionobject)
 - [TenantRolePermissionResource](#tenantrolepermissionresource)
 - [TenantRoleResource](#tenantroleresource)
-- [TenantTeamsCollection](#tenantteamscollection)
-- [TenantTeamsObject](#tenantteamsobject)
-- [TenantTeamsResource](#tenantteamsresource)
+- [TenantTeamCollection](#tenantteamcollection)
+- [TenantTeamObject](#tenantteamobject)
+- [TenantTeamResource](#tenantteamresource)
 - [TenantUserCollection](#tenantusercollection)
 - [TenantUserMetaCollection](#tenantusermetacollection)
 - [TenantUserMetaObject](#tenantusermetaobject)
@@ -376,15 +376,15 @@ Object with property `data` which contains a [TenantRolePermissionObject](#tenan
 
 Object with property `data` which contains a [TenantRoleObject](#tenantroleobject).
 
-## TenantTeamsCollection
+## TenantTeamCollection
 
 Object with properties:
 
-- `data`: Array of [TenantTeamsObjects](#tenantteamsobject)
+- `data`: Array of [TenantTeamObjects](#tenantteamobject)
 - `aggregate`: Optional [AggregateObject](#aggregateobject)
 - `pagination`: Optional [PagePaginationObject](#pagepaginationobject) or [CursorPaginationObject](#cursorpaginationobject)
 
-## TenantTeamsObject
+## TenantTeamObject
 
 ```json
 {
@@ -406,9 +406,9 @@ Object with properties:
 | `created_at`  | `string`       | Resource creation datetime   |
 | `updated_at`  | `string\|null` | Last updated datetime        |
 
-## TenantTeamsResource
+## TenantTeamResource
 
-Object with property `data` which contains a [TenantTeamsObject](#tenantteamsobject).
+Object with property `data` which contains a [TenantTeamObject](#tenantteamobject).
 
 ## TenantUserCollection
 

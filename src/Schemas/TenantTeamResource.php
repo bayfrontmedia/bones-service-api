@@ -5,7 +5,7 @@ namespace Bayfront\BonesService\Api\Schemas;
 use Bayfront\ArraySchema\SchemaInterface;
 use Bayfront\BonesService\Api\Schemas\Utilities\ResourceSchema;
 
-class TenantTeamsResource implements SchemaInterface
+class TenantTeamResource implements SchemaInterface
 {
 
     /**
@@ -13,7 +13,7 @@ class TenantTeamsResource implements SchemaInterface
      */
     public static function create(array $array, array $config = []): array
     {
-        return ResourceSchema::create(TenantTeamsObject::create($array), $config);
+        return ResourceSchema::create(TenantTeamObject::create($array), $config);
     }
 
 }

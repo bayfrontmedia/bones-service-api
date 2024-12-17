@@ -5,7 +5,7 @@ namespace Bayfront\BonesService\Api\Schemas;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\ArraySchema\SchemaInterface;
 
-class TenantTeamsObject implements SchemaInterface
+class TenantTeamObject implements SchemaInterface
 {
 
     /**

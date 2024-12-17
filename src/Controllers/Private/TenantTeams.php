@@ -12,8 +12,8 @@ use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
 use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
-use Bayfront\BonesService\Api\Schemas\TenantTeamsCollection;
-use Bayfront\BonesService\Api\Schemas\TenantTeamsResource;
+use Bayfront\BonesService\Api\Schemas\TenantTeamCollection;
+use Bayfront\BonesService\Api\Schemas\TenantTeamResource;
 use Bayfront\BonesService\Api\Schemas\TenantUserCollection;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
@@ -72,7 +72,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
 
         $resource = $this->createResource($this->tenantTeamsModel, $body);
 
-        $this->respond(201, TenantTeamsResource::create($resource));
+        $this->respond(201, TenantTeamResource::create($resource));
 
     }
 
@@ -115,7 +115,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
 
         $collection = $this->listResources($this->tenantTeamsModel, $query_filter);
 
-        $this->respond(200, TenantTeamsCollection::create($collection['list'], $collection['config']));
+        $this->respond(200, TenantTeamCollection::create($collection['list'], $collection['config']));
 
     }
 
@@ -150,7 +150,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
 
         $resource = $this->readResource($this->tenantTeamsModel, $params['id']);
 
-        $this->respond(200, TenantTeamsResource::create($resource));
+        $this->respond(200, TenantTeamResource::create($resource));
 
     }
 
@@ -184,7 +184,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
 
         $resource = $this->updateResource($this->tenantTeamsModel, $params['id'], $body);
 
-        $this->respond(200, TenantTeamsResource::create($resource));
+        $this->respond(200, TenantTeamResource::create($resource));
 
     }
 

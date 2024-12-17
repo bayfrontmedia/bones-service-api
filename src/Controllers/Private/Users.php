@@ -51,7 +51,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
     /**
      * Revoke access and refresh keys for current user.
-     * Users will still be able to authenticate with an API key,
+     * Users will still be able to authenticate with an API key
      * or if access tokens are not revocable.
      *
      * @return void
@@ -242,7 +242,11 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
         $this->deleteResource($this->usersModel, $params['id']);
 
-        $this->logout(); // Respond with 204
+        if ($params['id'] == $this->user->getId()) {
+            $this->logout(); // Respond with 204
+        } else {
+            $this->respond(204);
+        }
 
     }
 
@@ -280,46 +284,6 @@ class Users extends PrivateApiController implements CrudControllerInterface
             return Arr::get($user, 'email', '');
 
         }
-
-    }
-
-    /**
-     * Accept tenant invitation.
-     *
-     * @param array $params
-     * @return void
-     * @throws ApiServiceException
-     * @throws BadRequestException
-     * @throws ForbiddenException
-     * @throws NotFoundException
-     */
-    public function acceptInvitation(array $params): void
-    {
-
-        $this->validatePath($params, [
-            'user' => 'required|uuid',
-            'id' => 'required|uuid'
-        ]);
-
-        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
-            throw new ForbiddenException();
-        }
-
-        $this->validateHeaders([
-            'Content-Type' => 'required|matches:application/json'
-        ]);
-
-        $tenantInvitationsModel = new TenantInvitationsModel($this->rbacService);
-
-        try {
-            $tenantInvitationsModel->acceptFromId($params['id']);
-        } catch (DoesNotExistException) {
-            throw new NotFoundException();
-        } catch (InvalidFieldException|UnexpectedException $e) {
-            throw new ApiServiceException($e->getMessage(), 0, $e);
-        }
-
-        $this->respond(204);
 
     }
 
@@ -365,6 +329,46 @@ class Users extends PrivateApiController implements CrudControllerInterface
     }
 
     /**
+     * Accept tenant invitation.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    public function acceptInvitation(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'user' => 'required|uuid',
+            'id' => 'required|uuid'
+        ]);
+
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+            throw new ForbiddenException();
+        }
+
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
+        ]);
+
+        $tenantInvitationsModel = new TenantInvitationsModel($this->rbacService);
+
+        try {
+            $tenantInvitationsModel->acceptFromId($params['id']);
+        } catch (DoesNotExistException) {
+            throw new NotFoundException();
+        } catch (InvalidFieldException|UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage(), 0, $e);
+        }
+
+        $this->respond(204);
+
+    }
+
+    /**
      * List tenants user belongs to.
      *
      * @param array $params
@@ -373,7 +377,6 @@ class Users extends PrivateApiController implements CrudControllerInterface
      * @throws BadRequestException
      * @throws DoesNotExistException
      * @throws ForbiddenException
-     * @throws UnexpectedException
      */
     public function listTenants(array $params): void
     {
@@ -405,7 +408,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
                 ]
             ]), true);
 
-        } catch (InvalidRequestException $e) {
+        } catch (InvalidRequestException|UnexpectedException $e) {
             throw new ApiServiceException($e->getMessage());
         }
 
@@ -415,8 +418,14 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
         if (empty($tenant_ids)) {
 
-            if (!$this->usersModel->exists($params['id'])) {
-                throw new DoesNotExistException();
+            try {
+
+                if (!$this->usersModel->exists($params['id'])) {
+                    throw new DoesNotExistException();
+                }
+
+            } catch (UnexpectedException $e) {
+                throw new ApiServiceException($e->getMessage());
             }
 
         }

@@ -57,12 +57,12 @@ trait UsesResourceModel
     /**
      * Get only and validate writable fields from body.
      * Optionally ensure all required fields exist (on create).
-     * Optionally ensure predefined values do not exist, then set their value,
-     * helpful when values are set by path parameters.
+     * Optionally ensure predefined values do not exist, then set their value.
+     * Helpful when values are set by path parameters.
      *
      * @param ResourceModel $resourceModel
      * @param bool $validate_required_fields
-     * @param array $defined_values
+     * @param array $defined_values (Predefined values not allowed to be defined in body)
      * @return array
      * @throws BadRequestException
      */
@@ -87,12 +87,9 @@ trait UsesResourceModel
     /**
      * Create new ResourceModel resource.
      *
-     * Array keys:
-     * - data: Created resource
-     *
      * @param ResourceModel $resourceModel
      * @param array $fields
-     * @return array
+     * @return array (Created resource)
      * @throws ApiServiceException
      * @throws BadRequestException
      * @throws ConflictException
@@ -117,9 +114,9 @@ trait UsesResourceModel
     /**
      * List ResourceModel resources, including pagination and aggregate of requested.
      *
-     * Array keys:
+     * Returned array keys:
      * - list: Collection list
-     * - config: Schema configuration array
+     * - config: Schema configuration array with pagination and aggregate data
      *
      * @param ResourceModel $resourceModel
      * @param array $query_filter (Additional filters to apply to query)
@@ -187,9 +184,6 @@ trait UsesResourceModel
     /**
      * Read ResourceModel resource.
      *
-     * Array keys:
-     * - data: Resource
-     *
      * @param ResourceModel $resourceModel
      * @param mixed $primary_key_id
      * @return array
@@ -218,9 +212,6 @@ trait UsesResourceModel
 
     /**
      * Update ResourceModel resource.
-     *
-     * Array keys:
-     * - data: Updated resource
      *
      * @param ResourceModel $resourceModel
      * @param mixed $primary_key_id

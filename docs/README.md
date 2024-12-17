@@ -8,4 +8,5 @@ The API service gives full API functionality to the [Bones RBAC service](https:/
 - [Controllers](controllers/README.md)
 - [Events](events.md)
 - [Filters](filters.md)
+- [Routes](routes.md)
 - [Schemas](schemas/README.md)

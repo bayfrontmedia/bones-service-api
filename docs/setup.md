@@ -214,7 +214,7 @@ The API service comes will all the routes necessary to utilize all of its featur
 The use of these predefined routes is optional. You can define your own routes and map them to any of the included
 [controller methods](controllers/README.md) you wish.
 
-To use the API service predefined routes, add the following to an `app.bootstrap` event subscription
+To use the API service [predefined routes](routes.md), add the following to an `app.bootstrap` event subscription
 when defining your routes:
 
 ```php

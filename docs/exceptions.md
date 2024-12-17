@@ -29,7 +29,7 @@ all `HttpException`'s thrown can be omitted from the normal exception handler by
 the following condition:
 
 ```php
-if ($e instanceof HttpException) {
+if (!$e instanceof HttpException) {
   // Log as normal
 }
 ```
@@ -61,8 +61,12 @@ For example:
 return [
     400 => 'https://example.com/docs/400',
     401 => 'https://example.com/docs/401',
+    402 => 'https://example.com/docs/402',
     403 => 'https://example.com/docs/403',
     404 => 'https://example.com/docs/404',
+    405 => 'https://example.com/docs/405',
+    406 => 'https://example.com/docs/406',
+    409 => 'https://example.com/docs/409',
     429 => 'https://example.com/docs/429',
     500 => 'https://example.com/docs/500'
 ];

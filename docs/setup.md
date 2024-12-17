@@ -176,7 +176,7 @@ duration (in minutes) before unverified users are deleted via a scheduled job.
 
 ## Add to container
 
-With the configuration completed, the `ApiService` class needs to be added to the Bones [service container](https://github.com/bayfrontmedia/bones/blob/master/docs/usage/container.md).
+With the configuration completed, the [ApiService](apiservice-class.md) class needs to be added to the Bones [service container](https://github.com/bayfrontmedia/bones/blob/master/docs/usage/container.md).
 This is typically done in the `resources/bootstrap.php` file.
 You may also wish to create an alias.
 

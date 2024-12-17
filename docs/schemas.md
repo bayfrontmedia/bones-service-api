@@ -106,26 +106,38 @@ The following schemas are added by this service:
 ```json
 {
   "results": {
-    "current": "",
-    "total": "",
-    "from": "",
-    "to": ""
+    "current": 10,
+    "total": 100,
+    "from": 1,
+    "to": 10
   },
   "page": {
-    "size": "",
-    "current": "",
-    "previous": "",
-    "next": "",
-    "total": ""
+    "size": 10,
+    "current": 1,
+    "previous": null,
+    "next": 2,
+    "total": 10
   },
   "cursor": {
-    "first": "",
-    "last": ""
+    "first": "ENCODED_STRING",
+    "last": "ENCODED_STRING"
   }
 }
 ```
 
-TODO
+| Field             | Type        | Description                       |
+|-------------------|-------------|-----------------------------------|
+| `results.current` | `int`       | Number of results returned        |
+| `results.total`   | `int`       | Total number of results existing  |
+| `results.from`    | `int\|null` | First returned result             |
+| `results.to`      | `int\|null` | Last returned result              |
+| `page.size`       | `int`       | Result limit                      |
+| `page.current`    | `int`       | Current page number               |
+| `page.previous`   | `int\|null` | Previous page number              |
+| `page.next`       | `int\|null` | Next page number                  |
+| `page.total`      | `int`       | Total number of pages             |
+| `cursor.first`    | `int`       | Cursor of first returned resource |
+| `cursor.last`     | `int`       | Cursor of last returned resource  |
 
 ## PermissionCollection
 
@@ -349,49 +361,251 @@ Object with property `data` which contains a [TenantRoleObject](#tenantroleobjec
 
 ## TenantTeamsCollection
 
-## TenantTeamsCollection
+Object with properties:
+
+- `data`: Array of [TenantTeamsObjects](#tenantteamsobject)
+- `aggregate`: Optional [AggregateObject](#aggregateobject)
+- `pagination`: Optional [PagePaginationObject](#pagepaginationobject) or [CursorPaginationObject](#cursorpaginationobject)
 
 ## TenantTeamsObject
 
+```json
+{
+  "id": "0193d628-a1bf-76a5-b02c-6697b50f94b7",
+  "tenant": "0193d64f-f782-709d-afa7-b444af500242",
+  "name": "Team name",
+  "description": "Team description",
+  "created_at": "2025-01-01 12:00:00",
+  "updated_at": "2025-01-01 12:00:00"
+}
+```
+
+| Field         | Type           | Description                  |
+|---------------|----------------|------------------------------|
+| `id`          | `string`       | Resource ID                  |
+| `tenant`      | `string`       | Tenant ID                    |
+| `name`        | `string`       | Team name (unique to tenant) |
+| `description` | `string`       | Team description             |
+| `created_at`  | `string`       | Resource creation datetime   |
+| `updated_at`  | `string\|null` | Last updated datetime        |
+
 ## TenantTeamsResource
+
+Object with property `data` which contains a [TenantTeamsObject](#tenantteamsobject).
 
 ## TenantUserCollection
 
+Object with properties:
+
+- `data`: Array of [TenantUserObjects](#tenantuserobject)
+- `aggregate`: Optional [AggregateObject](#aggregateobject)
+- `pagination`: Optional [PagePaginationObject](#pagepaginationobject) or [CursorPaginationObject](#cursorpaginationobject)
+
 ## TenantUserMetaCollection
+
+Object with properties:
+
+- `data`: Array of [TenantUserMetaObjects](#tenantusermetaobject)
+- `aggregate`: Optional [AggregateObject](#aggregateobject)
+- `pagination`: Optional [PagePaginationObject](#pagepaginationobject) or [CursorPaginationObject](#cursorpaginationobject)
 
 ## TenantUserMetaObject
 
+```json
+{
+  "id": "0193d628-a1bf-76a5-b02c-6697b50f94b7",
+  "tenant_user": "0193d64f-f782-709d-afa7-b444af500242",
+  "meta_key": "tenant_meta_key",
+  "meta_value": "Tenant meta value",
+  "created_at": "2025-01-01 12:00:00",
+  "updated_at": "2025-01-01 12:00:00"
+}
+```
+
+| Field         | Type           | Description                      |
+|---------------|----------------|----------------------------------|
+| `id`          | `string`       | Resource ID                      |
+| `tenant_user` | `string`       | Tenant user (ID)                 |
+| `meta_key`    | `string`       | Meta key (unique to tenant user) |
+| `meta_value`  | `string`       | Meta value                       |
+| `created_at`  | `string`       | Resource creation datetime       |
+| `updated_at`  | `string\|null` | Last updated datetime            |
+
 ## TenantUserMetaResource
+
+Object with property `data` which contains a [TenantUserMetaObject](#tenantusermetaobject).
 
 ## TenantUserObject
 
+```json
+{
+  "id": "0193d628-a1bf-76a5-b02c-6697b50f94b7",
+  "tenant": "0193d64f-f782-709d-afa7-b444af500242",
+  "user": "0193d669-1e76-70d5-88f5-17dcf797fc68",
+  "created_at": "2025-01-01 12:00:00",
+  "updated_at": "2025-01-01 12:00:00"
+}
+```
+
+| Field         | Type           | Description                |
+|---------------|----------------|----------------------------|
+| `id`          | `string`       | Resource ID                |
+| `tenant`      | `string`       | Tenant ID                  |
+| `user`        | `string`       | User ID                    |
+| `created_at`  | `string`       | Resource creation datetime |
+| `updated_at`  | `string\|null` | Last updated datetime      |
+
 ## TenantUserResource
+
+Object with property `data` which contains a [TenantUserObject](#tenantuserobject).
 
 ## TenantUserRoleCollection
 
+Object with properties:
+
+- `data`: Array of [TenantUserRoleObjects](#tenantuserroleobject)
+- `aggregate`: Optional [AggregateObject](#aggregateobject)
+- `pagination`: Optional [PagePaginationObject](#pagepaginationobject) or [CursorPaginationObject](#cursorpaginationobject)
+
 ## TenantUserRoleObject
+
+```json
+{
+  "id": "0193d628-a1bf-76a5-b02c-6697b50f94b7",
+  "tenant_user": "0193d64f-f782-709d-afa7-b444af500242",
+  "role": "0193d66b-0c89-72a8-aa67-73e12b72bbad",
+  "created_at": "2025-01-01 12:00:00",
+  "updated_at": "2025-01-01 12:00:00"
+}
+```
+
+| Field         | Type           | Description                |
+|---------------|----------------|----------------------------|
+| `id`          | `string`       | Resource ID                |
+| `tenant_user` | `string`       | Tenant user ID             |
+| `role`        | `string`       | Tenant role ID             |
+| `created_at`  | `string`       | Resource creation datetime |
+| `updated_at`  | `string\|null` | Last updated datetime      |
 
 ## TenantUserRoleResource
 
+Object with property `data` which contains a [TenantUserRoleObject](#tenantuserroleobject).
+
 ## TenantUserTeamCollection
+
+Object with properties:
+
+- `data`: Array of [TenantUserTeamObjects](#tenantuserteamobject)
+- `aggregate`: Optional [AggregateObject](#aggregateobject)
+- `pagination`: Optional [PagePaginationObject](#pagepaginationobject) or [CursorPaginationObject](#cursorpaginationobject)
 
 ## TenantUserTeamObject
 
+```json
+{
+  "id": "0193d628-a1bf-76a5-b02c-6697b50f94b7",
+  "tenant_user": "0193d64f-f782-709d-afa7-b444af500242",
+  "team": "0193d66b-0c89-72a8-aa67-73e12b72bbad",
+  "created_at": "2025-01-01 12:00:00",
+  "updated_at": "2025-01-01 12:00:00"
+}
+```
+
+| Field         | Type           | Description                |
+|---------------|----------------|----------------------------|
+| `id`          | `string`       | Resource ID                |
+| `tenant_user` | `string`       | Tenant user ID             |
+| `team`        | `string`       | Tenant team ID             |
+| `created_at`  | `string`       | Resource creation datetime |
+| `updated_at`  | `string\|null` | Last updated datetime      |
+
 ## TenantUserTeamResource
+
+Object with property `data` which contains a [TenantUserTeamObject](#tenantuserteamobject).
 
 ## UserCollection
 
+Object with properties:
+
+- `data`: Array of [UserObjects](#userobject)
+- `aggregate`: Optional [AggregateObject](#aggregateobject)
+- `pagination`: Optional [PagePaginationObject](#pagepaginationobject) or [CursorPaginationObject](#cursorpaginationobject)
+
 ## UserKeyCollection
+
+Object with properties:
+
+- `data`: Array of [UserKeyObjects](#userkeyobject)
+- `aggregate`: Optional [AggregateObject](#aggregateobject)
+- `pagination`: Optional [PagePaginationObject](#pagepaginationobject) or [CursorPaginationObject](#cursorpaginationobject)
 
 ## UserKeyObject
 
+```json
+{
+  "id": "0193d628-a1bf-76a5-b02c-6697b50f94b7",
+  "user": "0193d64f-f782-709d-afa7-b444af500242",
+  "name": "Descriptive key name",
+  "key_value": "",
+  "allowed_domains": null,
+  "allowed_ips": null,
+  "expires_at": "2025-01-01 12:00:00",
+  "last_used": "2025-01-01 12:00:00",
+  "created_at": "2025-01-01 12:00:00",
+  "updated_at": "2025-01-01 12:00:00"
+}
+```
+
+| Field             | Type           | Description                                |
+|-------------------|----------------|--------------------------------------------|
+| `id`              | `string`       | Resource ID                                |
+| `user`            | `string`       | User ID                                    |
+| `name`            | `string`       | User key name                              |
+| `key_value`       | `string`       | User key value (returned once on creation) |
+| `allowed_domains` | `array\|null`  | Domain whitelist                           |
+| `allowed_ips`     | `array\|null`  | IP whitelist                               |
+| `expires_at`      | `string`       | User key expiration datetime               |
+| `last_used`       | `string`       | User key last used datetime                |
+| `created_at`      | `string`       | Resource creation datetime                 |
+| `updated_at`      | `string\|null` | Last updated datetime                      |
+
 ## UserKeyResource
+
+Object with property `data` which contains a [UserKeyObject](#userkeyobject).
 
 ## UserMetaCollection
 
+Object with properties:
+
+- `data`: Array of [UserMetaObjects](#usermetaobject)
+- `aggregate`: Optional [AggregateObject](#aggregateobject)
+- `pagination`: Optional [PagePaginationObject](#pagepaginationobject) or [CursorPaginationObject](#cursorpaginationobject)
+
 ## UserMetaObject
 
+```json
+{
+  "id": "0193d628-a1bf-76a5-b02c-6697b50f94b7",
+  "user": "0193d64f-f782-709d-afa7-b444af500242",
+  "meta_key": "user_meta_key",
+  "meta_value": "User meta value",
+  "created_at": "2025-01-01 12:00:00",
+  "updated_at": "2025-01-01 12:00:00"
+}
+```
+
+| Field        | Type           | Description                |
+|--------------|----------------|----------------------------|
+| `id`         | `string`       | Resource ID                |
+| `user`       | `string`       | User (ID)                  |
+| `meta_key`   | `string`       | Meta key (unique to user)  |
+| `meta_value` | `string`       | Meta value                 |
+| `created_at` | `string`       | Resource creation datetime |
+| `updated_at` | `string\|null` | Last updated datetime      |
+
 ## UserMetaResource
+
+Object with property `data` which contains a [UserMetaObject](#usermetaobject).
 
 ## UserObject
 

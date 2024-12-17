@@ -22,9 +22,7 @@ class PagePaginationObject implements SchemaInterface
             'page.current',
             'page.previous',
             'page.next',
-            'page.total',
-            'cursor.first',
-            'cursor.last'
+            'page.total'
         ];
 
         return Arr::undot(Arr::only(Arr::dot($array), $keys));

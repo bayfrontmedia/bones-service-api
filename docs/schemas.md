@@ -53,6 +53,11 @@ The following schemas are added by this service:
 
 ## AggregateObject
 
+The `AggregateObject` has properties named after resource fields whose values are an array of the requested
+aggregate function for that field.
+
+For more information, see [getAggregate](https://github.com/bayfrontmedia/bones-service-orm/blob/master/docs/ormcollection.md#getaggregate).
+
 ## AuthResource
 
 ```json
@@ -72,6 +77,24 @@ The following schemas are added by this service:
 | `expires`     | `string`       | Expiration datetime |
 
 ## CursorPaginationObject
+
+```json
+{
+  "results": {
+    "current": 10
+  },
+  "cursor": {
+    "first": "ENCODED_STRING",
+    "last": "ENCODED_STRING"
+  }
+}
+```
+
+| Field             | Type        | Description                       |
+|-------------------|-------------|-----------------------------------|
+| `results.current` | `int`       | Number of results returned        |
+| `cursor.first`    | `int`       | Cursor of first returned resource |
+| `cursor.last`     | `int`       | Cursor of last returned resource  |
 
 ## ErrorResource
 
@@ -117,10 +140,6 @@ The following schemas are added by this service:
     "previous": null,
     "next": 2,
     "total": 10
-  },
-  "cursor": {
-    "first": "ENCODED_STRING",
-    "last": "ENCODED_STRING"
   }
 }
 ```
@@ -136,8 +155,6 @@ The following schemas are added by this service:
 | `page.previous`   | `int\|null` | Previous page number              |
 | `page.next`       | `int\|null` | Next page number                  |
 | `page.total`      | `int`       | Total number of pages             |
-| `cursor.first`    | `int`       | Cursor of first returned resource |
-| `cursor.last`     | `int`       | Cursor of last returned resource  |
 
 ## PermissionCollection
 

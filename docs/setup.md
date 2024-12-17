@@ -150,8 +150,9 @@ to identify each unique request as it is processed by the API. It is added to th
 returned meta array when `request.meta.enabled` is `true`. The request ID is helpful to attach to any logging services
 which may be used by the API.
 - `request.ip_whitelist`: API requests made from an IP not found in this list will return a `ForbiddenException`.
-- `reqiest.meta`: When enabled, requests with the field value of `true` existing in the query will return an array of
+- `request.meta`: When enabled, requests with the field value of `true` existing in the query will return an array of
 metadata along with the request. For example, by adding `?meta=true` to the request, the response will include metadata.
+This array can be filtered using the [api.response.meta filter](filters.md).
 The `request.meta.env` array specifies which app environments to allow this functionality.
 - `response.headers`: Headers to send with every API response.
 - `rate_limit`: Define the rate limit for the `auth`, `private` and `public` API controllers, or `0` for unlimited.

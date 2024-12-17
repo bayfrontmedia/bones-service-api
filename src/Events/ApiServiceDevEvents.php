@@ -27,33 +27,15 @@ class ApiServiceDevEvents extends EventSubscriber implements EventSubscriberInte
     public function getSubscriptions(): array
     {
         return [
-            new EventSubscription('api.auth.password.tfa', [$this, 'tfa'], 10),
             new EventSubscription('api.auth.otp', [$this, 'otp'], 10),
+            new EventSubscription('api.auth.password.tfa', [$this, 'tfa'], 10),
             new EventSubscription('api.user.password_request', [$this, 'passwordRequest'], 10),
-            new EventSubscription('rbac.user.password.updated', [$this, 'passwordUpdated'], 10),
             new EventSubscription('api.user.verification_request', [$this, 'verificationRequest'], 10),
             new EventSubscription('rbac.user.verified', [$this, 'userVerified'], 10),
+            new EventSubscription('rbac.user.password.updated', [$this, 'passwordUpdated'], 10),
             new EventSubscription('rbac.tenant.invitation.created', [$this, 'invitationCreated'], 10),
             new EventSubscription('rbac.tenant.invitation.accepted', [$this, 'invitationAccepted'], 10)
         ];
-    }
-
-    /**
-     * @param User $user
-     * @param Totp $totp
-     * @return void
-     */
-    #[NoReturn] public function tfa(User $user, Totp $totp): void
-    {
-
-        $this->apiService->response->sendJson([
-            'event' => 'api.auth.password.tfa',
-            'user' => $user->read(),
-            'totp' => $totp->getTotp()
-        ]);
-
-        die;
-
     }
 
     /**
@@ -79,11 +61,11 @@ class ApiServiceDevEvents extends EventSubscriber implements EventSubscriberInte
      * @param Totp $totp
      * @return void
      */
-    #[NoReturn] public function passwordRequest(User $user, Totp $totp): void
+    #[NoReturn] public function tfa(User $user, Totp $totp): void
     {
 
         $this->apiService->response->sendJson([
-            'event' => 'api.user.password_request',
+            'event' => 'api.auth.password.tfa',
             'user' => $user->read(),
             'totp' => $totp->getTotp()
         ]);
@@ -93,15 +75,17 @@ class ApiServiceDevEvents extends EventSubscriber implements EventSubscriberInte
     }
 
     /**
-     * @param OrmResource $resource
+     * @param User $user
+     * @param Totp $totp
      * @return void
      */
-    #[NoReturn] public function passwordUpdated(OrmResource $resource): void
+    #[NoReturn] public function passwordRequest(User $user, Totp $totp): void
     {
 
         $this->apiService->response->sendJson([
-            'event' => 'rbac.user.password.updated',
-            'user' => $resource->read(),
+            'event' => 'api.user.password_request',
+            'user' => $user->read(),
+            'totp' => $totp->getTotp()
         ]);
 
         die;
@@ -136,6 +120,22 @@ class ApiServiceDevEvents extends EventSubscriber implements EventSubscriberInte
         $this->apiService->response->sendJson([
             'event' => 'rbac.user.verified',
             'email' => $email
+        ]);
+
+        die;
+
+    }
+
+    /**
+     * @param OrmResource $resource
+     * @return void
+     */
+    #[NoReturn] public function passwordUpdated(OrmResource $resource): void
+    {
+
+        $this->apiService->response->sendJson([
+            'event' => 'rbac.user.password.updated',
+            'user' => $resource->read(),
         ]);
 
         die;

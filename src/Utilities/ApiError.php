@@ -13,7 +13,7 @@ class ApiError
 {
 
     /**
-     * Respond with API error resource.
+     * Respond with ErrorResource.
      *
      * This method can be used inside the exception handler respond() method.
      *

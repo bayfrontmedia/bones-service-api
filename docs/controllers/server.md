@@ -1,1 +1,1 @@
-# [API service](../../README.md) > [Controllers](../README.md) > Server
+# [API service](../README.md) > [Controllers](README.md) > Server

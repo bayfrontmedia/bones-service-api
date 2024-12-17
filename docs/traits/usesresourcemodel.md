@@ -1,4 +1,4 @@
-# [API service](../../README.md) > [Traits](../README.md) > UsesResourceModel
+# [API service](../README.md) > [Traits](README.md) > UsesResourceModel
 
 The `UsesResourceModel` trait provides helpful methods for working with an ORM service [ResourceModel](https://github.com/bayfrontmedia/bones-service-orm/blob/master/docs/models/resourcemodel.md).
 

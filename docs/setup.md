@@ -1,4 +1,4 @@
-# API service: Initial setup
+# [API service](README.md) > Initial setup
 
 - [Configuration](#configuration)
 - [Add to container](#add-to-container)

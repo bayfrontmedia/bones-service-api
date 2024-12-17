@@ -1,4 +1,4 @@
-# API service: Exceptions
+# [API service](README.md) > Exceptions
 
 Methods within an API controller should only throw a `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 (500 status code) or a `Bayfront\BonesService\Api\Exceptions\ApiHttpException` (400-499 status codes).

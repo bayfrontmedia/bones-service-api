@@ -1,4 +1,4 @@
-# [API service](../../README.md) > [Controllers](../README.md) > PrivateApiController
+# [API service](../README.md) > [Controllers](README.md) > PrivateApiController
 
 The `PrivateApiController` extends [ApiController](apicontroller.md),
 and emits the `api.controller.private` [event](../events.md) when instantiated.

@@ -1,1 +1,1 @@
-# [API service](../../README.md) > [Controllers](../README.md) > TenantRoles
+# [API service](../README.md) > [Controllers](README.md) > TenantRoles

@@ -9,4 +9,4 @@ The API service gives full API functionality to the [Bones RBAC service](https:/
 - [Events](events.md)
 - [Filters](filters.md)
 - [Routes](routes.md)
-- [Schemas](schemas/README.md)
+- [Schemas](schemas.md)

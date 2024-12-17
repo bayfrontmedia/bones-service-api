@@ -1,4 +1,4 @@
-# [API service](../../README.md) > [Controllers](../README.md) > ApiController
+# [API service](../README.md) > [Controllers](README.md) > ApiController
 
 The `ApiController` is the widest scoped controller used by the API service. All other controllers extend this.
 It requires an [ApiService](../apiservice-class.md) instance to be passed to the constructor, 

@@ -1,4 +1,4 @@
-# [API service](../../README.md) > [Controllers](../README.md) > CrudControllerInterface
+# [API service](../README.md) > [Controllers](README.md) > CrudControllerInterface
 
 The `CrudControllerInterface` contains methods used to perform CRUD actions on a resource.
 

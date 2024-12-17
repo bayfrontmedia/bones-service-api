@@ -1,1 +1,1 @@
-# [API service](../../README.md) > [Controllers](../README.md) > Permissions
+# [API service](../README.md) > [Controllers](README.md) > Permissions

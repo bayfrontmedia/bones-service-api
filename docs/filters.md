@@ -1,4 +1,4 @@
-# API service: Filters
+# [API service](README.md) > Filters
 
 The following [filters](https://github.com/bayfrontmedia/bones/blob/master/docs/services/filters.md) are added by this service:
 

@@ -1,4 +1,4 @@
-# [API service](../../README.md) > [Controllers](../README.md) > Users
+# [API service](../README.md) > [Controllers](README.md) > Users
 
 - Extends [PrivateApiController](privateapicontroller.md)
 - Implements [CrudControllerInterface](crudcontrollerinterface.md)

@@ -57,9 +57,8 @@ abstract class ApiController extends Controller
 
     /**
      * Enforce rate limit and set X-RateLimit headers.
-     * On error, aborts with 429 HTTP status.
      *
-     * @param string $id
+     * @param string $id (Bucket ID)
      * @param int $limit
      * @return void
      * @throws ApiServiceException
@@ -382,7 +381,7 @@ abstract class ApiController extends Controller
     /**
      * Validate and return plaintext body.
      *
-     * @param array $rules (Rules with key = body)
+     * @param array $rules (Rules with key of "body")
      * @return string
      * @throws BadRequestException
      */
@@ -414,11 +413,11 @@ abstract class ApiController extends Controller
      * - Filters response using the api.response filter
      * - Triggers the api.auditable event if needed
      * - Triggers the api.response event
-     * - Sends $data as json_encoded string
+     * - Sends $data as JSON encoded string
      *
      * @param int $status_code (HTTP status code to send)
      * @param array $data (Data to send)
-     * @param array $headers (Key/value pairs of header values to send)
+     * @param array $headers (Key/value pairs of headers to send)
      * @return void
      * @throws ApiServiceException
      */

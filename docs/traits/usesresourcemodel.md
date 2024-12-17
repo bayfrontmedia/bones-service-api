@@ -1,0 +1,1 @@
+# [API service](../../README.md) > [Traits](../README.md) > UsesResourceModel

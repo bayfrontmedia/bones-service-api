@@ -1,0 +1,1 @@
+# [API service](../../README.md) > [Controllers](../README.md) > TenantTeams

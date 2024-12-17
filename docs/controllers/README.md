@@ -3,7 +3,7 @@
 If using any of the API service controllers, the router cannot utilize the `class_namespace` [config key](https://github.com/bayfrontmedia/bones/blob/master/docs/services/router.md)
 since the API controllers reside in a different namespace than the controllers used at the app-level (see [routes](../setup.md#routes)).
 
-Every API controller response should use the `respond` method (TODO), 
+Every API controller response should use the [respond](apicontroller.md#respond) method, 
 and every exception should extend `ApiHttpException` or `ApiServiceException` (see [exceptions](../exceptions.md)).
 This allows the execution of the appropriate filters and events, and ensures a valid API schema is always returned.
 

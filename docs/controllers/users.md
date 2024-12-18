@@ -92,7 +92,7 @@ Read current user
 **Response:**
 
 - HTTP status code: `200`
-- Schema: `UserResource`
+- Schema: [UserResource](../schemas.md#userresource)
 
 **Throws:**
 
@@ -129,12 +129,12 @@ Create new resource.
 
 **Body:**
 
-- [Users model](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/models/users.md) fields
+- [UsersModel](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/models/users.md) fields
 
 **Response:**
 
 - HTTP status code: `200`
-- Schema: `UserResource`
+- Schema: [UserResource](../schemas.md#userresource)
 
 **Throws:**
 
@@ -176,7 +176,7 @@ List resources.
 **Response:**
 
 - HTTP status code: `200`
-- Schema: `UserCollection`
+- Schema: [UserCollection](../schemas.md#usercollection)
 
 **Throws:**
 
@@ -217,7 +217,7 @@ Read single resource.
 **Response:**
 
 - HTTP status code: `200`
-- Schema: `UserResource`
+- Schema: [UserResource](../schemas.md#userresource)
 
 **Throws:**
 
@@ -256,14 +256,14 @@ Update existing resource.
 
 **Body:**
 
-- [Users model](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/models/users.md) fields
+- [UsersModel](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/models/users.md) fields
 
 Non-admin users cannot define `admin` or `enabled` fields.
 
 **Response:**
 
 - HTTP status code: `200`
-- Schema: `UserResource`
+- Schema: [UserResource](../schemas.md#userresource)
 
 **Throws:**
 
@@ -347,7 +347,7 @@ List user's tenant invitations.
 **Response:**
 
 - HTTP status code: `200`
-- Schema: `TenantInvitationCollection`
+- Schema: [TenantInvitationCollection](../schemas.md#tenantinvitationcollection)
 
 **Throws:**
 
@@ -432,7 +432,7 @@ List tenants user belongs to.
 **Response:**
 
 - HTTP status code: `200`
-- Schema: `TenantCollection`
+- Schema: [TenantCollection](../schemas.md#tenantcollection)
 
 **Throws:**
 

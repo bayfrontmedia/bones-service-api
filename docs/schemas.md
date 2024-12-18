@@ -90,11 +90,11 @@ For more information, see [getAggregate](https://github.com/bayfrontmedia/bones-
 }
 ```
 
-| Field             | Type        | Description                       |
-|-------------------|-------------|-----------------------------------|
-| `results.current` | `int`       | Number of results returned        |
-| `cursor.first`    | `int`       | Cursor of first returned resource |
-| `cursor.last`     | `int`       | Cursor of last returned resource  |
+| Field             | Type     | Description                       |
+|-------------------|----------|-----------------------------------|
+| `results.current` | `int`    | Number of results returned        |
+| `cursor.first`    | `string` | Cursor of first returned resource |
+| `cursor.last`     | `string` | Cursor of last returned resource  |
 
 ## ErrorResource
 

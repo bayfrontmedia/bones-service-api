@@ -70,8 +70,8 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
                 'version' => $this->apiService->getConfig('version', ''),
                 'client_ip' => Request::getIp(),
                 'request_id' => Constants::isDefined('REQUEST_ID') ? Constants::get('REQUEST_ID') : null,
-                'date' => date('c'),
-                'elapsed' => App::getElapsedTime()
+                'elapsed' => App::getElapsedTime(),
+                'time' => date('c')
             ]));
 
             $data[$meta_field] = $this->apiService->filters->doFilter('api.response.meta', $data[$meta_field]);

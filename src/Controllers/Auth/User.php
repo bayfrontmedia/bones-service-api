@@ -57,11 +57,13 @@ class User extends AuthApiController
     }
 
     /**
+     * Register new user.
+     *
      * @return void
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws NotFoundException
      * @throws ConflictException
+     * @throws NotFoundException
      */
     public function register(): void
     {
@@ -88,7 +90,7 @@ class User extends AuthApiController
     }
 
     /**
-     * Request password reset and respond with 201 HTTP status code.
+     * Request password reset token.
      * Executes api.user.password_request event.
      *
      * @return void
@@ -141,7 +143,7 @@ class User extends AuthApiController
     }
 
     /**
-     * Reset password and respond with 200 HTTP status code.
+     * Reset password.
      * Executes rbac.user.password.updated event.
      *
      * @return void
@@ -212,7 +214,7 @@ class User extends AuthApiController
     }
 
     /**
-     * Request new user verification TOTP and respond with 201 HTTP status code.
+     * Request new user verification token.
      * Executes api.user.verification_request event.
      *
      * @return void
@@ -263,7 +265,7 @@ class User extends AuthApiController
     }
 
     /**
-     * Verify new user verification TOTP and respond with 200 HTTP status code.
+     * Verify new user verification token.
      * Executes rbac.user.verified event.
      *
      * @return void

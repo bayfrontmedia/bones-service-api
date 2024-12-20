@@ -124,8 +124,8 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
      * @inheritDoc
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws ForbiddenException
      * @throws ConflictException
+     * @throws ForbiddenException
      * @throws NotFoundException
      */
     public function update(array $params): void

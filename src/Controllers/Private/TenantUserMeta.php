@@ -186,8 +186,8 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
      * @inheritDoc
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws ForbiddenException
      * @throws ConflictException
+     * @throws ForbiddenException
      * @throws NotFoundException
      */
     public function update(array $params): void

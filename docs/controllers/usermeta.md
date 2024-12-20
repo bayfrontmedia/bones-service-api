@@ -45,7 +45,7 @@ Create new resource.
 
 **Response:**
 
-- HTTP status code: `200`
+- HTTP status code: `201`
 - Schema: [UserMetaResource](../schemas.md#usermetaresource)
 
 **Throws:**
@@ -63,7 +63,7 @@ List resources.
 
 **Route:**
 
-`GET /usrs/{user}/meta`
+`GET /users/{user}/meta`
 
 **Path parameters:**
 

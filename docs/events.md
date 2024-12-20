@@ -6,14 +6,14 @@ The following [events](https://github.com/bayfrontmedia/bones/blob/master/docs/s
 The `ApiService` instance is passed as a parameter.
 - `api.auth.limit`: Executes when a rate limit has been exceeded. 
 - `api.auth.otp`: Executes when a user attempts to authenticate with a correct email and a OTP has been generated.
-A [User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md) and `Totp` instance are passed as parameters.
+A [User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md) and [Totp](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/totp.md) instance are passed as parameters.
 - `api.auth.otp.fail`: Executes when a user fails to authenticate using their email + OTP. The email address used
 is passed as a parameter.
 - `api.auth.password.fail`: Executes when a user fails to authenticate using email + password. The email address used
 is passed as a parameter.
 - `api.auth.password.tfa`: Executes when a user attempts to authenticate with a correct email + password and a 
 TFA code has been generated. A [User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md) and
-`Totp` instance are passed as parameters.
+[Totp](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/totp.md) instance are passed as parameters.
 - `api.auth.refresh.fail`: Executes when a user fails to authenticate using a refresh token.
 - `api.auth.tfa.fail`: Executes when a user fails to authenticate using email + TFA. The email address used is passed
 as a parameter.
@@ -28,11 +28,11 @@ The `ApiController` instance is passed as a parameter.
 - `api.user.password.fail`: Executes when a user fails to reset their password using an incorrect token. The email address
 used is passed as a parameter.
 - `api.user.password_request`: Executes when a user requests a password reset. 
-A [User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md) and `Totp` instance are passed as parameters.
+A [User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md) and [Totp](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/totp.md) instance are passed as parameters.
 - `api.user.password_request.fail`: Executes when a user fails to request a password reset. This is typically because
 sufficient time has not yet elapsed since the last request was made. The email address used is passed as a parameter.
 - `api.user.verification_request`: Executes when a user verification request is created.
-A [User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md) and `Totp` instance are passed as parameters.
+A [User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md) and [Totp](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/totp.md) instance are passed as parameters.
 - `api.user.verification_request.fail`: Executes when a user fails to request a new email verification. 
 This is typically because the user is already verified, or sufficient time has not yet elapsed since the last request was made.
 The email address used is passed as a parameter.

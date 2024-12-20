@@ -133,7 +133,7 @@ Create new resource.
 
 **Response:**
 
-- HTTP status code: `200`
+- HTTP status code: `201`
 - Schema: [UserResource](../schemas.md#userresource)
 
 **Throws:**

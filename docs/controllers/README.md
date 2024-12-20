@@ -17,10 +17,6 @@ All API controllers should extend one of:
 API controllers can also use any of the available [controller traits](../traits/README.md).
 In addition, controllers can implement [CrudControllerInterface](crudcontrollerinterface.md).
 
-- [Public controllers](#public-controllers)
-- [Auth controllers](#auth-controllers)
-- [Private controllers](#private-controllers)
-
 ## Public controllers
 
 - [Server](server.md)

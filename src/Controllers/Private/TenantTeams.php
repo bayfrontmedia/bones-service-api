@@ -158,8 +158,8 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
      * @inheritDoc
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws ForbiddenException
      * @throws ConflictException
+     * @throws ForbiddenException
      * @throws NotFoundException
      */
     public function update(array $params): void
@@ -231,9 +231,17 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
             'id' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_teams:read'
-        ]);
+        try {
+
+            if (!$this->user->canDoAll($params['tenant'], [
+                    'tenant_teams:read'
+                ]) && !$this->user->inTeam($params['tenant'], $params['id'])) {
+                throw new ForbiddenException();
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
 
         $this->validateQuery($this->getQueryParserRules(), true);
 

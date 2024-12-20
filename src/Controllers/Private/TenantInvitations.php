@@ -120,7 +120,7 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
      */
     public function update(array $params): void
     {
-        // Non-routed
+        // Non-routed (relationship)
     }
 
     /**

@@ -158,6 +158,8 @@ Non-admin users cannot update domain or enabled values.
 Domain is always transformed to a lowercase URL-friendly slug.
 Owner cannot be set to user not already in tenant.
 
+Update a `null` value to a meta key to be removed.
+
 **Route:**
 
 `PATCH /tenants/{id}`

@@ -234,6 +234,8 @@ Read single resource.
 
 Update existing resource.
 
+Update a `null` value to a meta key to be removed.
+
 **Route:**
 
 `PATCH /users/{id}`

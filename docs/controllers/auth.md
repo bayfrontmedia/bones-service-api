@@ -2,6 +2,8 @@
 
 - Extends [AuthApiController](authapicontroller.md)
 
+Authentication errors are purposely kept nonspecific so as not to reveal unnecessary account information.
+
 Methods:
 
 - [login](#login)

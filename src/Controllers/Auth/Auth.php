@@ -141,6 +141,7 @@ class Auth extends AuthApiController
 
     /**
      * Initiate authentication by creating OTP.
+     * Executes api.auth.otp event.
      *
      * @return void
      * @throws ApiServiceException

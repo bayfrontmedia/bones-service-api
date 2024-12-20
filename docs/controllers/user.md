@@ -84,7 +84,7 @@ Executes `api.user.password_request` event.
 
 **Body:**
 
-- `$email` (string): Required
+- `email` (string): Required
 
 **Response:**
 
@@ -128,9 +128,9 @@ Executes `rbac.user.password.updated` event.
 
 **Body:**
 
-- `$email` (string): Required
-- `$password` (string): Required
-- `$token` (string): Required
+- `email` (string): Required
+- `password` (string): Required
+- `token` (string): Required
 
 **Response:**
 
@@ -182,7 +182,7 @@ Executes `api.user.verification_request` event.
 
 **Body:**
 
-- `$email` (string): Required
+- `email` (string): Required
 
 **Response:**
 
@@ -226,7 +226,7 @@ Executes `rbac.user.verified` event.
 
 **Body:**
 
-- `$email` (string): Required
+- `email` (string): Required
 
 **Response:**
 

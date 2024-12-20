@@ -12,6 +12,7 @@ Methods:
 - [read](#read)
 - [update](#update)
 - [delete](#delete)
+- [listUsers](#listusers)
 
 ## create
 

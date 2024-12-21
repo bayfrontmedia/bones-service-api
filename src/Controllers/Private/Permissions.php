@@ -61,6 +61,20 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
 
     /**
      * @inheritDoc
+     */
+    public function getAuditableActions(): array
+    {
+        return [
+            self::AUDIT_ACTION_CREATED,
+            self::AUDIT_ACTION_UPDATED,
+            self::AUDIT_ACTION_TRASHED,
+            self::AUDIT_ACTION_RESTORED,
+            self::AUDIT_ACTION_DELETED
+        ];
+    }
+
+    /**
+     * @inheritDoc
      * @throws ApiServiceException
      * @throws BadRequestException
      * @throws ConflictException

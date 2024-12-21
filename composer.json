@@ -25,7 +25,7 @@
     "preferred-install": "dist"
   },
   "require": {
-    "php": "^8.0",
+    "php": "^8.2",
     "bayfrontmedia/bones": "dev-dev",
     "bayfrontmedia/bones-service-orm": "dev-dev",
     "bayfrontmedia/bones-service-rbac": "@dev",

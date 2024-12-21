@@ -411,7 +411,6 @@ abstract class ApiController extends Controller
      * Send API response.
      *
      * - Filters response using the api.response filter
-     * - Triggers the api.auditable event if needed
      * - Triggers the api.response event
      * - Sends $data as JSON encoded string
      *

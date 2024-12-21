@@ -2,6 +2,7 @@
 
 - [Configuration](#configuration)
 - [Add to container](#add-to-container)
+- [Database migration and seeding](#database-migration-and-seeding)
 - [Routes](#routes)
 - [Scheduled jobs](#scheduled-jobs)
 - [Exception handler](#exception-handler)
@@ -207,6 +208,25 @@ $apiService = $container->make('Bayfront\BonesService\Api\ApiService', [
 $container->set('Bayfront\BonesService\Api\ApiService', $apiService);
 $container->setAlias('apiService', 'Bayfront\BonesService\Api\ApiService');
 ```
+
+## Database migration and seeding
+
+Since the API service utilizes the RBAC service, the [RBAC service migration](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/setup.md#database-migration-and-seeding) must be run using:
+
+```shell
+php bones migrate:up
+```
+
+Initial database seeding with an initial admin user and all the necessary permissions can be done from the console:
+
+```shell
+php bones api:seed user@example.com password
+
+# Force seeding (no input/confirmation required)
+php bones api:seed user@example.com password --force
+```
+
+The password is optional. If not provided, one will be created automatically.
 
 ## Routes
 

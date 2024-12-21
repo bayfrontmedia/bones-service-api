@@ -9,6 +9,7 @@ use Bayfront\Bones\Application\Utilities\Constants;
 use Bayfront\Bones\Exceptions\ConstantAlreadyDefinedException;
 use Bayfront\Bones\Interfaces\EventSubscriberInterface;
 use Bayfront\BonesService\Api\ApiService;
+use Bayfront\BonesService\Api\Commands\ApiSeed;
 use Bayfront\BonesService\Api\Controllers\Abstracts\ApiController;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
@@ -30,6 +31,7 @@ use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 use Bayfront\StringHelpers\Str;
+use Symfony\Component\Console\Application;
 use Throwable;
 
 class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterface
@@ -57,6 +59,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
             new EventSubscription('api.controller', [$this, 'checkIpWhitelist'], 5),
             new EventSubscription('api.response', [$this, 'setRequiredHeaders'], 5),
             new EventSubscription('bones.exception', [$this, 'setStatusCode'], 5),
+            new EventSubscription('app.cli', [$this, 'addConsoleCommands'], 10),
             new EventSubscription('app.cli', [$this, 'scheduleApiJobs'], 10),
             new EventSubscription('app.http', [$this, 'defineRequestId'], 5)
         ];
@@ -207,6 +210,15 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
             $response->setStatusCode($e->getHttpStatusCode());
         }
 
+    }
+
+    /**
+     * @param Application $application
+     * @return void
+     */
+    public function addConsoleCommands(Application $application): void
+    {
+        $application->add(new ApiSeed($this->apiService));
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Abstracts;
 
+use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
@@ -19,6 +20,7 @@ use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDisabledException;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDoesNotExistException;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserNotVerifiedException;
 use Bayfront\BonesService\Rbac\User;
+use Bayfront\Container\ContainerException;
 use Bayfront\HttpRequest\Request;
 
 abstract class PrivateApiController extends ApiController
@@ -48,7 +50,8 @@ abstract class PrivateApiController extends ApiController
     }
 
     /**
-     * Identify user using an enabled identification method.
+     * Identify user using an enabled identification method,
+     * and places User class into the container.
      *
      * @return User
      * @throws ApiServiceException
@@ -62,14 +65,22 @@ abstract class PrivateApiController extends ApiController
             $authenticator = new TokenAuthenticator($this->rbacService);
 
             try {
-                return $authenticator->authenticate(Request::getHeader('Bearer'), $authenticator::TOKEN_TYPE_ACCESS);
+
+                $user = $authenticator->authenticate(Request::getHeader('Bearer'), $authenticator::TOKEN_TYPE_ACCESS);
+
+                $container = App::getContainer();
+                $container->set($user::class, $user);
+                $container->setAlias('user', $user::class);
+
+                return $user;
+
             } catch (InvalidTokenException|TokenDoesNotExistException|UserDoesNotExistException) {
                 throw new ForbiddenException('Invalid credentials');
             } catch (UserDisabledException) {
                 throw new ForbiddenException('User is disabled');
             } catch (UserNotVerifiedException) {
                 throw new ForbiddenException('User is not verified');
-            } catch (UnexpectedAuthenticationException $e) {
+            } catch (UnexpectedAuthenticationException|ContainerException $e) {
                 throw new ApiServiceException($e->getMessage());
             }
 
@@ -84,7 +95,15 @@ abstract class PrivateApiController extends ApiController
             }
 
             try {
-                return $authenticator->authenticate(Request::getHeader('X-API-Key'), Request::getIp(), $referer);
+
+                $user = $authenticator->authenticate(Request::getHeader('X-API-Key'), Request::getIp(), $referer);
+
+                $container = App::getContainer();
+                $container->set($user::class, $user);
+                $container->setAlias('user', $user::class);
+
+                return $user;
+
             } catch (InvalidUserKeyException|UserDoesNotExistException) {
                 throw new ForbiddenException('Invalid credentials');
             } catch (ExpiredUserKeyException) {
@@ -97,7 +116,7 @@ abstract class PrivateApiController extends ApiController
                 throw new ForbiddenException('User is disabled');
             } catch (UserNotVerifiedException) {
                 throw new ForbiddenException('User is not verified');
-            } catch (UnexpectedAuthenticationException $e) {
+            } catch (UnexpectedAuthenticationException|ContainerException $e) {
                 throw new ApiServiceException($e->getMessage());
             }
 

@@ -15,7 +15,6 @@ use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
 use Bayfront\BonesService\Api\Schemas\PermissionCollection;
 use Bayfront\BonesService\Api\Schemas\PermissionResource;
 use Bayfront\BonesService\Api\Schemas\TenantRoleCollection;
-use Bayfront\BonesService\Api\Traits\Auditable;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
@@ -28,7 +27,7 @@ use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
 class Permissions extends PrivateApiController implements CrudControllerInterface
 {
 
-    use Auditable, UsesResourceModel;
+    use UsesResourceModel;
 
     protected PermissionsModel $permissionsModel;
 
@@ -43,34 +42,6 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
     {
         parent::__construct($apiService);
         $this->permissionsModel = $permissionsModel;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAuditableFunctions(): array
-    {
-        return [
-            'create',
-            'list',
-            'read',
-            'update',
-            'delete'
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAuditableActions(): array
-    {
-        return [
-            self::AUDIT_ACTION_CREATED,
-            self::AUDIT_ACTION_UPDATED,
-            self::AUDIT_ACTION_TRASHED,
-            self::AUDIT_ACTION_RESTORED,
-            self::AUDIT_ACTION_DELETED
-        ];
     }
 
     /**

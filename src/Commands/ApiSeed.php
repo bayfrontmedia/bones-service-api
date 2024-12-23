@@ -84,7 +84,7 @@ class ApiSeed extends Command
             if ($input->getArgument('password')) {
                 $password = $input->getArgument('password');
             } else {
-                $password = Str::random(24, Str::RANDOM_TYPE_ALL);
+                $password = Str::random(24);
             }
 
             $user = $users->create([

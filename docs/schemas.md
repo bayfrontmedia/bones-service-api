@@ -236,8 +236,8 @@ Object with properties:
 |--------------|----------------|--------------------------------|
 | `id`         | `string`       | Resource ID                    |
 | `email`      | `string`       | Email address                  |
-| `tenant`     | `string`       | Tenant (ID)                    |
-| `role`       | `string`       | Tenant role (ID)               |
+| `tenant`     | `string`       | Tenant ID                      |
+| `role`       | `string`       | Tenant role ID                 |
 | `expires_at` | `string`       | Invitation expiration datetime |
 | `created_at` | `string`       | Resource creation datetime     |
 | `updated_at` | `string\|null` | Last updated datetime          |
@@ -270,7 +270,7 @@ Object with properties:
 | Field        | Type           | Description                 |
 |--------------|----------------|-----------------------------|
 | `id`         | `string`       | Resource ID                 |
-| `tenant`     | `string`       | Tenant (ID)                 |
+| `tenant`     | `string`       | Tenant ID                   |
 | `meta_key`   | `string`       | Meta key (unique to tenant) |
 | `meta_value` | `string`       | Meta value                  |
 | `created_at` | `string`       | Resource creation datetime  |
@@ -442,7 +442,7 @@ Object with properties:
 | Field         | Type           | Description                      |
 |---------------|----------------|----------------------------------|
 | `id`          | `string`       | Resource ID                      |
-| `tenant_user` | `string`       | Tenant user (ID)                 |
+| `tenant_user` | `string`       | Tenant user ID                   |
 | `meta_key`    | `string`       | Meta key (unique to tenant user) |
 | `meta_value`  | `string`       | Meta value                       |
 | `created_at`  | `string`       | Resource creation datetime       |
@@ -614,7 +614,7 @@ Object with properties:
 | Field        | Type           | Description                |
 |--------------|----------------|----------------------------|
 | `id`         | `string`       | Resource ID                |
-| `user`       | `string`       | User (ID)                  |
+| `user`       | `string`       | User ID                    |
 | `meta_key`   | `string`       | Meta key (unique to user)  |
 | `meta_value` | `string`       | Meta value                 |
 | `created_at` | `string`       | Resource creation datetime |

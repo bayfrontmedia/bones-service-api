@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [2.0.0] - 2024.12.23
+
+### Added
+
+- Added `bones-service-rbac` functionality
+
+### Changed
+
+- Updated to work with Bones `v5.3`
+- Updated all dependencies
+
 ## [1.1.0] - 2024.09.04
 
 ### Changed

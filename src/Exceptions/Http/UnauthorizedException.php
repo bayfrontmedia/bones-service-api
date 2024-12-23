@@ -2,13 +2,12 @@
 
 namespace Bayfront\BonesService\Api\Exceptions\Http;
 
-use Bayfront\Bones\Exceptions\HttpException;
-use Bayfront\BonesService\Api\Interfaces\ApiExceptionInterface;
+use Bayfront\BonesService\Api\Exceptions\ApiHttpException;
 
 /**
  * HTTP status 401.
  */
-class UnauthorizedException extends HttpException implements ApiExceptionInterface
+class UnauthorizedException extends ApiHttpException
 {
 
     /**

@@ -286,7 +286,7 @@ $this->scheduler->call('delete-expired-buckets', function () {
         
     }
 
-}
+});
 ```
 
 ### PDO
@@ -295,11 +295,11 @@ $this->scheduler->call('delete-expired-buckets', function () {
 $this->scheduler->call('delete-expired-buckets', function () {
 
     // Specify table used for buckets
-    $this->db->query("DELETE FROM buckets WHERE updatedAt < DATE_SUB(NOW(), INTERVAL 60 MINUTE)");
+    $this->db->query("DELETE FROM buckets WHERE updated_at < DATE_SUB(NOW(), INTERVAL 60 MINUTE)");
 
     $count = $this->db->rowCount();
 
-}
+});
 ```
 
 ## Exception handler

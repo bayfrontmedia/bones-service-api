@@ -146,7 +146,7 @@ These will halt the normal API response and return the available parameters when
   - `rbac.tenant.invitation.accepted`
 - `request.headers`: API requests without these headers will return a `BadRequestException`.
 - `request.https_env`: API requests not made over HTTPS in these environments will return a `NotAcceptableException`.
-- `request.id`: When enabled, a unique `REQUEST_ID` constant is created in the `app.http` event which can be used
+- `request.id`: When enabled, a unique `REQUEST_ID` constant is created in the `app.bootstrap` event which can be used
 to identify each unique request as it is processed by the API. It is added to the `ErrorResource` schema as well as the
 returned meta array when `request.meta.enabled` is `true`. The request ID is helpful to attach to any logging services
 which may be used by the API.

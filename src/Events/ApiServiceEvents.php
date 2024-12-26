@@ -61,7 +61,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
             new EventSubscription('bones.exception', [$this, 'setStatusCode'], 5),
             new EventSubscription('app.cli', [$this, 'addConsoleCommands'], 10),
             new EventSubscription('app.cli', [$this, 'scheduleApiJobs'], 10),
-            new EventSubscription('app.http', [$this, 'defineRequestId'], 5)
+            new EventSubscription('app.bootstrap', [$this, 'defineRequestId'], 5)
         ];
     }
 

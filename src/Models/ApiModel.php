@@ -9,6 +9,7 @@ use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Orm\OrmResource;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
+use Bayfront\BonesService\Rbac\User;
 
 class ApiModel extends Model
 {
@@ -45,7 +46,7 @@ class ApiModel extends Model
             $this->apiService->getConfig('user.verification.type', $this->apiService->rbacService::TOTP_TYPE_ALPHANUMERIC)
         );
 
-        $this->apiService->events->doEvent('api.user.verification_request', $user, $totp);
+        $this->apiService->events->doEvent('api.user.verification_request', new User($this->apiService->rbacService, $user), $totp);
 
     }
 

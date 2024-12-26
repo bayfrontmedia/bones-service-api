@@ -4,6 +4,7 @@
 - [Add to container](#add-to-container)
 - [Database migration and seeding](#database-migration-and-seeding)
 - [Routes](#routes)
+- [Setup events](#setup-events)
 - [Scheduled jobs](#scheduled-jobs)
 - [Exception handler](#exception-handler)
 
@@ -20,9 +21,6 @@ use Bayfront\BonesService\Rbac\RbacService;
 
 return [
     'version' => '1.0.0', // API version
-    'dev_events' => [ // Environments in which to load ApiServiceDevEvents
-        App::ENV_DEV,
-    ],
     'request' => [
         'headers' => [ // Required headers for every request
             'Accept' => 'application/json',
@@ -133,17 +131,6 @@ return [
 
 - `version`: The API version is added to the information returned by the `php bones about:bones` [console command](https://github.com/bayfrontmedia/bones/blob/master/docs/usage/console.md).
 It is also added to the returned meta array when `request.meta.enabled` is `true`.
-- `dev_events`: App environments in which to load `ApiServiceDevEvents`.
-**These should never be enabled in a production environment, as they will expose sensitive information!** 
-These will halt the normal API response and return the available parameters when the following events are triggered:
-  - `api.auth.otp`
-  - `api.auth.password.tfa`
-  - `api.user.password.request`
-  - `api.user.verification.request`
-  - `rbac.user.verified`
-  - `rbac.user.password.updated`
-  - `rbac.tenant.invitation.created`
-  - `rbac.tenant.invitation.accepted`
 - `request.headers`: API requests without these headers will return a `BadRequestException`.
 - `request.https_env`: API requests not made over HTTPS in these environments will return a `NotAcceptableException`.
 - `request.id`: When enabled, a unique `REQUEST_ID` constant is created in the `app.bootstrap` event which can be used
@@ -250,6 +237,21 @@ The API service does not include a route for the root URL. This can be handled a
 
 If using any of the API service controllers, the router cannot utilize the `class_namespace` [config key](https://github.com/bayfrontmedia/bones/blob/master/docs/services/router.md)
 since the API controllers reside in a different namespace than the controllers used at the app-level.
+
+## Setup events
+
+Some events used by this service would most likely need to dispatch messages. This must be setup on an app-level.
+
+The suggested events are:
+
+- `api.auth.otp`
+- `api.auth.password.tfa`
+- `api.user.password.request`
+- `rbac.user.password.updated`
+- `api.user.verification.request`
+- `rbac.user.verified`
+- `rbac.tenant.invitation.created`
+- `rbac.tenant.invitation.accepted`
 
 ## Scheduled jobs
 

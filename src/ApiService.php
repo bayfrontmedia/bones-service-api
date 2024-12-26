@@ -58,10 +58,6 @@ class ApiService extends Service
 
             $this->events->addSubscriptions(new ApiServiceEvents($this, $scheduler));
 
-            if (in_array(App::environment(), $this->getConfig('dev_events', []))) {
-                $this->events->addSubscriptions(new ApiServiceDevEvents($this));
-            }
-
         } catch (ServiceException $e) {
             throw new ApiServiceException('Unable to start ApiService: ' . $e->getMessage(), $e->getCode(), $e->getPrevious());
         }

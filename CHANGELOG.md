@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated initial user created with `api:seed` to be automatically verified
 
+### Fixed
+
+- `/users/logout` route bugfix
+
 ## [2.1.1] - 2024.12.26
 
 ### Fixed

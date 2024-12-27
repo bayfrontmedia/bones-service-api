@@ -128,7 +128,7 @@ class ApiRoutes
             ->patch($route_prefix . '/users/{*:user}/meta/{*:id}', [UserMeta::class, 'update'])
             ->delete($route_prefix . '/users/{*:user}/meta/{*:id}', [UserMeta::class, 'delete'])
             // Users
-            ->get($route_prefix . '/users/logout', [Users::class, 'logout'])
+            ->post($route_prefix . '/users/logout', [Users::class, 'logout'])
             ->get($route_prefix . '/users/me', [Users::class, 'me'])
             ->post($route_prefix . '/users', [Users::class, 'create'])
             ->get($route_prefix . '/users', [Users::class, 'list'])

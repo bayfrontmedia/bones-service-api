@@ -204,7 +204,7 @@ Since the API service utilizes the RBAC service, the [RBAC service migration](ht
 php bones migrate:up
 ```
 
-Initial database seeding with an initial admin user and all the necessary permissions can be done from the console:
+Initial database seeding with a verified admin user and all the necessary permissions can be done from the console:
 
 ```shell
 php bones api:seed user@example.com password

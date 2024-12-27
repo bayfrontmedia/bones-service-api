@@ -87,12 +87,16 @@ class ApiSeed extends Command
                 $password = Str::random(24);
             }
 
+            $email = $input->getArgument('email');
+
             $user = $users->create([
-                'email' => $input->getArgument('email'),
+                'email' => $email,
                 'password' => $password,
                 'enabled' => true,
                 'admin' => true
             ]);
+
+            $users->verify($email);
 
             $permissions->create([
                 'name' => 'tenant:update',

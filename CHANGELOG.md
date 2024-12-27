@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## Upcoming
+
+### Changed
+
+- Updated initial user created with `api:seed` to be automatically verified
+
 ## [2.1.1] - 2024.12.26
 
 ### Fixed

@@ -13,7 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
-## Upcoming
+## [2.2.0] - Upcoming
+
+### Added
+
+- Added Postman collection and environment assets
 
 ### Changed
 

@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `/users/logout` route bugfix
+- Fixed bug in `TenantUsers` controller not listing permissions for tenant owner
 
 ## [2.1.1] - 2024.12.26
 

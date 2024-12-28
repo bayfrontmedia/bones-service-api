@@ -2379,6 +2379,13 @@
 								"TENANT_USER",
 								"roles",
 								"ID"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -2866,7 +2873,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/ID/permissions",
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/01940867-25e0-728a-aef6-7e9b24296142/permissions",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -2874,10 +2881,40 @@
 								"tenants",
 								"{{tenantId}}",
 								"users",
-								"ID",
+								"01940867-25e0-728a-aef6-7e9b24296142",
 								"permissions"
 							],
 							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
 								{
 									"key": "pagination",
 									"value": "page",
@@ -2889,13 +2926,18 @@
 									"disabled": true
 								},
 								{
-									"key": "fields",
-									"value": "*",
+									"key": "before",
+									"value": "",
 									"disabled": true
 								},
 								{
-									"key": "filter",
-									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
 									"disabled": true
 								},
 								{

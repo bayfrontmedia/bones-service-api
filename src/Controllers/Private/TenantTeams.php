@@ -81,7 +81,6 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
      * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws ForbiddenException
      */
     public function list(array $params): void
     {
@@ -89,8 +88,6 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
         $this->validatePath($params, [
             'tenant' => 'required|uuid'
         ]);
-
-        $this->validateInEnabledTenant($this->user, $params['tenant']);
 
         $query_filter = [];
 

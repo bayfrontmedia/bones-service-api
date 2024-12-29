@@ -23,7 +23,7 @@ Methods include:
 
 - [enforceRateLimit](#enforceratelimit)
 - [validateIsAdmin](#validateisadmin)
-- [validateInActiveTenant](#validateinactivetenant)
+- [validateInEnabledTenant](#validateinenabledtenant)
 - [validateHasPermissions](#validatehaspermissions)
 - [validatePath](#validatepath)
 - [validateQuery](#validatequery)
@@ -95,11 +95,11 @@ Validate user is admin.
 
 - `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 
-## validateInActiveTenant
+## validateInEnabledTenant
 
 **Description:**
 
-Validate user is in active tenant.
+Validate user is in enabled tenant.
 Admin users have no restrictions.
 
 **Parameters:**

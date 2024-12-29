@@ -126,7 +126,7 @@ abstract class ApiController extends Controller
     }
 
     /**
-     * Validate user is in active tenant.
+     * Validate user is in enabled tenant.
      * Admin users have no restrictions.
      *
      * @param User $user
@@ -135,7 +135,7 @@ abstract class ApiController extends Controller
      * @throws ApiServiceException
      * @throws ForbiddenException
      */
-    protected function validateInActiveTenant(User $user, string $tenant_id): void
+    protected function validateInEnabledTenant(User $user, string $tenant_id): void
     {
 
         if ($user->isAdmin()) {
@@ -143,11 +143,11 @@ abstract class ApiController extends Controller
         }
 
         try {
-            if (!$user->inActiveTenant($tenant_id)) {
+            if (!$user->inEnabledTenant($tenant_id)) {
                 throw new ForbiddenException();
             }
         } catch (UnexpectedException $e) {
-            throw new ApiServiceException('Unable to verify user in active tenant: Unexpected error', 0, $e);
+            throw new ApiServiceException('Unable to verify user in enabled tenant: Unexpected error', 0, $e);
         }
 
     }

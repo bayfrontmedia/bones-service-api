@@ -90,7 +90,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
             'tenant' => 'required|uuid'
         ]);
 
-        $this->validateInActiveTenant($this->user, $params['tenant']);
+        $this->validateInEnabledTenant($this->user, $params['tenant']);
 
         $query_filter = [];
 

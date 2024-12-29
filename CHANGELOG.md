@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added Postman collection and environment assets
+- Added `validateInActiveTenant` method in `ApiController`
 
 ### Changed
 
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `/users/logout` route bugfix
 - Fixed bug in `TenantUsers` controller not listing permissions for tenant owner
+- Fixed bug in tenant-scoped controller `list` methods not returning `ForbiddenException` if tenant is not enabled 
 
 ## [2.1.1] - 2024.12.26
 

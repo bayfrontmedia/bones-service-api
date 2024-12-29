@@ -139,7 +139,7 @@ returned meta array when `request.meta.enabled` is `true`. The request ID is hel
 which may be used by the API.
 - `request.ip_whitelist`: API requests made from an IP not found in this list will return a `ForbiddenException`.
 - `request.meta`: When enabled, requests with the field value of `true` existing in the query will return an array of
-metadata along with the request. For example, by adding `?meta=true` to the request, the response will include metadata.
+metadata along with the response. For example, by adding `?meta=true` to the request, the response will include metadata.
 This array can be filtered using the [api.response.meta filter](filters.md).
 The `request.meta.env` array specifies which app environments to allow this functionality.
 - `response.headers`: Headers to send with every API response.
@@ -204,7 +204,7 @@ Since the API service utilizes the RBAC service, the [RBAC service migration](ht
 php bones migrate:up
 ```
 
-Initial database seeding with an initial admin user and all the necessary permissions can be done from the console:
+Initial database seeding with a verified admin user and all the necessary permissions can be done from the console:
 
 ```shell
 php bones api:seed user@example.com password

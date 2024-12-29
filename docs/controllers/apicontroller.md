@@ -23,6 +23,7 @@ Methods include:
 
 - [enforceRateLimit](#enforceratelimit)
 - [validateIsAdmin](#validateisadmin)
+- [validateInEnabledTenant](#validateinenabledtenant)
 - [validateHasPermissions](#validatehaspermissions)
 - [validatePath](#validatepath)
 - [validateQuery](#validatequery)
@@ -80,7 +81,7 @@ Enforce rate limit and set `X-RateLimit` headers.
 
 **Description:**
 
-Validate user is admin
+Validate user is admin.
 
 **Parameters:**
 
@@ -92,6 +93,27 @@ Validate user is admin
 
 **Throws:**
 
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
+
+## validateInEnabledTenant
+
+**Description:**
+
+Validate user is in enabled tenant.
+Admin users have no restrictions.
+
+**Parameters:**
+
+- `$user` ([User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md))
+- `$tenant_id` (string)
+
+**Returns:**
+
+- (void)
+
+**Throws:**
+
+- `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 
 ## validateHasPermissions

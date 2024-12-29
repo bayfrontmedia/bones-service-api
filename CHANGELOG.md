@@ -13,6 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [2.2.0] - 2024.12.29
+
+### Added
+
+- Added Postman collection and environment assets
+- Added `validateInActiveTenant` method in `ApiController`
+
+### Changed
+
+- Updated initial user created with `api:seed` to be automatically verified
+
+### Fixed
+
+- `/users/logout` route bugfix
+- Fixed bug in `TenantUsers` controller not listing permissions for tenant owner
+- Fixed bug in tenant-scoped controller `list` methods not returning `ForbiddenException` if tenant is not enabled 
+
 ## [2.1.1] - 2024.12.26
 
 ### Fixed

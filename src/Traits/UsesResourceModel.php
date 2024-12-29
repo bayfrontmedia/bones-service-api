@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Traits;
 
+use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
 use Bayfront\BonesService\Api\Exceptions\Http\ConflictException;
@@ -27,9 +28,20 @@ trait UsesResourceModel
      */
     protected function getFieldParserRules(): array
     {
+        if ($this->apiService->getConfig('request.meta.enabled') === true
+            && in_array(App::environment(), $this->apiService->getConfig('request.meta.env', []))) {
+
+            return [
+                'fields' => 'isString',
+                $this->apiService->getConfig('request.meta.field', 'meta') => 'isString'
+            ];
+
+        }
+
         return [
             'fields' => 'isString'
         ];
+
     }
 
     /**

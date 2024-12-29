@@ -126,6 +126,33 @@ abstract class ApiController extends Controller
     }
 
     /**
+     * Validate user is in enabled tenant.
+     * Admin users have no restrictions.
+     *
+     * @param User $user
+     * @param string $tenant_id
+     * @return void
+     * @throws ApiServiceException
+     * @throws ForbiddenException
+     */
+    protected function validateInEnabledTenant(User $user, string $tenant_id): void
+    {
+
+        if ($user->isAdmin()) {
+            return;
+        }
+
+        try {
+            if (!$user->inEnabledTenant($tenant_id)) {
+                throw new ForbiddenException();
+            }
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException('Unable to verify user in enabled tenant: Unexpected error', 0, $e);
+        }
+
+    }
+
+    /**
      * Validate user has required permissions.
      * Admin users have no restrictions.
      *

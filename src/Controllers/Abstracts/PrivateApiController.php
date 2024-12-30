@@ -84,7 +84,7 @@ abstract class PrivateApiController extends ApiController
                 throw new ApiServiceException($e->getMessage());
             }
 
-        } else if ($this->apiService->getConfig('identity.key') === true && Request::hasHeader('X-API-Key')) {
+        } else if ($this->apiService->getConfig('identity.key') === true && Request::hasHeader('X-Api-Key')) {
 
             $authenticator = new UserKeyAuthenticator($this->rbacService);
 
@@ -96,7 +96,7 @@ abstract class PrivateApiController extends ApiController
 
             try {
 
-                $user = $authenticator->authenticate(Request::getHeader('X-API-Key'), Request::getIp(), $referer);
+                $user = $authenticator->authenticate(Request::getHeader('X-Api-Key'), Request::getIp(), $referer);
 
                 $container = App::getContainer();
                 $container->set($user::class, $user);

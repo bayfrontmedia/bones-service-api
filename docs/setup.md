@@ -145,7 +145,7 @@ The `request.meta.env` array specifies which app environments to allow this func
 - `response.headers`: Headers to send with every API response.
 - `rate_limit`: Define the rate limit for the `auth`, `private` and `public` API controllers, or `0` for unlimited.
 - `identity`: Allow `key` and/or `token` identification methods when authorizing a `PrivateApiController` request.
-The `key` method will check the `X-API-Key` header for a valid user API key, and the `token` method will check the `Bearer`
+The `key` method will check the `X-Api-Key` header for a valid user API key, and the `token` method will check the `Bearer`
 header for a valid access token. (See [PrivateApiController](controllers/privateapicontroller.md))
 - `auth.passsword`: Allow user to authenticate with email + password. The `auth.password.tfa` specifies whether to
 issue a TFA (two-factor authentication) code, along with its rules.

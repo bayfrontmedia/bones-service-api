@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Traits;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
@@ -68,17 +69,23 @@ trait UsesResourceModel
 
     /**
      * Get only and validate writable fields from body.
+     *
      * Optionally ensure all required fields exist (on create).
+     *
      * Optionally ensure predefined values do not exist, then set their value.
      * Helpful when values are set by path parameters.
+     *
+     * Optionally ensure disallowed fields do not exist (on update).
+     * Helpful for scoped resources whose scoped values are set by path parameters.
      *
      * @param ResourceModel $resourceModel
      * @param bool $validate_required_fields
      * @param array $defined_values (Predefined values not allowed to be defined in body)
+     * @param array $disallowed_fields
      * @return array
      * @throws BadRequestException
      */
-    protected function getResourceBody(ResourceModel $resourceModel, bool $validate_required_fields = false, array $defined_values = []): array
+    protected function getResourceBody(ResourceModel $resourceModel, bool $validate_required_fields = false, array $defined_values = [], array $disallowed_fields = []): array
     {
 
         $body = $this->getJsonBody($resourceModel->getAllowedFieldsWrite());
@@ -90,6 +97,14 @@ trait UsesResourceModel
 
         if ($validate_required_fields === true) {
             $this->validateFieldsExist($body, $resourceModel->getRequiredFields());
+        }
+
+        if (!empty($disallowed_fields)) {
+            foreach ($disallowed_fields as $field) {
+                if (isset($body[$field])) {
+                    throw new BadRequestException('Unable to get body: Invalid field (' . $field . ')');
+                }
+            }
         }
 
         return $body;
@@ -219,6 +234,52 @@ trait UsesResourceModel
         } catch (UnexpectedException $e) {
             throw new ApiServiceException('Unable to read resource: Unexpected error', 0, $e);
         }
+
+    }
+
+    /**
+     * Read filtered ResourceModel resource.
+     *
+     * @param ResourceModel $resourceModel
+     * @param mixed $primary_key_id
+     * @param array $filtered_fields (Key = field, value = required resource value)
+     * @return array
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     */
+    protected function readFilteredResource(ResourceModel $resourceModel, mixed $primary_key_id, array $filtered_fields = []): array
+    {
+
+        /*
+         * This queries all readable fields from the database to ensure
+         * the $filtered_fields array key exists, then only returns the
+         * fields requested via $parser->getFields().
+         */
+
+        try {
+
+            $resource = $resourceModel->read($primary_key_id);
+
+        } catch (DoesNotExistException $e) {
+            throw new NotFoundException('Unable to read resource: Resource does not exist', 0, $e);
+        } catch (InvalidRequestException $e) {
+            throw new BadRequestException('Unable to read resource: Invalid field(s)', 0, $e);
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException('Unable to read resource: Unexpected error', 0, $e);
+        }
+
+        foreach ($filtered_fields as $field => $value) {
+
+            if (Arr::get($resource, $field) != $value) {
+                throw new NotFoundException('Unable to read resource: Resource does not exist');
+            }
+
+        }
+
+        $parser = new FieldParser(Request::getQuery());
+
+        return Arr::only($resource, $parser->getFields());
 
     }
 

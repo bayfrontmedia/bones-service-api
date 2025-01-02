@@ -47,15 +47,21 @@ Get [FieldParser](https://github.com/bayfrontmedia/bones-service-orm/blob/master
 **Description:**
 
 Get only and validate writable fields from body.
+
 Optionally ensure all required fields exist (on create).
+
 Optionally ensure predefined values do not exist, then set their value.
 Helpful when values are set by path parameters.
+
+Optionally ensure disallowed fields do not exist (on update).
+Helpful for scoped resources whose scoped values are set by path parameters.
 
 **Parameters:**
 
 - `$resourceModel` ([ResourceModel](https://github.com/bayfrontmedia/bones-service-orm/blob/master/docs/models/resourcemodel.md))
 - `$validate_required_fields = false` (bool)
 - `$defined_values = []` (array): Predefined values not allowed to be defined in body
+- `$disallowed_fields = []` (array)
 
 **Returns:**
 
@@ -132,6 +138,8 @@ Read [ResourceModel](https://github.com/bayfrontmedia/bones-service-orm/blob/mas
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
 - `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`
+
+
 
 ## updateResource
 

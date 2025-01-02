@@ -81,7 +81,15 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
 
         $this->validateQuery($this->getQueryParserRules(), true);
 
-        $collection = $this->listResources($this->tenantInvitationsModel);
+        $query_filter = [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ];
+
+        $collection = $this->listResources($this->tenantInvitationsModel, $query_filter);
 
         $this->respond(200, TenantInvitationCollection::create($collection['list'], $collection['config']));
 
@@ -108,6 +116,16 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
         ]);
 
         $this->validateQuery($this->getFieldParserRules());
+
+        if (!$this->filteredResourceExists($this->tenantInvitationsModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
 
         $resource = $this->readResource($this->tenantInvitationsModel, $params['id']);
 
@@ -141,7 +159,15 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
             'tenant_invitations:delete'
         ]);
 
-        $this->deleteResource($this->tenantInvitationsModel, $params['id']);
+        if ($this->filteredResourceExists($this->tenantInvitationsModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            $this->deleteResource($this->tenantInvitationsModel, $params['id']);
+        }
 
         $this->respond(204);
 

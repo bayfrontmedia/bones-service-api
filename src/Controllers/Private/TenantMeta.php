@@ -79,7 +79,15 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
 
         $this->validateQuery($this->getQueryParserRules(), true);
 
-        $collection = $this->listResources($this->tenantMetaModel);
+        $query_filter = [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ];
+
+        $collection = $this->listResources($this->tenantMetaModel, $query_filter);
 
         $this->respond(200, TenantMetaCollection::create($collection['list'], $collection['config']));
 
@@ -105,6 +113,16 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
         ]);
 
         $this->validateQuery($this->getFieldParserRules());
+
+        if (!$this->filteredResourceExists($this->tenantMetaModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
 
         $resource = $this->readResource($this->tenantMetaModel, $params['id']);
 
@@ -136,9 +154,19 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getResourceBody($this->tenantMetaModel, false, [
-            'tenant' => $params['tenant']
+        $body = $this->getResourceBody($this->tenantMetaModel, false, [], [
+            'tenant'
         ]);
+
+        if (!$this->filteredResourceExists($this->tenantMetaModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
 
         $resource = $this->updateResource($this->tenantMetaModel, $params['id'], $body);
 
@@ -164,7 +192,15 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
             'tenant_meta:delete'
         ]);
 
-        $this->deleteResource($this->tenantMetaModel, $params['id']);
+        if ($this->filteredResourceExists($this->tenantMetaModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            $this->deleteResource($this->tenantMetaModel, $params['id']);
+        }
 
         $this->respond(204);
 

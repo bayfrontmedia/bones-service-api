@@ -16,7 +16,6 @@ use Bayfront\BonesService\Api\Schemas\TenantRoleCollection;
 use Bayfront\BonesService\Api\Schemas\TenantRoleResource;
 use Bayfront\BonesService\Api\Schemas\TenantUserCollection;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
-use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
@@ -89,13 +88,23 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'tenant' => 'required|uuid'
         ]);
 
-        $query_filter = [];
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         try {
 
-            if (!$this->user->canDoAll($params['tenant'], [
+            if ($this->user->canDoAll($params['tenant'], [
                 'tenant_roles:read'
             ])) {
+
+                $query_filter = [
+                    [
+                        'tenant' => [
+                            'eq' => $params['tenant']
+                        ]
+                    ]
+                ];
+
+            } else {
 
                 $query_filter = [
                     [
@@ -110,8 +119,6 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
         } catch (UnexpectedException $e) {
             throw new ApiServiceException($e->getMessage());
         }
-
-        $this->validateQuery($this->getQueryParserRules(), true);
 
         $collection = $this->listResources($this->tenantRolesModel, $query_filter);
 
@@ -149,6 +156,16 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
 
         $this->validateQuery($this->getFieldParserRules());
 
+        if (!$this->filteredResourceExists($this->tenantRolesModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
+
         $resource = $this->readResource($this->tenantRolesModel, $params['id']);
 
         $this->respond(200, TenantRoleResource::create($resource));
@@ -179,9 +196,19 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getResourceBody($this->tenantRolesModel, false, [
-            'tenant' => $params['tenant']
+        $body = $this->getResourceBody($this->tenantRolesModel, false, [], [
+            'tenant'
         ]);
+
+        if (!$this->filteredResourceExists($this->tenantRolesModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
 
         $resource = $this->updateResource($this->tenantRolesModel, $params['id'], $body);
 
@@ -207,7 +234,15 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'tenant_roles:delete'
         ]);
 
-        $this->deleteResource($this->tenantRolesModel, $params['id']);
+        if ($this->filteredResourceExists($this->tenantRolesModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            $this->deleteResource($this->tenantRolesModel, $params['id']);
+        }
 
         $this->respond(204);
 
@@ -220,9 +255,8 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
      * @return void
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws DoesNotExistException
      * @throws ForbiddenException
-     * @throws UnexpectedException
+     * @throws NotFoundException
      */
     public function listUsers(array $params): void
     {
@@ -231,6 +265,8 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             'tenant' => 'required|uuid',
             'id' => 'required|uuid'
         ]);
+
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         try {
 
@@ -244,7 +280,17 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             throw new ApiServiceException($e->getMessage());
         }
 
-        $this->validateQuery($this->getQueryParserRules(), true);
+        // Ensure role belongs to tenant
+
+        if (!$this->filteredResourceExists($this->tenantRolesModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
 
         // Get array of tenant user ID's
 
@@ -263,21 +309,11 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
                 ]
             ]), true);
 
-        } catch (InvalidRequestException $e) {
+        } catch (InvalidRequestException|UnexpectedException $e) {
             throw new ApiServiceException($e->getMessage());
         }
 
         $user_ids = Arr::pluck($rolesCollection->list(), 'tenant_user');
-
-        // Check role exists if no user ID's found
-
-        if (empty($user_ids)) {
-
-            if (!$this->tenantRolesModel->exists($params['id'])) {
-                throw new DoesNotExistException();
-            }
-
-        }
 
         // List users
 

@@ -169,6 +169,11 @@ class ApiSeed extends Command
             ]);
 
             $permissions->create([
+                'name' => 'tenant_permissions:read',
+                'description' => 'Delete roles'
+            ]);
+
+            $permissions->create([
                 'name' => 'tenant_meta:create',
                 'description' => 'Create tenant meta'
             ]);

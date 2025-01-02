@@ -7,6 +7,7 @@ use Bayfront\BonesService\Api\Controllers\Auth\User;
 use Bayfront\BonesService\Api\Controllers\Private\Permissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantInvitations;
 use Bayfront\BonesService\Api\Controllers\Private\TenantMeta;
+use Bayfront\BonesService\Api\Controllers\Private\TenantPermissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRolePermissions;
 use Bayfront\BonesService\Api\Controllers\Private\TenantRoles;
 use Bayfront\BonesService\Api\Controllers\Private\Tenants;
@@ -68,6 +69,11 @@ class ApiRoutes
             ->get($route_prefix . '/tenants/{*:tenant}/meta/{*:id}', [TenantMeta::class, 'read'])
             ->patch($route_prefix . '/tenants/{*:tenant}/meta/{*:id}', [TenantMeta::class, 'update'])
             ->delete($route_prefix . '/tenants/{*:tenant}/meta/{*:id}', [TenantMeta::class, 'delete'])
+            // Tenant permissions
+            ->post($route_prefix . '/tenants/{*:tenant}/permissions', [TenantPermissions::class, 'create'])
+            ->get($route_prefix . '/tenants/{*:tenant}/permissions', [TenantPermissions::class, 'list'])
+            ->get($route_prefix . '/tenants/{*:tenant}/permissions/{*:id}', [TenantPermissions::class, 'read'])
+            ->delete($route_prefix . '/tenants/{*:tenant}/permissions/{*:id}', [TenantPermissions::class, 'delete'])
             // Tenant role permissions
             ->post($route_prefix . '/tenants/{*:tenant}/roles/{*:role}/permissions', [TenantRolePermissions::class, 'create'])
             ->get($route_prefix . '/tenants/{*:tenant}/roles/{*:role}/permissions', [TenantRolePermissions::class, 'list'])

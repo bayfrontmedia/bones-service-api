@@ -72,9 +72,12 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
      * @inheritDoc
      * @throws ApiServiceException
      * @throws BadRequestException
+     * @throws ForbiddenException
      */
     public function list(array $params): void
     {
+
+        $this->validateIsAdmin($this->user);
 
         $this->validateQuery($this->getQueryParserRules(), true);
 
@@ -86,8 +89,10 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
 
     /**
      * @inheritDoc
+     * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
+     * @throws ForbiddenException
      * @throws NotFoundException
      */
     public function read(array $params): void
@@ -96,6 +101,8 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
         $this->validatePath($params, [
             'id' => 'required|uuid'
         ]);
+
+        $this->validateIsAdmin($this->user);
 
         $this->validateQuery($this->getFieldParserRules());
 

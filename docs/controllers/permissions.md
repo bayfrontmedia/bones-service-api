@@ -72,7 +72,7 @@ List resources.
 
 **Required permissions:**
 
-- (none)
+- Is admin
 
 **Required headers:**
 
@@ -112,7 +112,7 @@ Read single resource.
 
 **Required permissions:**
 
-- (none)
+- Is admin
 
 **Required headers:**
 

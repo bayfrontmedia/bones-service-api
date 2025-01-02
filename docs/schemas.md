@@ -19,6 +19,9 @@ The following schemas are added by this service:
 - [TenantMetaObject](#tenantmetaobject)
 - [TenantMetaResource](#tenantmetaresource)
 - [TenantObject](#tenantobject)
+- [TenantPermissionCollection](#tenantpermissioncollection)
+- [TenantPermissionObject](#tenantpermissionobject)
+- [TenantPermissionResource](#tenantpermissionresource)
 - [TenantResource](#tenantresource)
 - [TenantRoleCollection](#tenantrolecollection)
 - [TenantRoleObject](#tenantroleobject)
@@ -306,6 +309,38 @@ Object with property `data` which contains a [TenantMetaObject](#tenantmetaobjec
 | `created_at` | `string`       | Resource creation datetime |
 | `updated_at` | `string\|null` | Last updated datetime      |
 
+## TenantPermissionCollection
+
+Object with properties:
+
+- `data`: Array of [TenantPermissionObjects](#tenantpermissionobject)
+- `aggregate`: Optional [AggregateObject](#aggregateobject)
+- `pagination`: Optional [PagePaginationObject](#pagepaginationobject) or [CursorPaginationObject](#cursorpaginationobject)
+
+## TenantPermissionObject
+
+```json
+{
+  "id": "0193d628-a1bf-76a5-b02c-6697b50f94b7",
+  "tenant": "0193d64f-f782-709d-afa7-b444af500242",
+  "permission": "019426cc-98db-7bd1-94b3-996d55c12562",
+  "created_at": "2025-01-01 12:00:00",
+  "updated_at": "2025-01-01 12:00:00"
+}
+```
+
+| Field         | Type           | Description                |
+|---------------|----------------|----------------------------|
+| `id`          | `string`       | Resource ID                |
+| `tenant`      | `string`       | Tenant ID                  |
+| `permission`  | `string`       | Permission ID              |
+| `created_at`  | `string`       | Resource creation datetime |
+| `updated_at`  | `string\|null` | Last updated datetime      |
+
+## TenantPermissionResource
+
+Object with property `data` which contains a [TenantPermissionObject](#tenantpermissionobject).
+
 ## TenantResource
 
 Object with property `data` which contains a [TenantObject](#tenantobject).
@@ -354,19 +389,19 @@ Object with properties:
 {
   "id": "0193d628-a1bf-76a5-b02c-6697b50f94b7",
   "role": "0193d64f-f782-709d-afa7-b444af500242",
-  "permission": "0193d65c-e9fa-7ac4-8cd0-46e97daaf95a",
+  "tenant_permission": "0193d65c-e9fa-7ac4-8cd0-46e97daaf95a",
   "created_at": "2025-01-01 12:00:00",
   "updated_at": "2025-01-01 12:00:00"
 }
 ```
 
-| Field        | Type           | Description                |
-|--------------|----------------|----------------------------|
-| `id`         | `string`       | Resource ID                |
-| `role`       | `string`       | Role ID                    |
-| `permission` | `string`       | Permission ID              |
-| `created_at` | `string`       | Resource creation datetime |
-| `updated_at` | `string\|null` | Last updated datetime      |
+| Field               | Type           | Description                |
+|---------------------|----------------|----------------------------|
+| `id`                | `string`       | Resource ID                |
+| `role`              | `string`       | Role ID                    |
+| `tenant_permission` | `string`       | Tenant permission ID       |
+| `created_at`        | `string`       | Resource creation datetime |
+| `updated_at`        | `string\|null` | Last updated datetime      |
 
 ## TenantRolePermissionResource
 

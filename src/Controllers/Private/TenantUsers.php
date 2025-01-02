@@ -269,7 +269,7 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
                 try {
 
                     $rolePermissionsCollection = $tenantRolePermissionsModel->list(new QueryParser([
-                        'fields' => 'permission',
+                        'fields' => 'tenant_permission',
                         'filter' => [
                             [
                                 'role' => [
@@ -283,7 +283,7 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
                     throw new ApiServiceException($e->getMessage());
                 }
 
-                $permission_ids = array_unique(Arr::pluck($rolePermissionsCollection->list(), 'permission'));
+                $permission_ids = array_unique(Arr::pluck($rolePermissionsCollection->list(), 'tenant_permission'));
 
             } else {
                 $permission_ids = $role_ids; // Empty array

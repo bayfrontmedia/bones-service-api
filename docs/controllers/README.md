@@ -31,6 +31,7 @@ In addition, controllers can implement [CrudControllerInterface](crudcontrolleri
 - [Permissions](permissions.md)
 - [TenantInvitations](tenantinvitations.md)
 - [TenantMeta](tenantmeta.md)
+- [TenantPermissions](tenantpermissions.md)
 - [TenantRolePermissions](tenantrolepermissions.md)
 - [TenantRoles](tenantroles.md)
 - [Tenants](tenants.md)

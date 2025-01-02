@@ -5,7 +5,7 @@ namespace Bayfront\BonesService\Api\Schemas;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\ArraySchema\SchemaInterface;
 
-class TenantRolePermissionObject implements SchemaInterface
+class TenantPermissionObject implements SchemaInterface
 {
 
     /**
@@ -15,8 +15,8 @@ class TenantRolePermissionObject implements SchemaInterface
     {
         $keys = [
             'id',
-            'role',
-            'tenant_permission',
+            'tenant',
+            'permission',
             'created_at',
             'updated_at'
         ];

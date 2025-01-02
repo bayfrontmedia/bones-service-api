@@ -2,7 +2,6 @@
 
 namespace Bayfront\BonesService\Api\Traits;
 
-use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Exceptions\Http\BadRequestException;
@@ -234,52 +233,6 @@ trait UsesResourceModel
         } catch (UnexpectedException $e) {
             throw new ApiServiceException('Unable to read resource: Unexpected error', 0, $e);
         }
-
-    }
-
-    /**
-     * Read filtered ResourceModel resource.
-     *
-     * @param ResourceModel $resourceModel
-     * @param mixed $primary_key_id
-     * @param array $filtered_fields (Key = field, value = required resource value)
-     * @return array
-     * @throws ApiServiceException
-     * @throws BadRequestException
-     * @throws NotFoundException
-     */
-    protected function readFilteredResource(ResourceModel $resourceModel, mixed $primary_key_id, array $filtered_fields = []): array
-    {
-
-        /*
-         * This queries all readable fields from the database to ensure
-         * the $filtered_fields array key exists, then only returns the
-         * fields requested via $parser->getFields().
-         */
-
-        try {
-
-            $resource = $resourceModel->read($primary_key_id);
-
-        } catch (DoesNotExistException $e) {
-            throw new NotFoundException('Unable to read resource: Resource does not exist', 0, $e);
-        } catch (InvalidRequestException $e) {
-            throw new BadRequestException('Unable to read resource: Invalid field(s)', 0, $e);
-        } catch (UnexpectedException $e) {
-            throw new ApiServiceException('Unable to read resource: Unexpected error', 0, $e);
-        }
-
-        foreach ($filtered_fields as $field => $value) {
-
-            if (Arr::get($resource, $field) != $value) {
-                throw new NotFoundException('Unable to read resource: Resource does not exist');
-            }
-
-        }
-
-        $parser = new FieldParser(Request::getQuery());
-
-        return Arr::only($resource, $parser->getFields());
 
     }
 

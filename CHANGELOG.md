@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated `getResourceBody` method to include option for disallowed fields
 
+### Fixed
+
+- Fixed bug in `getResourceBody` checking fields do not exist
+
 ## [2.2.1] - 2024.12.29
 
 ### Fixed

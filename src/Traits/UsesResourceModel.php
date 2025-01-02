@@ -91,7 +91,7 @@ trait UsesResourceModel
         $body = $this->getJsonBody($resourceModel->getAllowedFieldsWrite());
 
         if (!empty($defined_values)) {
-            $this->validateFieldsDoNotExist($body, $defined_values);
+            $this->validateFieldsDoNotExist($body, array_keys($defined_values));
             $body = array_merge($body, $defined_values);
         }
 

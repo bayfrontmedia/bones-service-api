@@ -31,6 +31,7 @@ Create new resource.
 **Required permissions:**
 
 - `tenant_roles:update`
+- `tenant_permissions:read`
 
 **Required headers:**
 
@@ -73,7 +74,7 @@ List resources.
 
 **Required permissions:**
 
-- `tenant_roles:read` or filtered to has role
+- `tenant_roles:read` and `tenant_permissions:read` or filtered to has role
 
 **Required headers:**
 
@@ -116,7 +117,7 @@ Read single resource.
 
 **Required permissions:**
 
-- `tenant_roles:read` or has role
+- `tenant_roles:read` and `tenant_permissions:read` or has role
 
 **Required headers:**
 

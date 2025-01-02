@@ -45,7 +45,8 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
         ]);
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_roles:update'
+            'tenant_roles:update',
+            'tenant_permissions:read'
         ]);
 
         $this->validateHeaders([
@@ -80,7 +81,8 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
         try {
 
             if (!$this->user->canDoAll($params['tenant'], [
-                    'tenant_roles:read'
+                    'tenant_roles:read',
+                    'tenant_permissions:read'
                 ]) && !$this->user->hasRole($params['tenant'], $params['role'])) {
                 throw new ForbiddenException();
             }
@@ -124,7 +126,8 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
         try {
 
             if (!$this->user->canDoAll($params['tenant'], [
-                    'tenant_roles:read'
+                    'tenant_roles:read',
+                    'tenant_permissions:read'
                 ]) && !$this->user->hasRole($params['tenant'], $params['role'])) {
                 throw new ForbiddenException();
             }

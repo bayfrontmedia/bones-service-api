@@ -166,10 +166,6 @@ abstract class ApiController extends Controller
     protected function validateHasPermissions(User $user, string $tenant_id, array $permission_names): void
     {
 
-        if ($user->isAdmin()) {
-            return;
-        }
-
         try {
 
             if (!$user->canDoAll($tenant_id, $permission_names)) {

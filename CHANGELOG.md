@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed bug in `getResourceBody` checking fields do not exist
+- Fixed some controllers throwing non-API service exceptions
+- Fixed permission filter bugs
 
 ## [2.2.1] - 2024.12.29
 

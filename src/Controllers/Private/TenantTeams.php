@@ -16,7 +16,6 @@ use Bayfront\BonesService\Api\Schemas\TenantTeamCollection;
 use Bayfront\BonesService\Api\Schemas\TenantTeamResource;
 use Bayfront\BonesService\Api\Schemas\TenantUserCollection;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
-use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
@@ -255,9 +254,8 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
      * @return void
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws DoesNotExistException
      * @throws ForbiddenException
-     * @throws UnexpectedException
+     * @throws NotFoundException
      */
     public function listUsers(array $params): void
     {
@@ -310,7 +308,7 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
                 ]
             ]), true);
 
-        } catch (InvalidRequestException $e) {
+        } catch (InvalidRequestException|UnexpectedException $e) {
             throw new ApiServiceException($e->getMessage());
         }
 

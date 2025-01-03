@@ -232,4 +232,3 @@ List tenant user permissions.
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
 - `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 - `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`
-- `Bayfront\BonesService\Api\Exceptions\Http\UnexpectedException`

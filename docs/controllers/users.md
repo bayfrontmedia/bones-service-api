@@ -440,5 +440,5 @@ List tenants user belongs to.
 
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
-- `Bayfront\BonesService\Api\Exceptions\Http\DoesNotExistException`
 - `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
+- `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`

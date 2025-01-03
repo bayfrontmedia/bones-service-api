@@ -16,7 +16,6 @@ use Bayfront\BonesService\Api\Schemas\PermissionCollection;
 use Bayfront\BonesService\Api\Schemas\PermissionResource;
 use Bayfront\BonesService\Api\Schemas\TenantRoleCollection;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
-use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
@@ -169,9 +168,8 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
      * @return void
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws DoesNotExistException
      * @throws ForbiddenException
-     * @throws UnexpectedException
+     * @throws NotFoundException
      */
     public function listRoles(array $params): void
     {
@@ -201,7 +199,7 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
                 ]
             ]), true);
 
-        } catch (InvalidRequestException $e) {
+        } catch (InvalidRequestException|UnexpectedException $e) {
             throw new ApiServiceException($e->getMessage());
         }
 
@@ -211,8 +209,12 @@ class Permissions extends PrivateApiController implements CrudControllerInterfac
 
         if (empty($role_ids)) {
 
-            if (!$this->permissionsModel->exists($params['id'])) {
-                throw new DoesNotExistException();
+            try {
+                if (!$this->permissionsModel->exists($params['id'])) {
+                    throw new NotFoundException();
+                }
+            } catch (UnexpectedException $e) {
+                throw new ApiServiceException($e->getMessage());
             }
 
         }

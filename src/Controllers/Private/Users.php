@@ -375,8 +375,8 @@ class Users extends PrivateApiController implements CrudControllerInterface
      * @return void
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws DoesNotExistException
      * @throws ForbiddenException
+     * @throws NotFoundException
      */
     public function listTenants(array $params): void
     {
@@ -421,7 +421,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
             try {
 
                 if (!$this->usersModel->exists($params['id'])) {
-                    throw new DoesNotExistException();
+                    throw new NotFoundException();
                 }
 
             } catch (UnexpectedException $e) {

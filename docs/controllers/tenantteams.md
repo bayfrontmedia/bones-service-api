@@ -267,6 +267,5 @@ List tenant users who belong to team.
 
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
-- `Bayfront\BonesService\Api\Exceptions\Http\DoesNotExistException`
 - `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
-- `Bayfront\BonesService\Api\Exceptions\Http\UnexpectedException`
+- `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`

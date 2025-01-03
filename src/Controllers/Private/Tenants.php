@@ -241,15 +241,15 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
 
         if ($this->apiService->getConfig('tenant.allow_delete') === true) {
 
-           try {
+            try {
 
-               if (!$this->user->isAdmin() && !$this->user->ownsTenant($params['id'])) {
-                   throw new ForbiddenException();
-               }
+                if (!$this->user->isAdmin() && !$this->user->ownsTenant($params['id'])) {
+                    throw new ForbiddenException();
+                }
 
-           } catch (UnexpectedException $e) {
-               throw new ApiServiceException($e->getMessage());
-           }
+            } catch (UnexpectedException $e) {
+                throw new ApiServiceException($e->getMessage());
+            }
 
         } else {
             $this->validateIsAdmin($this->user);

@@ -83,7 +83,7 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
 
         try {
 
-            if (!$this->user->inTenant($params['tenant'])) {
+            if (!$this->user->isAdmin() && !$this->user->inTenant($params['tenant'])) {
                 throw new ForbiddenException();
             }
 
@@ -124,7 +124,7 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
 
         try {
 
-            if (!$this->user->inTenant($params['tenant'])) {
+            if (!$this->user->isAdmin() && !$this->user->inTenant($params['tenant'])) {
                 throw new ForbiddenException();
             }
 
@@ -208,11 +208,23 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
             'id' => 'required|uuid'
         ]);
 
+        $this->validateQuery($this->getQueryParserRules(), true);
+
         $this->validateHasPermissions($this->user, $params['tenant'], [
             'tenant_roles:read'
         ]);
 
-        $this->validateQuery($this->getQueryParserRules(), true);
+        // Ensure user belongs to tenant
+
+        if (!$this->filteredResourceExists($this->tenantUsersModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
 
         $tenantsModel = new TenantsModel($this->rbacService);
 

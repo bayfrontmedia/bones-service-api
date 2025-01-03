@@ -89,13 +89,23 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
             'tenant' => 'required|uuid'
         ]);
 
-        $query_filter = [];
+        $this->validateQuery($this->getQueryParserRules(), true);
 
         try {
 
-            if (!$this->user->canDoAll($params['tenant'], [
+            if ($this->user->canDoAll($params['tenant'], [
                 'tenant_teams:read'
             ])) {
+
+                $query_filter = [
+                    [
+                        'tenant' => [
+                            'eq' => $params['tenant']
+                        ]
+                    ]
+                ];
+
+            } else {
 
                 $query_filter = [
                     [
@@ -110,8 +120,6 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
         } catch (UnexpectedException $e) {
             throw new ApiServiceException($e->getMessage());
         }
-
-        $this->validateQuery($this->getQueryParserRules(), true);
 
         $collection = $this->listResources($this->tenantTeamsModel, $query_filter);
 
@@ -148,6 +156,16 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
 
         $this->validateQuery($this->getFieldParserRules());
 
+        if (!$this->filteredResourceExists($this->tenantTeamsModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
+
         $resource = $this->readResource($this->tenantTeamsModel, $params['id']);
 
         $this->respond(200, TenantTeamResource::create($resource));
@@ -178,9 +196,19 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        $body = $this->getResourceBody($this->tenantTeamsModel, false, [
-            'tenant' => $params['tenant']
+        $body = $this->getResourceBody($this->tenantTeamsModel, false, [], [
+            'tenant'
         ]);
+
+        if (!$this->filteredResourceExists($this->tenantTeamsModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
 
         $resource = $this->updateResource($this->tenantTeamsModel, $params['id'], $body);
 
@@ -206,7 +234,15 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
             'tenant_teams:delete'
         ]);
 
-        $this->deleteResource($this->tenantTeamsModel, $params['id']);
+        if ($this->filteredResourceExists($this->tenantTeamsModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            $this->deleteResource($this->tenantTeamsModel, $params['id']);
+        }
 
         $this->respond(204);
 
@@ -231,6 +267,8 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
             'id' => 'required|uuid'
         ]);
 
+        $this->validateQuery($this->getQueryParserRules(), true);
+
         try {
 
             if (!$this->user->canDoAll($params['tenant'], [
@@ -243,7 +281,17 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
             throw new ApiServiceException($e->getMessage());
         }
 
-        $this->validateQuery($this->getQueryParserRules(), true);
+        // Ensure team belongs to tenant
+
+        if (!$this->filteredResourceExists($this->tenantTeamsModel, $params['id'], [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ])) {
+            throw new NotFoundException();
+        }
 
         // Get array of tenant user ID's
 
@@ -266,17 +314,8 @@ class TenantTeams extends PrivateApiController implements CrudControllerInterfac
             throw new ApiServiceException($e->getMessage());
         }
 
+        /** @noinspection DuplicatedCode */
         $user_ids = Arr::pluck($teamsCollection->list(), 'tenant_user');
-
-        // Check team exists if no user ID's found
-
-        if (empty($user_ids)) {
-
-            if (!$this->tenantTeamsModel->exists($params['id'])) {
-                throw new DoesNotExistException();
-            }
-
-        }
 
         // List users
 

@@ -313,6 +313,7 @@ class TenantRoles extends PrivateApiController implements CrudControllerInterfac
             throw new ApiServiceException($e->getMessage());
         }
 
+        /** @noinspection DuplicatedCode */
         $user_ids = Arr::pluck($rolesCollection->list(), 'tenant_user');
 
         // List users

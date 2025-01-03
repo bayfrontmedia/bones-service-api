@@ -154,6 +154,10 @@ class UserMeta extends PrivateApiController implements CrudControllerInterface
             'Content-Type' => 'required|matches:application/json'
         ]);
 
+        $body = $this->getResourceBody($this->userMetaModel, false, [], [
+            'user'
+        ]);
+
         if (!$this->filteredResourceExists($this->userMetaModel, $params['id'], [
             [
                 'user' => [
@@ -163,8 +167,6 @@ class UserMeta extends PrivateApiController implements CrudControllerInterface
         ])) {
             throw new NotFoundException();
         }
-
-        $body = $this->getResourceBody($this->userMetaModel);
 
         $resource = $this->updateResource($this->userMetaModel, $params['id'], $body);
 

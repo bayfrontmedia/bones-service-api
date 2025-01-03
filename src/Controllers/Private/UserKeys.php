@@ -154,6 +154,10 @@ class UserKeys extends PrivateApiController implements CrudControllerInterface
             'Content-Type' => 'required|matches:application/json'
         ]);
 
+        $body = $this->getResourceBody($this->userKeysModel, false, [], [
+            'user'
+        ]);
+
         if (!$this->filteredResourceExists($this->userKeysModel, $params['id'], [
             [
                 'user' => [
@@ -163,8 +167,6 @@ class UserKeys extends PrivateApiController implements CrudControllerInterface
         ])) {
             throw new NotFoundException();
         }
-
-        $body = $this->getResourceBody($this->userKeysModel);
 
         $resource = $this->updateResource($this->userKeysModel, $params['id'], $body);
 

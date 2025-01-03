@@ -121,7 +121,6 @@ class TenantPermissions extends PrivateApiController implements CrudControllerIn
      * @inheritDoc
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws ForbiddenException
      * @throws NotFoundException
      */
     public function read(array $params): void
@@ -130,10 +129,6 @@ class TenantPermissions extends PrivateApiController implements CrudControllerIn
         $this->validatePath($params, [
             'tenant' => 'required|uuid',
             'id' => 'required|uuid'
-        ]);
-
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_permissions:read'
         ]);
 
         $this->validateQuery($this->getFieldParserRules());

@@ -72,7 +72,7 @@ List resources.
 
 **Required permissions:**
 
-- In tenant
+- In tenant or admin
 
 **Required headers:**
 
@@ -114,7 +114,7 @@ Read single resource.
 
 **Required permissions:**
 
-- In tenant
+- In tenant or admin
 
 **Required headers:**
 

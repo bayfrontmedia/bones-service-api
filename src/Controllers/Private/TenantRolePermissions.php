@@ -54,6 +54,7 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
         ]);
 
         $body = $this->getResourceBody($this->tenantRolePermissionsModel, true, [
+            'tenant' => $params['tenant'],
             'role' => $params['role']
         ]);
 
@@ -95,6 +96,9 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
 
         $query_filter = [
             [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ],
                 'role' => [
                     'eq' => $params['role']
                 ]
@@ -140,6 +144,9 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
 
         if (!$this->filteredResourceExists($this->tenantRolePermissionsModel, $params['id'], [
             [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ],
                 'role' => [
                     'eq' => $params['role']
                 ]
@@ -183,6 +190,9 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
 
         if ($this->filteredResourceExists($this->tenantRolePermissionsModel, $params['id'], [
             [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ],
                 'role' => [
                     'eq' => $params['role']
                 ]

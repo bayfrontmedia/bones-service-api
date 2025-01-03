@@ -114,6 +114,11 @@ class ApiSeed extends Command
             ]);
 
             $permissions->create([
+                'name' => 'tenant_user_meta:create',
+                'description' => 'Read tenant user meta'
+            ]);
+
+            $permissions->create([
                 'name' => 'tenant_user_meta:read',
                 'description' => 'Read tenant user meta'
             ]);

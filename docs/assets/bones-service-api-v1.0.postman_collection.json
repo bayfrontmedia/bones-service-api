@@ -1,0 +1,4754 @@
+{
+	"info": {
+		"_postman_id": "762a56dc-9d35-4cf8-83db-06f26322b748",
+		"name": "bones-service-api-v1.0",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8617133"
+	},
+	"item": [
+		{
+			"name": "Server",
+			"item": [
+				{
+					"name": "/server/status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/server/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"server",
+								"status"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "/auth/login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/otp",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{email}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/otp",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"otp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/tfa",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{email}}\",\n  \"token\": \"TOKEN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/tfa",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"tfa"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/refresh",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh_token\": \"{{refreshToken}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "/user/register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"register"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/password-request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{email}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/password-request",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"password-request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"token\": \"TOKEN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/verification-request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{email}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/verification-request",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"verification-request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/verify",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{email}}\",\n  \"token\": \"TOKEN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Permissions",
+			"item": [
+				{
+					"name": "/permissions",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"NAME\",\n  \"description\": \"DESCRIPTION\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/permissions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"permissions"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/permissions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/permissions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"permissions"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/permissions/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/permissions/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"permissions",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/permissions/{id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"UPDATED DESCRIPTION\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/permissions/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"permissions",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/permissions/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/permissions/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"permissions",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenants",
+			"item": [
+				{
+					"name": "/tenants",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"owner\": \"USER_ID\",\n  \"domain\": \"tenant-name\",\n  \"name\": \"Tenant name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated tenant name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant invitations",
+			"item": [
+				{
+					"name": "/tenants/{tenant}/invitations",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"invited@example.com\",\n  \"role\": \"ID\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/invitations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"invitations"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/invitations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/invitations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"invitations"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/invitations/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/invitations/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"invitations",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/invitations/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/invitations/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"invitations",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant meta",
+			"item": [
+				{
+					"name": "/tenants/{tenant}/meta",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta_key\": \"tenant_meta_key\",\n  \"meta_value\": \"Tenant meta value\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/meta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"meta"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/meta",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/meta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"meta"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/meta/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/meta/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"meta",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/meta/{id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta_value\": \"Updated tenant meta value\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/meta/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"meta",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/meta/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/meta/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"meta",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant permissions",
+			"item": [
+				{
+					"name": "/tenants/{tenant}/permissions",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta_key\": \"tenant_meta_key\",\n  \"meta_value\": \"Tenant meta value\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/permissions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"permissions"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/permissions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/permissions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"permissions"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/permissions/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/permissions/ID?fields=id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"permissions",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id"
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/permissions/{id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta_value\": \"Updated tenant meta value\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/permissions/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"permissions",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/permissions/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/permissions/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"permissions",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant role permissions",
+			"item": [
+				{
+					"name": "/tenants/{tenant}/roles/{role}/permissions",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"permission\": \"ID\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/roles/ROLE/permissions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"roles",
+								"ROLE",
+								"permissions"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/roles/{role}/permissions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/roles/ROLE/permissions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"roles",
+								"ROLE",
+								"permissions"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/roles/{role}/permissions/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/roles/ROLE/permissions/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"roles",
+								"ROLE",
+								"permissions",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/roles/{role}/permissions/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/roles/ROLE/permissions/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"roles",
+								"ROLE",
+								"permissions",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant roles",
+			"item": [
+				{
+					"name": "/tenants/{tenant}/roles",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Role name\",\n  \"description\": \"Role description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/roles",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/roles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/roles",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/roles/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/roles/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"roles",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/roles/{id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated role name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/roles/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"roles",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/roles/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/roles/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"roles",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/roles/{id}/users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/roles/ID/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"roles",
+								"ID",
+								"users"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant teams",
+			"item": [
+				{
+					"name": "/tenants/{tenant}/teams",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Team name\",\n  \"description\": \"Team description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/teams",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"teams"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/teams",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/teams",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"teams"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/teams/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/teams/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"teams",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/teams/{id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated team name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/teams/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"teams",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/teams/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/teams/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"teams",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/teams/{id}/users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/teams/ID/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"teams",
+								"ID",
+								"users"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant users",
+			"item": [
+				{
+					"name": "/tenants/{tenant}/users",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user\": \"USER_ID\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/users/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/users/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/users/{id}/permissions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/ID/permissions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"ID",
+								"permissions"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant user meta",
+			"item": [
+				{
+					"name": "/tenants/{tenant}/users/{tenant_user}/meta",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta_key\": \"tenant_user_meta_key\",\n  \"meta_value\": \"Tenant user meta value\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/meta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"meta"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/users/{tenant_user}/meta",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/meta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"meta"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/users/{tenant_user}/meta/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/meta/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"meta",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/users/{tenant_user}/meta/{id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta_value\": \"Updated tenant user meta value\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/meta/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"meta",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/users/{tenant_user}/meta/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/meta/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"meta",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant user roles",
+			"item": [
+				{
+					"name": "/tenants/{tenant}/users/{tenant_user}/roles",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"role\": \"ROLE_ID\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/roles",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/users/{tenant_user}/roles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/roles",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/users/{tenant_user}/roles/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/roles/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"roles",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{tenant}/users/{tenant_user}/roles/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/roles/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"roles",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tenant user teams",
+			"item": [
+				{
+					"name": "/tenants/{id}/users/{tenant_user}/teams",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"team\": \"TEAM_ID\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/teams",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"teams"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{id}/users/{tenant_user}/teams",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/teams",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"teams"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{id}/users/{tenant_user}/teams/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/teams/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"teams",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/tenants/{id}/users/{tenant_user}/teams/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/teams/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"teams",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "/users/logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/me",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"me"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{id}/invitations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/ID/invitations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"ID",
+								"invitations"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{user}/invitations/{id}",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/USER/invitations/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"USER",
+								"invitations",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{user}/tenants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/ID/tenants",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"ID",
+								"tenants"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User keys",
+			"item": [
+				{
+					"name": "/users/{user}/keys",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"User key name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/USER/keys",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"USER",
+								"keys"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{user}/keys",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/USER/keys",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"USER",
+								"keys"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{user}/keys/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/USER/keys/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"USER",
+								"keys",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{user}/keys/{id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated user key name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/USER/keys/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"USER",
+								"keys",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{user}/keys/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/USER/keys/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"USER",
+								"keys",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User meta",
+			"item": [
+				{
+					"name": "/users/{user}/meta",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta_key\": \"user_meta_key\",\n  \"meta_value\": \"User meta value\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/USER/meta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"USER",
+								"meta"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{user}/meta",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/USER/meta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"USER",
+								"meta"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{user}/meta/{id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/USER/meta/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"USER",
+								"meta",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "id",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{user}/meta/{id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta_value\": \"Updated user meta value\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/USER/meta/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"USER",
+								"meta",
+								"ID"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/users/{user}/meta/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/USER/meta/ID",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"USER",
+								"meta",
+								"ID"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost/api/v1",
+			"type": "default"
+		},
+		{
+			"key": "email",
+			"value": "user@example.com",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "password",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "ACCESS_TOKEN",
+			"type": "default"
+		},
+		{
+			"key": "refreshToken",
+			"value": "REFRESH_TOKEN",
+			"type": "default"
+		},
+		{
+			"key": "apiKey",
+			"value": "API_KEY",
+			"type": "default"
+		},
+		{
+			"key": "authMethod",
+			"value": "Bearer",
+			"type": "string"
+		},
+		{
+			"key": "authValue",
+			"value": "{{accessToken}}",
+			"type": "string"
+		},
+		{
+			"key": "metaField",
+			"value": "meta",
+			"type": "string"
+		},
+		{
+			"key": "tenantId",
+			"value": "TENANT_ID",
+			"type": "default"
+		}
+	]
+}

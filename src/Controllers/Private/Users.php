@@ -393,7 +393,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
         $this->validateQuery($this->getQueryParserRules());
 
-        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['id']) {
             throw new ForbiddenException();
         }
 

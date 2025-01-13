@@ -66,6 +66,7 @@ For more information, see [getAggregate](https://github.com/bayfrontmedia/bones-
 ```json
 {
   "data": {
+    "user": "0193d628-a1bf-76a5-b02c-6697b50f94b7",
     "access": "STRING",
     "refresh": "STRING",
     "expires": "2025-01-01 12:00:00"
@@ -73,11 +74,12 @@ For more information, see [getAggregate](https://github.com/bayfrontmedia/bones-
 }
 ```
 
-| Field         | Type           | Description         |
-|---------------|----------------|---------------------|
-| `access`      | `string`       | Access token (JWT)  |
-| `refresh`     | `string`       | Refresh token (JWT) |
-| `expires`     | `string`       | Expiration datetime |
+| Field     | Type     | Description         |
+|-----------|----------|---------------------|
+| `user`    | `string` | User ID             |
+| `access`  | `string` | Access token (JWT)  |
+| `refresh` | `string` | Refresh token (JWT) |
+| `expires` | `string` | Expiration datetime |
 
 ## CursorPaginationObject
 

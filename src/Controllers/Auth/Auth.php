@@ -60,6 +60,7 @@ class Auth extends AuthApiController
             $this->events->doEvent('api.auth.success', $user);
 
             $this->respond(201, AuthResource::create([
+                'user' => $user->getId(),
                 'access' => $access_token,
                 'refresh' => $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_REFRESH),
                 'expires' => Arr::get($jwt, 'exp')

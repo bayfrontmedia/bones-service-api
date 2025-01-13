@@ -13,7 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
-## [1.0.1] - Upcoming
+## [1.1.0] - Upcoming
+
+### Added
+
+- Added `user` field to be returned in `AuthResource`
 
 ### Fixed
 

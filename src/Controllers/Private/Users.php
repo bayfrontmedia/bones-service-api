@@ -407,40 +407,49 @@ class Users extends PrivateApiController implements CrudControllerInterface
             throw new ApiServiceException($e->getMessage());
         }
 
-        // Get array of tenant ID's
+        if ($this->user->isAdmin()) { // Return all tenants
 
-        $tenantUsersModel = new TenantUsersModel($this->rbacService);
+            $tenantsModel = new TenantsModel($this->rbacService);
+            $query_filter = [];
 
-        try {
+        } else {
 
-            $tenantsCollection = $tenantUsersModel->list(new QueryParser([
-                'fields' => 'tenant',
-                'filter' => [
-                    [
-                        'user' => [
-                            'eq' => $params['id']
+            // Get array of tenant ID's
+
+            $tenantUsersModel = new TenantUsersModel($this->rbacService);
+
+            try {
+
+                $tenantsCollection = $tenantUsersModel->list(new QueryParser([
+                    'fields' => 'tenant',
+                    'filter' => [
+                        [
+                            'user' => [
+                                'eq' => $params['id']
+                            ]
                         ]
                     ]
-                ]
-            ]), true);
+                ]), true);
 
-        } catch (InvalidRequestException|UnexpectedException $e) {
-            throw new ApiServiceException($e->getMessage());
+            } catch (InvalidRequestException|UnexpectedException $e) {
+                throw new ApiServiceException($e->getMessage());
+            }
+
+            $tenant_ids = Arr::pluck($tenantsCollection->list(), 'tenant');
+
+            // List tenants
+
+            $tenantsModel = new TenantsModel($this->rbacService);
+
+            $query_filter = [
+                [
+                    'id' => [
+                        'in' => implode(',', $tenant_ids)
+                    ]
+                ]
+            ];
+
         }
-
-        $tenant_ids = Arr::pluck($tenantsCollection->list(), 'tenant');
-
-        // List tenants
-
-        $tenantsModel = new TenantsModel($this->rbacService);
-
-        $query_filter = [
-            [
-                'id' => [
-                    'in' => implode(',', $tenant_ids)
-                ]
-            ]
-        ];
 
         $collection = $this->listResources($tenantsModel, $query_filter);
 

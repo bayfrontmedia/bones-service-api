@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `user` field to be returned in `AuthResource`
 
+### Changed
+
+- Updated `/users/{id}/tenants` endpoint to return all tenants if user is admin
+
 ### Fixed
 
 - Bugfix in `listTenants` method

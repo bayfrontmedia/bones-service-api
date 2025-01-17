@@ -406,6 +406,7 @@ Accept tenant invitation.
 **Description:**
 
 List tenants user belongs to.
+Admins belong to all tenants.
 
 **Route:**
 

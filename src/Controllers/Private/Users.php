@@ -12,6 +12,7 @@ use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
 use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
+use Bayfront\BonesService\Api\Schemas\PermissionCollection;
 use Bayfront\BonesService\Api\Schemas\TenantCollection;
 use Bayfront\BonesService\Api\Schemas\TenantInvitationCollection;
 use Bayfront\BonesService\Api\Schemas\UserCollection;
@@ -78,6 +79,44 @@ class Users extends PrivateApiController implements CrudControllerInterface
         $this->read([
             'id' => $this->user->getId()
         ]);
+    }
+
+    /**
+     * List all user permissions in tenant.
+     *
+     * NOTE:
+     * This method returns all permissions and ignores
+     * any URL query parameters which may exist.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     */
+    public function tenantPermissions(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'tenant' => 'required|uuid'
+        ]);
+
+        //$this->validateQuery($this->getQueryParserRules());
+
+        try {
+
+            if (!$this->user->isAdmin() && !$this->user->inTenant($params['tenant'])) {
+                throw new ForbiddenException();
+            }
+
+            $permissions = $this->user->getPermissions($params['tenant']);
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
+
+        $this->respond(200, PermissionCollection::create($permissions));
+
     }
 
     /**

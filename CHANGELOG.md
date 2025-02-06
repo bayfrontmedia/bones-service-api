@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `user` field to be returned in `AuthResource`
+- Added `/users/me/tenant/{id}/permissions` endpoint
 
 ### Changed
 

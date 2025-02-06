@@ -124,6 +124,7 @@ class ApiRoutes
             // Users
             ->post($route_prefix . '/users/logout', [Users::class, 'logout'])
             ->get($route_prefix . '/users/me', [Users::class, 'me'])
+            ->get($route_prefix . '/users/me/tenant/{:tenant}/permissions', [Users::class, 'tenantPermissions'])
             ->post($route_prefix . '/users', [Users::class, 'create'])
             ->get($route_prefix . '/users', [Users::class, 'list'])
             ->get($route_prefix . '/users/{*:id}', [Users::class, 'read'])

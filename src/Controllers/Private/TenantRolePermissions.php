@@ -63,7 +63,6 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
         ]);
 
         $body = $this->getResourceBody($this->tenantRolePermissionsModel, true, [
-            'tenant' => $params['tenant'],
             'role' => $params['role']
         ]);
 

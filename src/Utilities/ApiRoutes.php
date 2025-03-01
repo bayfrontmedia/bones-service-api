@@ -69,6 +69,7 @@ class ApiRoutes
             ->get($route_prefix . '/tenants/{*:tenant}/invitations/{*:id}', [TenantInvitations::class, 'read'])
             ->delete($route_prefix . '/tenants/{*:tenant}/invitations/{*:id}', [TenantInvitations::class, 'delete'])
             // Tenant meta
+            ->put($route_prefix . '/tenants/{*:tenant}/meta/{*:key}', [TenantMeta::class, 'upsert'])
             ->post($route_prefix . '/tenants/{*:tenant}/meta', [TenantMeta::class, 'create'])
             ->get($route_prefix . '/tenants/{*:tenant}/meta', [TenantMeta::class, 'list'])
             ->get($route_prefix . '/tenants/{*:tenant}/meta/{*:id}', [TenantMeta::class, 'read'])
@@ -106,6 +107,7 @@ class ApiRoutes
             ->delete($route_prefix . '/tenants/{*:tenant}/users/{*:id}', [TenantUsers::class, 'delete'])
             ->get($route_prefix . '/tenants/{*:tenant}/users/{*:id}/permissions', [TenantUsers::class, 'listPermissions'])
             // Tenant user meta
+            ->put($route_prefix . '/tenants/{*:tenant}/users/{*:tenant_user}/meta/{*:key}', [TenantUserMeta::class, 'upsert'])
             ->post($route_prefix . '/tenants/{*:tenant}/users/{*:tenant_user}/meta', [TenantUserMeta::class, 'create'])
             ->get($route_prefix . '/tenants/{*:tenant}/users/{*:tenant_user}/meta', [TenantUserMeta::class, 'list'])
             ->get($route_prefix . '/tenants/{*:tenant}/users/{*:tenant_user}/meta/{*:id}', [TenantUserMeta::class, 'read'])
@@ -140,6 +142,7 @@ class ApiRoutes
             ->patch($route_prefix . '/users/{*:user}/keys/{*:id}', [UserKeys::class, 'update'])
             ->delete($route_prefix . '/users/{*:user}/keys/{*:id}', [UserKeys::class, 'delete'])
             // User meta
+            ->put($route_prefix . '/users/{*:user}/meta/{*:key}', [UserMeta::class, 'upsert'])
             ->post($route_prefix . '/users/{*:user}/meta', [UserMeta::class, 'create'])
             ->get($route_prefix . '/users/{*:user}/meta', [UserMeta::class, 'list'])
             ->get($route_prefix . '/users/{*:user}/meta/{*:id}', [UserMeta::class, 'read'])

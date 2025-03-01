@@ -7,11 +7,56 @@
 
 Methods:
 
+- [upsert](#upsert)
 - [create](#create)
 - [list](#list)
 - [read](#read)
 - [update](#update)
 - [delete](#delete)
+
+## upsert
+
+**Description:**
+
+Upsert user meta.
+
+Returned resource will have a new ID if previously existing.
+
+**Route:**
+
+`PUT /users/{user}/meta/{key}`
+
+**Path parameters:**
+
+- `user`: (`required|uuid`)
+- `key`: (`required`)
+
+**Required permissions:**
+
+- Is admin or self
+
+**Required headers:**
+
+- `Content-Type`: `application/json`
+
+**Valid query parameters:**
+
+- (none)
+
+**Body:**
+
+- [UserMetaModel](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/models/usermeta.md) fields
+
+**Response:**
+
+- HTTP status code: `201`
+- Schema: [UserMetaResource](../schemas.md#usermetaresource)
+
+**Throws:**
+
+- `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
+- `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 
 ## create
 

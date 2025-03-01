@@ -14,6 +14,7 @@ use Bayfront\BonesService\Api\Schemas\TenantUserMetaCollection;
 use Bayfront\BonesService\Api\Schemas\TenantUserMetaResource;
 use Bayfront\BonesService\Api\Traits\TenantUserResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\OrmServiceException;
 use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\TenantUserMetaModel;
 use Bayfront\BonesService\Rbac\Models\TenantUsersModel;
@@ -31,6 +32,70 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
         parent::__construct($apiService);
         $this->tenantUserMetaModel = $tenantUserMetaModel;
         $this->tenantUsersModel = $tenantUsersModel;
+    }
+
+    /**
+     * Upsert tenant user meta.
+     * Returned resource will have a new ID if previously existing.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    public function upsert(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'tenant' => 'required|uuid',
+            'tenant_user' => 'required|uuid',
+            'key' => 'required'
+        ]);
+
+        /** @noinspection DuplicatedCode */
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
+        ]);
+
+        $this->validateTenantUserExists($this->tenantUsersModel, $params['tenant'], $params['tenant_user']);
+
+        if ($this->apiService->getConfig('tenant.user_meta.manage_self') === true) {
+
+            try {
+
+                if (!$this->user->canDoAll($params['tenant'], [
+                        'tenant_user_meta:create'
+                    ]) && $this->user->getTenantUserId($params['tenant']) != $params['tenant_user']) {
+                    throw new ForbiddenException();
+                }
+
+            } catch (UnexpectedException $e) {
+                throw new ApiServiceException($e->getMessage());
+            }
+
+        } else {
+
+            $this->validateHasPermissions($this->user, $params['tenant'], [
+                'tenant_user_meta:create'
+            ]);
+
+        }
+
+        $body = $this->getResourceBody($this->tenantUserMetaModel, true, [
+            'tenant_user' => $params['tenant_user'],
+            'meta_key' => $params['key']
+        ]);
+
+        try {
+            $resource = $this->tenantUserMetaModel->withTrashed()->upsert($body);
+        } catch (OrmServiceException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
+
+        $this->respond(201, TenantUserMetaResource::create($resource->read()));
+
     }
 
     /**
@@ -56,6 +121,7 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
 
         $this->validateTenantUserExists($this->tenantUsersModel, $params['tenant'], $params['tenant_user']);
 
+        /** @noinspection DuplicatedCode */
         if ($this->apiService->getConfig('tenant.user_meta.manage_self') === true) {
 
             try {

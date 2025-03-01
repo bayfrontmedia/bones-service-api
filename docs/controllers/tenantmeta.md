@@ -7,11 +7,56 @@
 
 Methods:
 
+- [upsert](#upsert)
 - [create](#create)
 - [list](#list)
 - [read](#read)
 - [update](#update)
 - [delete](#delete)
+
+## upsert
+
+**Description:**
+
+Upsert tenant meta.
+
+Returned resource will have a new ID if previously existing.
+
+**Route:**
+
+`PUT /tenants/{tenant}/meta/{key}`
+
+**Path parameters:**
+
+- `tenant`: (`required|uuid`)
+- `key`: (`required`)
+
+**Required permissions:**
+
+- `tenant_meta:create`
+
+**Required headers:**
+
+- `Content-Type`: `application/json`
+
+**Valid query parameters:**
+
+- (none)
+
+**Body:**
+
+- [TenantMetaModel](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/models/tenantmeta.md) fields
+
+**Response:**
+
+- HTTP status code: `201`
+- Schema: [TenantMetaResource](../schemas.md#tenantmetaresource)
+
+**Throws:**
+
+- `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
+- `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 
 ## create
 

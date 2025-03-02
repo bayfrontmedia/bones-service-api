@@ -48,7 +48,7 @@ class UserKeys extends PrivateApiController implements CrudControllerInterface
             'Content-Type' => 'required|matches:application/json'
         ]);
 
-        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+        if (!$this->user->isAdmin() && ($this->user->getId() != $params['user'] || $this->apiService->getConfig('identity.key') !== true)) {
             throw new ForbiddenException();
         }
 

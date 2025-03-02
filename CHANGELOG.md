@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated `/users/{id}/tenants` endpoint to return all tenants if user is admin
+- Updated creation of user keys only when `identity.key` config value is `true`
 
 ### Fixed
 

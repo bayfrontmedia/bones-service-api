@@ -29,7 +29,7 @@ Create new resource.
 
 **Required permissions:**
 
-- Is admin or self
+- Is admin, or self and `identity.key` config value equals `true`
 
 **Required headers:**
 

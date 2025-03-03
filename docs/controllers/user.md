@@ -227,6 +227,7 @@ Executes `rbac.user.verified` event.
 **Body:**
 
 - `email` (string): Required
+- `token` (string): Required
 
 **Response:**
 

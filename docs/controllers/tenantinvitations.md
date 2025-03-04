@@ -167,7 +167,7 @@ Delete single resource.
 
 **Required permissions:**
 
-- `tenant_invitations:delete`
+- `tenant_invitations:delete` or self
 
 **Required headers:**
 

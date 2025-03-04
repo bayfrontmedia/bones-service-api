@@ -57,6 +57,7 @@ class ApiRoutes
             ->get($route_prefix . '/permissions/{*:id}', [Permissions::class, 'read'])
             ->patch($route_prefix . '/permissions/{*:id}', [Permissions::class, 'update'])
             ->delete($route_prefix . '/permissions/{*:id}', [Permissions::class, 'delete'])
+            ->get($route_prefix . '/permissions/{*:id}/tenants', [Permissions::class, 'listTenants'])
             // Tenants
             ->post($route_prefix . '/tenants', [Tenants::class, 'create'])
             ->get($route_prefix . '/tenants', [Tenants::class, 'list'])

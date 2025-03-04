@@ -12,6 +12,7 @@ Methods:
 - [read](#read)
 - [update](#update)
 - [delete](#delete)
+- [listTenants](#listtenants)
 
 ## create
 
@@ -94,6 +95,7 @@ List resources.
 
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 
 ## read
 
@@ -136,6 +138,7 @@ Read single resource.
 
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 - `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`
 
 ## update
@@ -221,3 +224,45 @@ Delete single resource.
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
 - `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
+
+## listTenants
+
+**Description:**
+
+List tenants with permission.
+
+**Route:**
+
+`GET /permissions/{id}/tenants`
+
+**Path parameters:**
+
+- `id`: (`required|uuid`)
+
+**Required permissions:**
+
+- Is admin
+
+**Required headers:**
+
+- (none)
+
+**Valid query parameters:**
+
+- Any valid [QueryParser](https://github.com/bayfrontmedia/bones-service-orm/blob/master/docs/utilities/queryparser.md) keys
+
+**Body:**
+
+- (none)
+
+**Response:**
+
+- HTTP status code: `200`
+- Schema: [TenantCollection](../schemas.md#tenantcollection)
+
+**Throws:**
+
+- `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
+- `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
+- `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`

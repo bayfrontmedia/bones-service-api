@@ -157,6 +157,7 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
 
     /**
      * @inheritDoc
+     * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
      * @throws ForbiddenException
@@ -169,9 +170,19 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
             'id' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_users:delete'
-        ]);
+        try {
+
+            if (!$this->user->canDoAll($params['tenant'], [
+                    'tenant_users:delete'
+                ]) && $this->user->getTenantUserId($params['tenant']) !== $params['id']) {
+
+                throw new ForbiddenException();
+
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
 
         if ($this->tenantResourceExists($this->tenantUsersModel, $params['tenant'], $params['id'])) {
             $this->deleteResource($this->tenantUsersModel, $params['id']);

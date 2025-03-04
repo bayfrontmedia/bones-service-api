@@ -165,7 +165,7 @@ Delete single resource.
 
 **Required permissions:**
 
-- `tenant_users:delete`
+- `tenant_users:delete` or self
 
 **Required headers:**
 

@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bugfix in `listTenants` method
 - Bugfix in `TenantRolePermissions` controller `create` method where `tenant` is not needed by model
 - Bugfix in `Users` controller
+- Bugfix in `TenantUsers` controller `listPermissions` method not checking if tenant or user was enabled or if user was an admin
 
 ## [1.0.0] - 2025.01.09
 

@@ -97,7 +97,6 @@ Executes `api.user.password_request` event.
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
 - `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`
 - `Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException`
-- `Bayfront\BonesService\Api\Exceptions\Http\UnauthorizedException`
 
 ## resetPassword
 

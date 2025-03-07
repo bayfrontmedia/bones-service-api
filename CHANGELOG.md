@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated creation of user keys only when `identity.key` config value is `true`
 - Updated `TenantUsers` controller `delete` method to allow self to remove from tenant
 - Updated `TenantInvitations` controller `delete` method to allow self to delete invitation
+- Updated unknown email address in `User` controller `passwordRequest` method to return `204` status
 
 ### Fixed
 

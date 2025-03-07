@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "762a56dc-9d35-4cf8-83db-06f26322b748",
-		"name": "bones-service-api-v1.0",
+		"name": "bones-service-api-v1.1",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "8617133"
 	},
@@ -628,6 +628,98 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "/permissions/{id}/tenants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/permissions/ID/tenants",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"permissions",
+								"ID",
+								"tenants"
+							],
+							"query": [
+								{
+									"key": "fields",
+									"value": "*",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "[{\"id\":{\"!null\": \"true\"}}]",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "-id",
+									"disabled": true
+								},
+								{
+									"key": "group",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "pagination",
+									"value": "page",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "before",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "aggregate",
+									"value": "[{\"COUNT\": \"*\"}]",
+									"disabled": true
+								},
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1106,6 +1198,53 @@
 			"name": "Tenant meta",
 			"item": [
 				{
+					"name": "/tenants/{tenant}/meta/{key}",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta_value\": \"Tenant meta value\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/meta/tenant_meta_key",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"meta",
+								"tenant_meta_key"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "/tenants/{tenant}/meta",
 					"request": {
 						"method": "POST",
@@ -1524,7 +1663,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/tenants/{{tenantId}}/permissions/ID?fields=id",
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/permissions/ID",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1537,7 +1676,8 @@
 							"query": [
 								{
 									"key": "fields",
-									"value": "id"
+									"value": "id",
+									"disabled": true
 								},
 								{
 									"key": "{{metaField}}",
@@ -2885,6 +3025,55 @@
 			"name": "Tenant user meta",
 			"item": [
 				{
+					"name": "/tenants/{tenant}/users/{tenant_user}/meta/{key}",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta_value\": \"Tenant user meta value\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tenants/{{tenantId}}/users/TENANT_USER/meta/KEY",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tenants",
+								"{{tenantId}}",
+								"users",
+								"TENANT_USER",
+								"meta",
+								"KEY"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "/tenants/{tenant}/users/{tenant_user}/meta",
 					"request": {
 						"method": "POST",
@@ -3674,6 +3863,45 @@
 					"response": []
 				},
 				{
+					"name": "/users/me/tenants/{tenant}/permissions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/me/tenants/{{tenantId}}/permissions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"me",
+								"tenants",
+								"{{tenantId}}",
+								"permissions"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "/users",
 					"request": {
 						"method": "POST",
@@ -4416,6 +4644,53 @@
 			"name": "User meta",
 			"item": [
 				{
+					"name": "/users/{user}/meta/{key}",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "{{authMethod}}",
+								"value": "{{authValue}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meta_value\": \"User meta value\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/ID/meta/app_preferences",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"ID",
+								"meta",
+								"app_preferences"
+							],
+							"query": [
+								{
+									"key": "{{metaField}}",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "/users/{user}/meta",
 					"request": {
 						"method": "POST",
@@ -4441,13 +4716,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/users/USER/meta",
+							"raw": "{{baseUrl}}/users/ID/meta",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"users",
-								"USER",
+								"ID",
 								"meta"
 							],
 							"query": [
@@ -4478,13 +4753,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/users/USER/meta",
+							"raw": "{{baseUrl}}/users/ID/meta",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"users",
-								"USER",
+								"ID",
 								"meta"
 							],
 							"query": [
@@ -4703,7 +4978,7 @@
 		{
 			"key": "baseUrl",
 			"value": "http://localhost/api/v1",
-			"type": "default"
+			"type": "string"
 		},
 		{
 			"key": "email",
@@ -4718,17 +4993,17 @@
 		{
 			"key": "accessToken",
 			"value": "ACCESS_TOKEN",
-			"type": "default"
+			"type": "string"
 		},
 		{
 			"key": "refreshToken",
 			"value": "REFRESH_TOKEN",
-			"type": "default"
+			"type": "string"
 		},
 		{
 			"key": "apiKey",
 			"value": "API_KEY",
-			"type": "default"
+			"type": "string"
 		},
 		{
 			"key": "authMethod",
@@ -4748,7 +5023,7 @@
 		{
 			"key": "tenantId",
 			"value": "TENANT_ID",
-			"type": "default"
+			"type": "string"
 		}
 	]
 }

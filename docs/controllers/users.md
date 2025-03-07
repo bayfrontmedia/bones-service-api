@@ -9,6 +9,7 @@ Methods:
 
 - [logout](#logout)
 - [me](#me)
+- [tenantPermissions](#tenantpermissions)
 - [create](#create)
 - [list](#list)
 - [read](#read)
@@ -63,7 +64,7 @@ or if access tokens are not revocable.
 
 **Description:**
 
-Read current user
+Read current user.
 
 **Route:**
 
@@ -100,6 +101,50 @@ Read current user
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
 - `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 - `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`
+
+## tenantPermissions
+
+**Description:**
+
+List all user permissions in tenant.
+
+NOTE: This method returns all permissions and ignores
+any URL query parameters which may exist.
+
+**Route:**
+
+`GET /users/me/tenant/{:tenant}/permissions`
+
+**Path parameters:**
+
+- `tenant`: (`required|uuid`)
+
+**Required permissions:**
+
+- Is admin or in tenant
+
+**Required headers:**
+
+- (none)
+
+**Valid query parameters:**
+
+- (none)
+
+**Body:**
+
+- (none)
+
+**Response:**
+
+- HTTP status code: `200`
+- Schema: [PermissionCollection](../schemas.md#permissioncollection)
+
+**Throws:**
+
+- `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
+- `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 
 ## create
 
@@ -406,6 +451,7 @@ Accept tenant invitation.
 **Description:**
 
 List tenants user belongs to.
+Admins belong to all tenants.
 
 **Route:**
 

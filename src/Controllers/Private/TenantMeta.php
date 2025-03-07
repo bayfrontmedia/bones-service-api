@@ -14,6 +14,7 @@ use Bayfront\BonesService\Api\Schemas\TenantMetaCollection;
 use Bayfront\BonesService\Api\Schemas\TenantMetaResource;
 use Bayfront\BonesService\Api\Traits\TenantResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\OrmServiceException;
 use Bayfront\BonesService\Rbac\Models\TenantMetaModel;
 
 class TenantMeta extends PrivateApiController implements CrudControllerInterface
@@ -27,6 +28,47 @@ class TenantMeta extends PrivateApiController implements CrudControllerInterface
     {
         parent::__construct($apiService);
         $this->tenantMetaModel = $tenantMetaModel;
+
+    }
+
+    /**
+     * Upsert tenant meta.
+     * Returned resource will have a new ID if previously existing.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     */
+    public function upsert(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'tenant' => 'required|uuid',
+            'key' => 'required'
+        ]);
+
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
+        ]);
+
+        $this->validateHasPermissions($this->user, $params['tenant'], [
+            'tenant_meta:create'
+        ]);
+
+        $body = $this->getResourceBody($this->tenantMetaModel, true, [
+            'tenant' => $params['tenant'],
+            'meta_key' => $params['key']
+        ]);
+
+        try {
+            $resource = $this->tenantMetaModel->withTrashed()->upsert($body);
+        } catch (OrmServiceException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
+
+        $this->respond(201, TenantMetaResource::create($resource->read()));
 
     }
 

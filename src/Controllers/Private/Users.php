@@ -12,6 +12,7 @@ use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\NotFoundException;
 use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Interfaces\CrudControllerInterface;
+use Bayfront\BonesService\Api\Schemas\PermissionCollection;
 use Bayfront\BonesService\Api\Schemas\TenantCollection;
 use Bayfront\BonesService\Api\Schemas\TenantInvitationCollection;
 use Bayfront\BonesService\Api\Schemas\UserCollection;
@@ -78,6 +79,44 @@ class Users extends PrivateApiController implements CrudControllerInterface
         $this->read([
             'id' => $this->user->getId()
         ]);
+    }
+
+    /**
+     * List all user permissions in tenant.
+     *
+     * NOTE:
+     * This method returns all permissions and ignores
+     * any URL query parameters which may exist.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     */
+    public function tenantPermissions(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'tenant' => 'required|uuid'
+        ]);
+
+        //$this->validateQuery($this->getQueryParserRules());
+
+        try {
+
+            if (!$this->user->isAdmin() && !$this->user->inTenant($params['tenant'])) {
+                throw new ForbiddenException();
+            }
+
+            $permissions = $this->user->getPermissions($params['tenant']);
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
+
+        $this->respond(200, PermissionCollection::create($permissions));
+
     }
 
     /**
@@ -308,7 +347,7 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
         $this->validateQuery($this->getQueryParserRules());
 
-        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['id']) {
             throw new ForbiddenException();
         }
 
@@ -393,54 +432,65 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
         $this->validateQuery($this->getQueryParserRules());
 
-        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['id']) {
             throw new ForbiddenException();
         }
 
         // Ensure user exists
 
         try {
-            if (!$this->usersModel->exists($params['id'])) {
-                throw new NotFoundException();
-            }
-        } catch (UnexpectedException $e) {
-            throw new ApiServiceException($e->getMessage());
-        }
-
-        // Get array of tenant ID's
-
-        $tenantUsersModel = new TenantUsersModel($this->rbacService);
-
-        try {
-
-            $tenantsCollection = $tenantUsersModel->list(new QueryParser([
-                'fields' => 'tenant',
-                'filter' => [
-                    [
-                        'user' => [
-                            'eq' => $params['id']
-                        ]
-                    ]
-                ]
-            ]), true);
-
+            $user = $this->usersModel->read($params['id'], ['admin']);
+        } catch (DoesNotExistException) {
+            throw new NotFoundException();
         } catch (InvalidRequestException|UnexpectedException $e) {
             throw new ApiServiceException($e->getMessage());
         }
 
-        $tenant_ids = Arr::pluck($tenantsCollection->list(), 'tenant');
+        // Check if user is admin
 
-        // List tenants
+        if (Arr::get($user, 'admin') === true) {
 
-        $tenantsModel = new TenantsModel($this->rbacService);
+            $tenantsModel = new TenantsModel($this->rbacService);
+            $query_filter = [];
 
-        $query_filter = [
-            [
-                'id' => [
-                    'in' => implode(',', $tenant_ids)
+        } else {
+
+            // Get array of tenant ID's
+
+            $tenantUsersModel = new TenantUsersModel($this->rbacService);
+
+            try {
+
+                $tenantsCollection = $tenantUsersModel->list(new QueryParser([
+                    'fields' => 'tenant',
+                    'filter' => [
+                        [
+                            'user' => [
+                                'eq' => $params['id']
+                            ]
+                        ]
+                    ]
+                ]), true);
+
+            } catch (InvalidRequestException|UnexpectedException $e) {
+                throw new ApiServiceException($e->getMessage());
+            }
+
+            $tenant_ids = Arr::pluck($tenantsCollection->list(), 'tenant');
+
+            // List tenants
+
+            $tenantsModel = new TenantsModel($this->rbacService);
+
+            $query_filter = [
+                [
+                    'id' => [
+                        'in' => implode(',', $tenant_ids)
+                    ]
                 ]
-            ]
-        ];
+            ];
+
+        }
 
         $collection = $this->listResources($tenantsModel, $query_filter);
 

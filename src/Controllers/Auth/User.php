@@ -98,7 +98,6 @@ class User extends AuthApiController
      * @throws BadRequestException
      * @throws NotFoundException
      * @throws TooManyRequestsException
-     * @throws UnauthorizedException
      */
     public function passwordRequest(): void
     {
@@ -115,7 +114,12 @@ class User extends AuthApiController
             'email' => 'required|email|maxLength:255'
         ]);
 
-        $user = $this->authenticateEmail($body['email'], 'api.user.password_request.fail');
+        try {
+            $user = $this->authenticateEmail($body['email'], 'api.user.password_request.fail');
+        } catch (UnauthorizedException) {
+            $this->respond(204);
+            return;
+        }
 
         $userMetaModel = new UserMetaModel($this->rbacService);
 

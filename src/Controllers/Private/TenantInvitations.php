@@ -2,6 +2,7 @@
 
 namespace Bayfront\BonesService\Api\Controllers\Private;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\BonesService\Api\ApiService;
 use Bayfront\BonesService\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
@@ -14,6 +15,9 @@ use Bayfront\BonesService\Api\Schemas\TenantInvitationCollection;
 use Bayfront\BonesService\Api\Schemas\TenantInvitationResource;
 use Bayfront\BonesService\Api\Traits\TenantResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
+use Bayfront\BonesService\Orm\Exceptions\InvalidRequestException;
+use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\TenantInvitationsModel;
 
 class TenantInvitations extends PrivateApiController implements CrudControllerInterface
@@ -152,11 +156,39 @@ class TenantInvitations extends PrivateApiController implements CrudControllerIn
             'id' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_invitations:delete'
-        ]);
+        // Ensure tenant resource exists
 
-        if ($this->tenantResourceExists($this->tenantInvitationsModel, $params['tenant'], $params['id'])) {
+        try {
+
+            $invitation = $this->tenantInvitationsModel->read($params['id']);
+
+        } catch (DoesNotExistException) {
+
+            $invitation = [];
+
+        } catch (InvalidRequestException|UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
+
+        // Ensure has permission tenant_invitations:delete or is self
+
+        try {
+
+            if (!$this->user->canDoAll($params['tenant'], [
+                    'tenant_invitations:delete'
+                ]) && $this->user->getEmail() !== Arr::get($invitation, 'email')) {
+
+                throw new ForbiddenException();
+
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
+
+        // Ensure invitation belongs to tenant
+
+        if (Arr::get($invitation, 'tenant') == $params['tenant']) {
             $this->deleteResource($this->tenantInvitationsModel, $params['id']);
         }
 

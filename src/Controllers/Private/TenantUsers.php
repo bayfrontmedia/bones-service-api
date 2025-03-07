@@ -25,6 +25,7 @@ use Bayfront\BonesService\Rbac\Models\TenantRolePermissionsModel;
 use Bayfront\BonesService\Rbac\Models\TenantsModel;
 use Bayfront\BonesService\Rbac\Models\TenantUserRolesModel;
 use Bayfront\BonesService\Rbac\Models\TenantUsersModel;
+use Bayfront\BonesService\Rbac\Models\UsersModel;
 
 class TenantUsers extends PrivateApiController implements CrudControllerInterface
 {
@@ -157,6 +158,7 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
 
     /**
      * @inheritDoc
+     * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
      * @throws ForbiddenException
@@ -169,15 +171,49 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
             'id' => 'required|uuid'
         ]);
 
-        $this->validateHasPermissions($this->user, $params['tenant'], [
-            'tenant_users:delete'
-        ]);
+        try {
+
+            if (!$this->user->canDoAll($params['tenant'], [
+                    'tenant_users:delete'
+                ]) && $this->user->getTenantUserId($params['tenant']) !== $params['id']) {
+
+                throw new ForbiddenException();
+
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
 
         if ($this->tenantResourceExists($this->tenantUsersModel, $params['tenant'], $params['id'])) {
             $this->deleteResource($this->tenantUsersModel, $params['id']);
         }
 
         $this->respond(204);
+
+    }
+
+    /**
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     */
+    private function returnNoPermissions(): void
+    {
+
+        $tenantPermissionsModel = new TenantPermissionsModel($this->rbacService);
+
+        $query_filter = [
+            [
+                'id' => [
+                    'in' => ''
+                ]
+            ]
+        ];
+
+        $collection = $this->listResources($tenantPermissionsModel, $query_filter);
+
+        $this->respond(200, TenantPermissionCollection::create($collection['list'], $collection['config']));
 
     }
 
@@ -217,12 +253,14 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
             throw new ApiServiceException($e->getMessage());
         }
 
+        $usersModel = new UsersModel($this->rbacService);
         $tenantsModel = new TenantsModel($this->rbacService);
 
         try {
 
             $tenant_user = $this->tenantUsersModel->read($params['id']); // Resource
-            $tenant_owner = $tenantsModel->getOwnerId($params['tenant']); // String (user id)
+            $user = $usersModel->read(Arr::get($tenant_user, 'user', ''));
+            $tenant = $tenantsModel->read($params['tenant']); // Resource
 
         } catch (DoesNotExistException) {
             throw new NotFoundException();
@@ -230,7 +268,25 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
             throw new ApiServiceException($e->getMessage());
         }
 
-        if (Arr::get($tenant_user, 'user') == $tenant_owner) { // If tenant user owns tenant
+        // Check user is enabled
+
+        if (Arr::get($user, 'enabled') !== true) {
+
+            $this->returnNoPermissions();
+            return;
+
+        }
+
+        // Check tenant is enabled
+
+        if (Arr::get($tenant, 'enabled') !== true && Arr::get($user, 'admin') !== true) {
+
+            $this->returnNoPermissions();
+            return;
+
+        }
+
+        if (Arr::get($user, 'admin') === true || Arr::get($tenant_user, 'user') == Arr::get($tenant, 'owner', '')) { // If user is admin or tenant user owns tenant
 
             // List all tenant permissions
 

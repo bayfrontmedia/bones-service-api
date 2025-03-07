@@ -7,11 +7,58 @@
 
 Methods:
 
+- [upsert](#upsert)
 - [create](#create)
 - [list](#list)
 - [read](#read)
 - [update](#update)
 - [delete](#delete)
+
+## upsert
+
+**Description:**
+
+Upsert tenant user meta.
+
+Returned resource will have a new ID if previously existing.
+
+**Route:**
+
+`PUT /tenants/{tenant}/users/{tenant_user}/meta/{key}`
+
+**Path parameters:**
+
+- `tenant`: (`required|uuid`)
+- `tenant_user`: (`required|uuid`)
+- `key`: (`required`)
+
+**Required permissions:**
+
+- `tenant_user_meta:create` or self if [tenant.user_meta_manage_self config](../setup.md#configuration) value is `true`
+
+**Required headers:**
+
+- `Content-Type`: `application/json`
+
+**Valid query parameters:**
+
+- (none)
+
+**Body:**
+
+- [TenantUserMetaModel](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/models/tenantusermeta.md) fields
+
+**Response:**
+
+- HTTP status code: `201`
+- Schema: [TenantUserMetaResource](../schemas.md#tenantusermetaresource)
+
+**Throws:**
+
+- `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
+- `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
+- `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`
 
 ## create
 
@@ -55,6 +102,7 @@ Create new resource.
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
 - `Bayfront\BonesService\Api\Exceptions\Http\ConflictException`
 - `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
+- `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`
 
 ## list
 
@@ -97,6 +145,7 @@ List resources.
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
 - `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
+- `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`
 
 ## read
 
@@ -134,8 +183,6 @@ Read single resource.
 
 - HTTP status code: `200`
 - Schema: [TenantUserMetaResource](../schemas.md#tenantusermetaresource)
-
-**Throws:**
 
 **Throws:**
 
@@ -231,3 +278,4 @@ Delete single resource.
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
 - `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
+- `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`

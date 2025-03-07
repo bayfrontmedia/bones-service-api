@@ -15,6 +15,7 @@ class AuthResource implements SchemaInterface
     public static function create(array $array, array $config = []): array
     {
         $keys = [
+            'user',
             'access',
             'refresh',
             'expires'

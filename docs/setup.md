@@ -94,7 +94,6 @@ return [
         'user' => [
             'name.first' => 'required|isString|lengthLessThan:255',
             'name.last' => 'required|isString|lengthLessThan:255',
-            'name.full' => 'required|isString|lengthLessThan:255',
         ],
     ],
     'user' => [

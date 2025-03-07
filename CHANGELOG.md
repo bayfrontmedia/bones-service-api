@@ -13,6 +13,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.1.0] - 2025.03.07
+
+### Added
+
+- Added `user` field to be returned in `AuthResource`
+- Added `/users/me/tenants/{id}/permissions` endpoint
+- Added meta upsert endpoints
+- Added `/permissions/{id}/tenants` endpoint
+
+### Changed
+
+- Updated `/users/{id}/tenants` endpoint to return all tenants if user is admin
+- Updated creation of user keys only when `identity.key` config value is `true`
+- Updated `TenantUsers` controller `delete` method to allow self to remove from tenant
+- Updated `TenantInvitations` controller `delete` method to allow self to delete invitation
+- Updated unknown email address in `User` controller `passwordRequest` method to return `204` status
+- Updated Postman assets
+
+### Fixed
+
+- Bugfix in `listTenants` method
+- Bugfix in `TenantRolePermissions` controller `create` method where `tenant` is not needed by model
+- Bugfix in `Users` controller
+- Bugfix in `TenantUsers` controller `listPermissions` method not checking if tenant or user was enabled or if user was an admin
+
 ## [1.0.0] - 2025.01.09
 
 ### Added

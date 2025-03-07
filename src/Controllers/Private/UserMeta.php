@@ -14,6 +14,7 @@ use Bayfront\BonesService\Api\Schemas\UserMetaCollection;
 use Bayfront\BonesService\Api\Schemas\UserMetaResource;
 use Bayfront\BonesService\Api\Traits\UserResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
+use Bayfront\BonesService\Orm\Exceptions\OrmServiceException;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
 
@@ -28,6 +29,47 @@ class UserMeta extends PrivateApiController implements CrudControllerInterface
     {
         parent::__construct($apiService);
         $this->userMetaModel = $userMetaModel;
+    }
+
+    /**
+     * Upsert user meta.
+     * Returned resource will have a new ID if previously existing.
+     *
+     * @param array $params
+     * @return void
+     * @throws ApiServiceException
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     */
+    public function upsert(array $params): void
+    {
+
+        $this->validatePath($params, [
+            'user' => 'required|uuid',
+            'key' => 'required'
+        ]);
+
+        $this->validateHeaders([
+            'Content-Type' => 'required|matches:application/json'
+        ]);
+
+        if (!$this->user->isAdmin() && $this->user->getId() != $params['user']) {
+            throw new ForbiddenException();
+        }
+
+        $body = $this->getResourceBody($this->userMetaModel, true, [
+            'user' => $params['user'],
+            'meta_key' => $params['key']
+        ]);
+
+        try {
+            $resource = $this->userMetaModel->withTrashed()->upsert($body);
+        } catch (OrmServiceException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
+
+        $this->respond(201, UserMetaResource::create($resource->read()));
+
     }
 
     /**

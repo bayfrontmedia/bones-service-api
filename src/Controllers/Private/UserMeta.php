@@ -63,7 +63,7 @@ class UserMeta extends PrivateApiController implements CrudControllerInterface
         ]);
 
         try {
-            $resource = $this->userMetaModel->withTrashed()->upsert($body);
+            $resource = $this->userMetaModel->upsert($body);
         } catch (OrmServiceException $e) {
             throw new ApiServiceException($e->getMessage());
         }

@@ -89,7 +89,7 @@ class TenantUserMeta extends PrivateApiController implements CrudControllerInter
         ]);
 
         try {
-            $resource = $this->tenantUserMetaModel->withTrashed()->upsert($body);
+            $resource = $this->tenantUserMetaModel->upsert($body);
         } catch (OrmServiceException $e) {
             throw new ApiServiceException($e->getMessage());
         }

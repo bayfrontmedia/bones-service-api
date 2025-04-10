@@ -133,14 +133,16 @@ class Users extends PrivateApiController implements CrudControllerInterface
         $meta_rules = $this->apiService->getConfig('meta.user', []);
 
         /** @noinspection DuplicatedCode */
-        if (isset($body['meta']) && is_array($body['meta']) && !empty($meta_rules)) {
+        if (!empty($meta_rules)) {
+
+            $meta = Arr::dot((array)Arr::get($body, 'meta', []));
 
             $validator = new Validator();
 
-            $validator->validate(Arr::dot($body['meta']), $meta_rules, false, true);
+            $validator->validate($meta, $meta_rules, false, true);
 
-            if (!empty(Arr::except(Arr::dot($body['meta']), array_keys($meta_rules))) || !$validator->isValid()) {
-                throw new BadRequestException('Unable to ' . $action . ' resource: Invalid meta field(s)');
+            if (!empty(Arr::except($meta, array_keys($meta_rules))) || !$validator->isValid()) {
+                throw new BadRequestException('Unable to ' . $action . ' resource: Invalid and/or missing meta field(s)');
             }
 
         }

@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.1.1] - 2025.04.10
+
+### Fixed
+
+- Bugfix in `validateUserMeta` and `validateTenantMeta` methods for `Users` and `Tenants` controllers
+
 ## [1.1.0] - 2025.03.07
 
 ### Added

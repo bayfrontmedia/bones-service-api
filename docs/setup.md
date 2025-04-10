@@ -90,7 +90,6 @@ return [
             'address.state' => 'isString|lengthLessThan:255',
             'address.zip' => 'isString|lengthLessThan:255',
         ],
-        'tenant_user' => [],
         'user' => [
             'name.first' => 'required|isString|lengthLessThan:255',
             'name.last' => 'required|isString|lengthLessThan:255',
@@ -150,7 +149,7 @@ header for a valid access token. (See [PrivateApiController](controllers/private
 issue a TFA (two-factor authentication) code, along with its rules.
 - `auth.otp`: Allow user to authenticate with email + OTP (one-time password), along with its rules.
 - `auth.refresh`: Allow user to authenticate with a valid refresh token.
-- `meta`: The `meta.tenant`, `meta.tenant_user` and `meta.user` keys allow for the definition of validation rules
+- `meta`: The `meta.tenant` and `meta.user` keys allow for the definition of validation rules
 enforced for different meta resources. Only defined keys will be allowed.
 - `user.allow_register`: Allow public user registration
 - `user.allow_delete`: Allow users to delete their own accounts

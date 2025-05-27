@@ -27,8 +27,8 @@
   "require": {
     "php": "^8.0",
     "bayfrontmedia/bones": "^5.3",
-    "bayfrontmedia/bones-service-orm": "^1.0",
-    "bayfrontmedia/bones-service-rbac": "^1.1",
+    "bayfrontmedia/bones-service-orm": "^1.1",
+    "bayfrontmedia/bones-service-rbac": "1.1",
     "bayfrontmedia/array-schema": "^2.1",
     "bayfrontmedia/leaky-bucket": "^2.2",
     "bayfrontmedia/php-array-helpers": "^2.0",

@@ -137,6 +137,28 @@ class Users extends PrivateApiController implements CrudControllerInterface
 
             $meta = Arr::dot((array)Arr::get($body, 'meta', []));
 
+            if ($action == 'update') {
+
+                foreach ($meta_rules as $k => $v) {
+
+                    if (array_key_exists($k, $meta)) {
+
+                        if (str_contains($v, 'required') && $meta[$k] === null) {
+                            throw new BadRequestException('Unable to ' . $action . ' resource: Missing required meta field(s)');
+                        }
+
+                    }
+
+                    $meta_rules[$k] = str_replace([
+                        'required|',
+                        '|required',
+                        'required'
+                    ], '', $v);
+
+                }
+
+            }
+
             $validator = new Validator();
 
             $validator->validate($meta, $meta_rules, false, true);

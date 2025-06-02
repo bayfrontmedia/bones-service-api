@@ -31,7 +31,7 @@ Create new resource.
 **Required permissions:**
 
 - `tenant_users:update`
-- `tenant_roles:update`
+- `tenant_user_roles:update`
 
 **Required headers:**
 
@@ -170,7 +170,7 @@ Delete single resource.
 **Required permissions:**
 
 - `tenant_users:update`
-- `tenant_roles:update`
+- `tenant_user_roles:update`
 
 **Required headers:**
 

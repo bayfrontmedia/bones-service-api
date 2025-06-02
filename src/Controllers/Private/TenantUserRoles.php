@@ -60,7 +60,7 @@ class TenantUserRoles extends PrivateApiController implements CrudControllerInte
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
             'tenant_users:update',
-            'tenant_roles:update',
+            'tenant_user_roles:update',
         ]);
 
         $body = $this->getResourceBody($this->tenantUserRolesModel, true, [
@@ -185,7 +185,7 @@ class TenantUserRoles extends PrivateApiController implements CrudControllerInte
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
             'tenant_users:update',
-            'tenant_roles:update'
+            'tenant_user_roles:update'
         ]);
 
         if ($this->tenantUserResourceExists($this->tenantUserRolesModel, $params['tenant_user'], $params['id'])) {

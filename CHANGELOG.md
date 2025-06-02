@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.2.0] - 2025.06.01
+
+### Added
+
+- Added `tenant_user_roles:update` permission
+- Added `tenant_user_teams:update` permission
+
+### Changed
+
+- Updated dependencies
+- Updated required permissions to `create` and `delete` from `TenantUserRoles`
+- Updated required permissions to `create` and `delete` from `TenantUserTeams`
+
 ## [1.1.3] - 2025.05.27
 
 ### Changed

@@ -60,7 +60,7 @@ class TenantUserTeams extends PrivateApiController implements CrudControllerInte
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
             'tenant_users:update',
-            'tenant_teams:update'
+            'tenant_user_teams:update'
         ]);
 
         $body = $this->getResourceBody($this->tenantUserTeamsModel, true, [
@@ -184,7 +184,7 @@ class TenantUserTeams extends PrivateApiController implements CrudControllerInte
 
         $this->validateHasPermissions($this->user, $params['tenant'], [
             'tenant_users:update',
-            'tenant_teams:update'
+            'tenant_user_teams:update'
         ]);
 
         if ($this->tenantUserResourceExists($this->tenantUserTeamsModel, $params['tenant_user'], $params['id'])) {

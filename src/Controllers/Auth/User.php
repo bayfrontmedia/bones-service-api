@@ -11,6 +11,7 @@ use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Exceptions\Http\UnauthorizedException;
 use Bayfront\BonesService\Api\Models\ApiModel;
 use Bayfront\BonesService\Api\Schemas\UserResource;
+use Bayfront\BonesService\Api\Traits\CreatesOrUpdatesUser;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
@@ -28,7 +29,7 @@ use Bayfront\BonesService\Rbac\User as RbacUser;
 class User extends AuthApiController
 {
 
-    use UsesResourceModel;
+    use CreatesOrUpdatesUser, UsesResourceModel;
 
     /**
      * Authenticate email or abort.
@@ -82,6 +83,8 @@ class User extends AuthApiController
             'admin' => false,
             'enabled' => true
         ]);
+
+        $this->validateUserMeta($body, 'create');
 
         $resource = $this->createResource($usersModel, $body);
 

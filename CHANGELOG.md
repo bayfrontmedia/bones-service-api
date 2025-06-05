@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.3.0] - 2025.06.04
+
+### Created
+
+- Created `CreatesOrUpdatesUser` trait
+
+### Fixed
+
+- Fixed bug where the `User->register()` method was not validating user meta
+
 ## [1.2.0] - 2025.06.01
 
 ### Added

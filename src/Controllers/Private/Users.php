@@ -17,6 +17,7 @@ use Bayfront\BonesService\Api\Schemas\TenantCollection;
 use Bayfront\BonesService\Api\Schemas\TenantInvitationCollection;
 use Bayfront\BonesService\Api\Schemas\UserCollection;
 use Bayfront\BonesService\Api\Schemas\UserResource;
+use Bayfront\BonesService\Api\Traits\CreatesOrUpdatesUser;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
 use Bayfront\BonesService\Orm\Exceptions\InvalidFieldException;
@@ -28,12 +29,11 @@ use Bayfront\BonesService\Rbac\Models\TenantsModel;
 use Bayfront\BonesService\Rbac\Models\TenantUsersModel;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
-use Bayfront\Validator\Validator;
 
 class Users extends PrivateApiController implements CrudControllerInterface
 {
 
-    use UsesResourceModel;
+    use CreatesOrUpdatesUser, UsesResourceModel;
 
     protected UsersModel $usersModel;
 
@@ -116,58 +116,6 @@ class Users extends PrivateApiController implements CrudControllerInterface
         }
 
         $this->respond(200, PermissionCollection::create($permissions));
-
-    }
-
-    /**
-     * Validate user meta.
-     *
-     * @param array $body
-     * @param string $action (create/update)
-     * @return void
-     * @throws BadRequestException
-     */
-    private function validateUserMeta(array $body, string $action): void
-    {
-
-        $meta_rules = $this->apiService->getConfig('meta.user', []);
-
-        /** @noinspection DuplicatedCode */
-        if (!empty($meta_rules)) {
-
-            $meta = Arr::dot((array)Arr::get($body, 'meta', []));
-
-            if ($action == 'update') {
-
-                foreach ($meta_rules as $k => $v) {
-
-                    if (array_key_exists($k, $meta)) {
-
-                        if (str_contains($v, 'required') && $meta[$k] === null) {
-                            throw new BadRequestException('Unable to ' . $action . ' resource: Missing required meta field(s)');
-                        }
-
-                    }
-
-                    $meta_rules[$k] = str_replace([
-                        'required|',
-                        '|required',
-                        'required'
-                    ], '', $v);
-
-                }
-
-            }
-
-            $validator = new Validator();
-
-            $validator->validate($meta, $meta_rules, false, true);
-
-            if (!empty(Arr::except($meta, array_keys($meta_rules))) || !$validator->isValid()) {
-                throw new BadRequestException('Unable to ' . $action . ' resource: Invalid and/or missing meta field(s)');
-            }
-
-        }
 
     }
 

@@ -261,7 +261,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
         })->everyHours(12);
 
-        if ($this->apiService->rbacService->getConfig('user.verification.require') === true
+        if ($this->apiService->rbacService->getConfig('user.require_verification') === true
             && (int)$this->apiService->getConfig('user.unverified_expiration', 0) > 0) {
 
             $this->scheduler->call('delete-unverified-users', function () {

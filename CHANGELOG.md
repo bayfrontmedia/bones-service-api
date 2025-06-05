@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed bug where the `User->register()` method was not validating user meta
+- Fixed bug in `ApiServiceEvents` not allowing `delete-unverified-users` job from running
 
 ## [1.2.0] - 2025.06.01
 

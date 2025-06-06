@@ -98,7 +98,7 @@ return [
     'user' => [
         'allow_register' => false, // Allow public user registration?
         'allow_delete' => true, // Allow users to delete their own accounts?
-        'impersonate' => [
+        'impersonation' => [
             'enabled' => true, // Enable user impersonation?
             'admin_only' => true // Only admins can impersonate?
         ],
@@ -160,8 +160,8 @@ issue a TFA (two-factor authentication) code, along with its rules.
 enforced for different meta resources. Only defined keys will be allowed.
 - `user.allow_register`: Allow public user registration
 - `user.allow_delete`: Allow users to delete their own accounts
-- `user.impersonate.enabled`: Enable user impersonation?
-- `user.impersonate.admin_only`: Only admins can impersonate?
+- `user.impersonation.enabled`: Enable user impersonation?
+- `user.impersonation.admin_only`: Only admins can impersonate?
 - `user.password_request`: Allow users to request a password reset, along with its rules.
 - `user.unverified.expiration`: If RBAC users [require verification](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/setup.md#configuration),
   duration (in minutes) before unverified users are deleted via a scheduled job. `0` to disable.

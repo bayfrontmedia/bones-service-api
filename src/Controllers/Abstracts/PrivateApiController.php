@@ -59,12 +59,12 @@ abstract class PrivateApiController extends ApiController
     private function canImpersonateUser(bool $is_admin): bool
     {
 
-        if ($this->apiService->getConfig('user.impersonate.enabled') !== true
+        if ($this->apiService->getConfig('user.impersonation.enabled') !== true
             || !Request::hasHeader('X-Impersonate-User')) {
             return false;
         }
 
-        if ($this->apiService->getConfig('user.impersonate.admin_only') && !$is_admin) {
+        if ($this->apiService->getConfig('user.impersonation.admin_only') && !$is_admin) {
             return false;
         }
 
@@ -77,13 +77,15 @@ abstract class PrivateApiController extends ApiController
      *
      * Non-admins can never impersonate admins.
      *
+     * The api.user.impersonate event is executed.
+     *
      * @param string $user_id
-     * @param bool $is_admin (Is actual user an admin?)
+     * @param User $actual_user
      * @return User
      * @throws ApiServiceException
      * @throws ForbiddenException
      */
-    private function impersonateUser(string $user_id, bool $is_admin): User
+    private function impersonateUser(string $user_id, User $actual_user): User
     {
 
         $authenticator = new UserIdAuthenticator($this->rbacService);
@@ -100,9 +102,11 @@ abstract class PrivateApiController extends ApiController
             throw new ApiServiceException('Unexpected error impersonating user: ' . $e->getMessage());
         }
 
-        if ($is_admin === false && $user->isAdmin()) {
+        if ($actual_user->isAdmin() === false && $user->isAdmin()) {
             throw new ForbiddenException('Unable to impersonate user: Non-admin users cannot impersonate an admin');
         }
+
+        $this->events->doEvent('api.user.impersonate', $actual_user, $user);
 
         return $user;
 
@@ -132,7 +136,7 @@ abstract class PrivateApiController extends ApiController
                 $container->setAlias('user', $user::class);
 
                 if ($this->canImpersonateUser($user->isAdmin())) {
-                    return $this->impersonateUser(Request::getHeader('X-Impersonate-User'), $user->isAdmin());
+                    return $this->impersonateUser(Request::getHeader('X-Impersonate-User'), $user);
                 }
 
                 return $user;
@@ -166,7 +170,7 @@ abstract class PrivateApiController extends ApiController
                 $container->setAlias('user', $user::class);
 
                 if ($this->canImpersonateUser($user->isAdmin())) {
-                    return $this->impersonateUser(Request::getHeader('X-Impersonate-User'), $user->isAdmin());
+                    return $this->impersonateUser(Request::getHeader('X-Impersonate-User'), $user);
                 }
 
                 return $user;

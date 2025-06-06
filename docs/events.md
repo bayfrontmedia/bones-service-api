@@ -25,6 +25,8 @@ instance is passed as a parameter.
 - `api.controller.public`: Executes when a `PublicApiController` is instantiated. The controller instance is passed as a parameter.
 - `api.response`: Executes just before the API response is sent with the `respond` method. 
 The `ApiController` instance is passed as a parameter.
+- `api.user.impersonate`: Executes when a user is being impersonated. Two [User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md)
+instances are passed as parameters: The first representing the actual user, and the second representing the user being impersonated.
 - `api.user.password.fail`: Executes when a user fails to reset their password using an incorrect token. The email address
 used is passed as a parameter.
 - `api.user.password_request`: Executes when a user requests a password reset. 

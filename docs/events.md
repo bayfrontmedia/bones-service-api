@@ -5,7 +5,7 @@ The following [events](https://github.com/bayfrontmedia/bones/blob/master/docs/s
 - `api.start`: Executes in the `ApiService` constructor as the first event available to this service. 
 The `ApiService` instance is passed as a parameter.
 - `api.auth.limit`: Executes when a rate limit has been exceeded. 
-- `api.auth.otp`: Executes when a user attempts to authenticate with a correct email and a OTP has been generated.
+- `api.auth.otp`: Executes when a user attempts to authenticate with a correct email and an OTP has been generated.
 A [User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md) and [Totp](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/totp.md) instance are passed as parameters.
 - `api.auth.otp.fail`: Executes when a user fails to authenticate using their email + OTP. The email address used
 is passed as a parameter.

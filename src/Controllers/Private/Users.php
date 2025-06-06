@@ -27,8 +27,8 @@ use Bayfront\BonesService\Orm\Utilities\Parsers\QueryParser;
 use Bayfront\BonesService\Rbac\Models\TenantInvitationsModel;
 use Bayfront\BonesService\Rbac\Models\TenantsModel;
 use Bayfront\BonesService\Rbac\Models\TenantUsersModel;
-use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
+use Bayfront\BonesService\Rbac\Models\UserTokensModel;
 
 class Users extends PrivateApiController implements CrudControllerInterface
 {
@@ -60,8 +60,8 @@ class Users extends PrivateApiController implements CrudControllerInterface
      */
     public function logout(): void
     {
-        $userMetaModel = new UserMetaModel($this->rbacService);
-        $userMetaModel->deleteAllTokens($this->user->getId());
+        $userTokensModel = new UserTokensModel($this->rbacService);
+        $userTokensModel->deleteAllTokens($this->user->getId());
         $this->respond(204);
     }
 

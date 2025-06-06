@@ -98,7 +98,8 @@ return [
     'user' => [
         'allow_register' => false, // Allow public user registration?
         'allow_delete' => true, // Allow users to delete their own accounts?
-        'unverified_expiration' => 10080, // If RBAC users require verification, duration before unverified users are deleted (in minutes), 0 for unlimited: 10080 = 7 days
+        'unverified_expiration' => 10080, // If RBAC users require verification, duration before unverified users are deleted (in minutes). 0 to disable. 10080 = 7 days
+        'unverified_new_only' => true, // Remove only new unverified users? When false, all unverified users will be eligible for deletion
         'password_request' => [ // Password reset request
             'enabled' => true,
             'wait' => 3,
@@ -154,7 +155,8 @@ enforced for different meta resources. Only defined keys will be allowed.
 - `user.allow_register`: Allow public user registration
 - `user.allow_delete`: Allow users to delete their own accounts
 - `user.unverified_expiration`: If RBAC users [require verification](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/setup.md#configuration), 
-duration (in minutes) before unverified users are deleted via a scheduled job.
+duration (in minutes) before unverified users are deleted via a scheduled job. `0` to disable.
+- `user.unverified_new_only`: Remove only new unverified users? When `false`, all unverified users will be eligible for deletion.
 - `user.password_request`: Allow users to request a password reset, along with its rules.
 - `user.verification`: Require users to verify their email addresses, along with its rules.
 - `tenant.allow_create`: Allow non-admin users to create tenants?

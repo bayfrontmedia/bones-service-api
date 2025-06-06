@@ -24,6 +24,7 @@ use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDoesNotExistExcepti
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserNotVerifiedException;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
+use Bayfront\BonesService\Rbac\Models\UserTokensModel;
 use Bayfront\BonesService\Rbac\User as RbacUser;
 
 class User extends AuthApiController
@@ -214,7 +215,9 @@ class User extends AuthApiController
 
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_password);
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_tfa);
-        $userMetaModel->deleteAllTokens($user->getId());
+
+        $userTokensModel = new UserTokensModel($this->rbacService);
+        $userTokensModel->deleteAllTokens($user->getId());
 
         $this->respond(204);
 

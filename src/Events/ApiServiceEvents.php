@@ -24,6 +24,7 @@ use Bayfront\BonesService\Rbac\Models\TenantInvitationsModel;
 use Bayfront\BonesService\Rbac\Models\UserKeysModel;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
+use Bayfront\BonesService\Rbac\Models\UserTokensModel;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\LabelExistsException;
 use Bayfront\CronScheduler\SyntaxException;
@@ -242,8 +243,8 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
         $this->scheduler->call('delete-expired-tokens', function () {
 
-            $userMetaModel = new UserMetaModel($this->apiService->rbacService);
-            $userMetaModel->deleteExpiredTokens();
+            $userTokensModel = new UserTokensModel($this->apiService->rbacService);
+            $userTokensModel->deleteExpiredTokens();
 
         })->everyMinutes(15);
 
@@ -267,7 +268,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
             $this->scheduler->call('delete-unverified-users', function () {
 
                 $usersModel = new UsersModel($this->apiService->rbacService);
-                $usersModel->deleteUnverified(time() - (int)$this->apiService->getConfig('unverified_expiration'));
+                $usersModel->deleteUnverified(time() - (int)$this->apiService->getConfig('user.unverified_expiration', 0), (bool)$this->apiService->getConfig('user.unverified_new_only', true));
 
             })->daily();
 

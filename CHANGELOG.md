@@ -15,9 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.0] - Upcoming
 
-### Created
+### Added
 
-- Created `CreatesOrUpdatesUser` trait
+- Added `CreatesOrUpdatesUser` trait
+- Added newly added permissions in `ApiSeed` command
+- Added `user.unverified_new_only` config value
+
+### Changed
+
+- Updated `Auth` controllers to use new `userTokensModel` in `bones-service-rbac` v1.3.0
+- Updated dependencies
 
 ### Fixed
 

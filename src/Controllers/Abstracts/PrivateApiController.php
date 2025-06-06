@@ -8,6 +8,7 @@ use Bayfront\BonesService\Api\Exceptions\ApiServiceException;
 use Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException;
 use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Rbac\Authenticators\TokenAuthenticator;
+use Bayfront\BonesService\Rbac\Authenticators\UserIdAuthenticator;
 use Bayfront\BonesService\Rbac\Authenticators\UserKeyAuthenticator;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\ExpiredUserKeyException;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\InvalidDomainException;
@@ -50,6 +51,68 @@ abstract class PrivateApiController extends ApiController
     }
 
     /**
+     * Can user be impersonated?
+     *
+     * @param bool $is_admin (Is actual user an admin?)
+     * @return bool
+     */
+    private function canImpersonateUser(bool $is_admin): bool
+    {
+
+        if ($this->apiService->getConfig('user.impersonation.enabled') !== true
+            || !Request::hasHeader('X-Impersonate-User')) {
+            return false;
+        }
+
+        if ($this->apiService->getConfig('user.impersonation.admin_only') && !$is_admin) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    /**
+     * Impersonate user.
+     *
+     * Non-admins can never impersonate admins.
+     *
+     * The api.user.impersonate event is executed.
+     *
+     * @param string $user_id
+     * @param User $actual_user
+     * @return User
+     * @throws ApiServiceException
+     * @throws ForbiddenException
+     */
+    private function impersonateUser(string $user_id, User $actual_user): User
+    {
+
+        $authenticator = new UserIdAuthenticator($this->rbacService);
+
+        try {
+            $user = $authenticator->authenticate($user_id, $this->apiService->getConfig('user.verification.enabled'));
+        } catch (UserDoesNotExistException) {
+            throw new ForbiddenException('Unable to impersonate user: User does not exist (' . $user_id . ')');
+        } catch (UserDisabledException) {
+            throw new ForbiddenException('Unable to impersonate user: User is disabled (' . $user_id . ')');
+        } catch (UserNotVerifiedException) {
+            throw new ForbiddenException('Unable to impersonate user: User is not verified (' . $user_id . ')');
+        } catch (UnexpectedAuthenticationException $e) {
+            throw new ApiServiceException('Unexpected error impersonating user: ' . $e->getMessage());
+        }
+
+        if ($actual_user->isAdmin() === false && $user->isAdmin()) {
+            throw new ForbiddenException('Unable to impersonate user: Non-admin users cannot impersonate an admin');
+        }
+
+        $this->events->doEvent('api.user.impersonate', $actual_user, $user);
+
+        return $user;
+
+    }
+
+    /**
      * Identify user using an enabled identification method,
      * and places User class into the container.
      *
@@ -71,6 +134,10 @@ abstract class PrivateApiController extends ApiController
                 $container = App::getContainer();
                 $container->set($user::class, $user);
                 $container->setAlias('user', $user::class);
+
+                if ($this->canImpersonateUser($user->isAdmin())) {
+                    return $this->impersonateUser(Request::getHeader('X-Impersonate-User'), $user);
+                }
 
                 return $user;
 
@@ -101,6 +168,10 @@ abstract class PrivateApiController extends ApiController
                 $container = App::getContainer();
                 $container->set($user::class, $user);
                 $container->setAlias('user', $user::class);
+
+                if ($this->canImpersonateUser($user->isAdmin())) {
+                    return $this->impersonateUser(Request::getHeader('X-Impersonate-User'), $user);
+                }
 
                 return $user;
 

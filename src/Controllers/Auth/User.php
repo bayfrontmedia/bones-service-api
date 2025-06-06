@@ -11,6 +11,7 @@ use Bayfront\BonesService\Api\Exceptions\Http\TooManyRequestsException;
 use Bayfront\BonesService\Api\Exceptions\Http\UnauthorizedException;
 use Bayfront\BonesService\Api\Models\ApiModel;
 use Bayfront\BonesService\Api\Schemas\UserResource;
+use Bayfront\BonesService\Api\Traits\CreatesOrUpdatesUser;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
 use Bayfront\BonesService\Orm\Exceptions\AlreadyExistsException;
 use Bayfront\BonesService\Orm\Exceptions\DoesNotExistException;
@@ -23,12 +24,13 @@ use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDoesNotExistExcepti
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserNotVerifiedException;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
 use Bayfront\BonesService\Rbac\Models\UsersModel;
+use Bayfront\BonesService\Rbac\Models\UserTokensModel;
 use Bayfront\BonesService\Rbac\User as RbacUser;
 
 class User extends AuthApiController
 {
 
-    use UsesResourceModel;
+    use CreatesOrUpdatesUser, UsesResourceModel;
 
     /**
      * Authenticate email or abort.
@@ -82,6 +84,8 @@ class User extends AuthApiController
             'admin' => false,
             'enabled' => true
         ]);
+
+        $this->validateUserMeta($body, 'create');
 
         $resource = $this->createResource($usersModel, $body);
 
@@ -211,7 +215,9 @@ class User extends AuthApiController
 
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_password);
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_tfa);
-        $userMetaModel->deleteAllTokens($user->getId());
+
+        $userTokensModel = new UserTokensModel($this->rbacService);
+        $userTokensModel->deleteAllTokens($user->getId());
 
         $this->respond(204);
 

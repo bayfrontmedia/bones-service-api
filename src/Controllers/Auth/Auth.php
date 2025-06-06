@@ -26,7 +26,9 @@ use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDisabledException;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserDoesNotExistException;
 use Bayfront\BonesService\Rbac\Exceptions\Authentication\UserNotVerifiedException;
 use Bayfront\BonesService\Rbac\Models\UserMetaModel;
+use Bayfront\BonesService\Rbac\Models\UserTokensModel;
 use Bayfront\BonesService\Rbac\User;
+use Bayfront\HttpRequest\Request;
 
 class Auth extends AuthApiController
 {
@@ -52,22 +54,31 @@ class Auth extends AuthApiController
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_password);
         $userMetaModel->deleteTotp($user->getId(), $userMetaModel->totp_meta_key_tfa);
 
+        $userTokensModel = new UserTokensModel($this->rbacService);
+
         try {
 
-            $access_token = $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_ACCESS);
-            $jwt = $userMetaModel->readToken($access_token);
+            $access_token = $userTokensModel->createToken($user->getId(), $userTokensModel::TOKEN_TYPE_ACCESS, Request::getIp(), [
+                'referer' => Request::getReferer() ?? '',
+                'user_agent' => Request::getUserAgent() ?? ''
+            ]);
+            $jwt = $userTokensModel->readToken($access_token);
 
             $this->events->doEvent('api.auth.success', $user);
 
             $this->respond(201, AuthResource::create([
                 'user' => $user->getId(),
                 'access' => $access_token,
-                'refresh' => $userMetaModel->createToken($user->getId(), $userMetaModel::TOKEN_TYPE_REFRESH),
+                'refresh' => $userTokensModel->createToken($user->getId(), $userTokensModel::TOKEN_TYPE_REFRESH, Request::getIp(), [
+                    'referer' => Request::getReferer() ?? '',
+                    'user_agent' => Request::getUserAgent() ?? ''
+                ]),
                 'expires' => Arr::get($jwt, 'exp')
             ]));
 
-        } catch (DoesNotExistException|UnexpectedException $e) {
-            throw new ApiServiceException('Unexpected error', 0, $e);
+        } catch (UnexpectedException $e) {
+
+            throw new ApiServiceException('Unexpected error: ' . $e->getMessage(), 0, $e);
         }
 
     }

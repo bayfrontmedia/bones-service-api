@@ -28,7 +28,7 @@
     "php": "^8.0",
     "bayfrontmedia/bones": "^5.3",
     "bayfrontmedia/bones-service-orm": "^1.1.0",
-    "bayfrontmedia/bones-service-rbac": "^1.2",
+    "bayfrontmedia/bones-service-rbac": "^1.3",
     "bayfrontmedia/array-schema": "^2.1",
     "bayfrontmedia/leaky-bucket": "^2.2",
     "bayfrontmedia/php-array-helpers": "^2.0",

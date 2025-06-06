@@ -98,13 +98,20 @@ return [
     'user' => [
         'allow_register' => false, // Allow public user registration?
         'allow_delete' => true, // Allow users to delete their own accounts?
-        'unverified_expiration' => 10080, // If RBAC users require verification, duration before unverified users are deleted (in minutes), 0 for unlimited: 10080 = 7 days
+        'impersonation' => [
+            'enabled' => true, // Enable user impersonation?
+            'admin_only' => true // Only admins can impersonate?
+        ],
         'password_request' => [ // Password reset request
             'enabled' => true,
             'wait' => 3,
             'duration' => 15,
             'length' => 36,
             'type' => RbacService::TOTP_TYPE_ALPHANUMERIC,
+        ],
+        'unverified' => [
+            'expiration' => 10080, // If RBAC users require verification, duration before unverified users are deleted (in minutes). 0 to disable. 10080 = 7 days
+            'new_only' => true, // Remove only new unverified users? When false, all unverified users will be eligible for deletion
         ],
         'verification' => [ // User email verification
             'enabled' => true,
@@ -153,9 +160,12 @@ issue a TFA (two-factor authentication) code, along with its rules.
 enforced for different meta resources. Only defined keys will be allowed.
 - `user.allow_register`: Allow public user registration
 - `user.allow_delete`: Allow users to delete their own accounts
-- `user.unverified_expiration`: If RBAC users [require verification](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/setup.md#configuration), 
-duration (in minutes) before unverified users are deleted via a scheduled job.
+- `user.impersonation.enabled`: Enable user impersonation?
+- `user.impersonation.admin_only`: Only admins can impersonate?
 - `user.password_request`: Allow users to request a password reset, along with its rules.
+- `user.unverified.expiration`: If RBAC users [require verification](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/setup.md#configuration),
+  duration (in minutes) before unverified users are deleted via a scheduled job. `0` to disable.
+- `user.unverified.new_only`: Remove only new unverified users? When `false`, all unverified users will be eligible for deletion.
 - `user.verification`: Require users to verify their email addresses, along with its rules.
 - `tenant.allow_create`: Allow non-admin users to create tenants?
 - `tenant.auto_enabled`: Automatically enable tenants created by non-admin users?

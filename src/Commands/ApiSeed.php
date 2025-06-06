@@ -134,6 +134,17 @@ class ApiSeed extends Command
             ]);
 
             $permissions->create([
+                'name' => 'tenant_user_teams:update',
+                'description' => 'Update tenant user teams'
+            ]);
+
+
+            $permissions->create([
+                'name' => 'tenant_user_roles:update',
+                'description' => 'Update tenant user roles'
+            ]);
+
+            $permissions->create([
                 'name' => 'tenant_teams:create',
                 'description' => 'Create teams'
             ]);

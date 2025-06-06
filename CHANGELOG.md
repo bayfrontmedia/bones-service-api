@@ -13,6 +13,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.3.0] - 2025.06.06
+
+### Added
+
+- Added `CreatesOrUpdatesUser` trait
+- Added newly added permissions in `ApiSeed` command
+- Added `user.unverified.new_only` config value
+- Added user impersonation and related event
+
+### Changed
+
+- Updated `Auth` controllers to use new `userTokensModel` in `bones-service-rbac` v1.3.0
+- Updated dependencies
+
+### Fixed
+
+- Fixed bug where the `User->register()` method was not validating user meta
+- Fixed bug in `ApiServiceEvents` not allowing `delete-unverified-users` job from running
+
 ## [1.2.0] - 2025.06.01
 
 ### Added

@@ -95,6 +95,7 @@ List resources.
 
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 
 ## read
 
@@ -138,6 +139,7 @@ Read single resource.
 
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 - `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`
 
 ## update

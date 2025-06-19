@@ -71,7 +71,7 @@ class TenantPermissions extends PrivateApiController implements CrudControllerIn
      * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws NotFoundException
+     * @throws ForbiddenException
      */
     public function list(array $params): void
     {
@@ -82,7 +82,7 @@ class TenantPermissions extends PrivateApiController implements CrudControllerIn
 
         $this->validateQuery($this->getQueryParserRules());
 
-        $this->validateTenantExists($params['tenant']);
+        $this->validateInEnabledTenant($this->user, $params['tenant']);
 
         $query_filter = $this->getReadQueryFilter($params['tenant']);
 
@@ -141,8 +141,10 @@ class TenantPermissions extends PrivateApiController implements CrudControllerIn
 
     /**
      * @inheritDoc
+     * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
+     * @throws ForbiddenException
      * @throws NotFoundException
      */
     public function read(array $params): void
@@ -155,7 +157,7 @@ class TenantPermissions extends PrivateApiController implements CrudControllerIn
 
         $this->validateQuery($this->getFieldParserRules());
 
-        $this->validateTenantResourceExists($this->tenantPermissionsModel, $params['tenant'], $params['id']);
+        $this->validateInEnabledTenant($this->user, $params['tenant']);
 
         $query_filter = $this->getReadQueryFilter($params['tenant']);
 

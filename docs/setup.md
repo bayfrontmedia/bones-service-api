@@ -82,17 +82,17 @@ return [
             'enabled' => true,
         ],
     ],
-    'meta' => [ // Meta validation rules in dot notation, or empty for none. Only these keys will be allowed.
+    'meta' => [ // Meta validation rules, or empty for none. Only these keys will be allowed.
         'tenant' => [
-            'address.street' => 'isString|lengthLessThan:255',
-            'address.street2' => 'isString|lengthLessThan:255',
-            'address.city' => 'isString|lengthLessThan:255',
-            'address.state' => 'isString|lengthLessThan:255',
-            'address.zip' => 'isString|lengthLessThan:255',
+            'address_street' => 'isString|lengthLessThan:255',
+            'address_street2' => 'isString|lengthLessThan:255',
+            'address_city' => 'isString|lengthLessThan:255',
+            'address_state' => 'isString|lengthLessThan:255',
+            'address_zip' => 'isString|lengthLessThan:255',
         ],
         'user' => [
-            'name.first' => 'required|isString|lengthLessThan:255',
-            'name.last' => 'required|isString|lengthLessThan:255',
+            'name_first' => 'required|isString|lengthLessThan:255',
+            'name_last' => 'required|isString|lengthLessThan:255',
         ],
     ],
     'user' => [

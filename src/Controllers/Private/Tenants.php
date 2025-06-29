@@ -48,7 +48,7 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
         /** @noinspection DuplicatedCode */
         if (!empty($meta_rules)) {
 
-            $meta = Arr::dot((array)Arr::get($body, 'meta', []));
+            $meta = (array)Arr::get($body, 'meta', []);
 
             if ($action == 'update') {
 

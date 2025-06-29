@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.1] - Upcoming
 
+### Changed
+
+- Updated model meta to not dot arrays
+
 ### Fixed
 
 - Fixed bug in listing tenant permissions when not in tenant

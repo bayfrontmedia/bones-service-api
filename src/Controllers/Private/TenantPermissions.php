@@ -82,60 +82,23 @@ class TenantPermissions extends PrivateApiController implements CrudControllerIn
 
         $this->validateQuery($this->getQueryParserRules());
 
-        $this->validateInEnabledTenant($this->user, $params['tenant']);
+        if (!$this->user->isAdmin()) {
+            $this->validateHasPermissions($this->user, $params['tenant'], [
+                'tenant_permissions:read'
+            ]);
+        }
 
-        $query_filter = $this->getReadQueryFilter($params['tenant']);
+        $query_filter = [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ];
 
         $collection = $this->listResources($this->tenantPermissionsModel, $query_filter);
 
         $this->respond(200, TenantPermissionCollection::create($collection['list'], $collection['config']));
-
-    }
-
-    /**
-     * Get query filter to read permissions.
-     *
-     * @param string $tenant_id
-     * @return array
-     * @throws ApiServiceException
-     */
-    private function getReadQueryFilter(string $tenant_id): array
-    {
-
-        try {
-
-            if ($this->user->canDoAll($tenant_id, [
-                'tenant_permissions:read'
-            ])) {
-
-                return [
-                    [
-                        'tenant' => [
-                            'eq' => $tenant_id
-                        ]
-                    ]
-                ];
-
-            } else {
-
-                return [
-                    [
-                        'tenant' => [
-                            'eq' => $tenant_id
-                        ]
-                    ],
-                    [
-                        'permission' => [
-                            'in' => implode(',', Arr::pluck($this->user->getPermissions($tenant_id), 'id'))
-                        ]
-                    ]
-                ];
-
-            }
-
-        } catch (UnexpectedException $e) {
-            throw new ApiServiceException($e->getMessage());
-        }
 
     }
 
@@ -157,9 +120,19 @@ class TenantPermissions extends PrivateApiController implements CrudControllerIn
 
         $this->validateQuery($this->getFieldParserRules());
 
-        $this->validateInEnabledTenant($this->user, $params['tenant']);
+        if (!$this->user->isAdmin()) {
+            $this->validateHasPermissions($this->user, $params['tenant'], [
+                'tenant_permissions:read'
+            ]);
+        }
 
-        $query_filter = $this->getReadQueryFilter($params['tenant']);
+        $query_filter = [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ];
 
         if (!$this->resourceExists($this->tenantPermissionsModel, $params['id'], $query_filter)) {
             throw new NotFoundException();

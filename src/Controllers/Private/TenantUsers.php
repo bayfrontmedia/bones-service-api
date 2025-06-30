@@ -241,16 +241,10 @@ class TenantUsers extends PrivateApiController implements CrudControllerInterfac
 
         $this->validateTenantResourceExists($this->tenantUsersModel, $params['tenant'], $params['id']);
 
-        try {
-
-            if (!$this->user->canDoAll($params['tenant'], [
-                    'tenant_permissions:read'
-                ]) && $this->user->getTenantUserId($params['tenant']) !== $params['id']) {
-                throw new ForbiddenException();
-            }
-
-        } catch (UnexpectedException $e) {
-            throw new ApiServiceException($e->getMessage());
+        if (!$this->user->isAdmin()) {
+            $this->validateHasPermissions($this->user, $params['tenant'], [
+                'tenant_permissions:read'
+            ]);
         }
 
         $usersModel = new UsersModel($this->rbacService);

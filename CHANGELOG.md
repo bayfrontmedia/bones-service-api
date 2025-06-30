@@ -13,11 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
-## [1.3.1] - Upcoming
+## [1.4.0] - Upcoming
 
 ### Changed
 
 - Updated model meta to not dot arrays
+- Updated permissions to read `TenantPermissions`, `TenantRolePermissions` and to list permissions of `TenantUsers`
 
 ### Fixed
 

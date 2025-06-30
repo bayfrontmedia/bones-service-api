@@ -207,7 +207,7 @@ List tenant user permissions.
 
 **Required permissions:**
 
-- `tenant_roles:read`
+- `tenant_permissions:read` or is admin
 
 **Required headers:**
 

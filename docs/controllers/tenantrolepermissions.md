@@ -74,7 +74,7 @@ List resources.
 
 **Required permissions:**
 
-- `tenant_roles:read` and `tenant_permissions:read` or filtered to has role
+- `tenant_roles:read` and `tenant_permissions:read` or is admin
 
 **Required headers:**
 
@@ -117,7 +117,7 @@ Read single resource.
 
 **Required permissions:**
 
-- `tenant_roles:read` and `tenant_permissions:read` or has role
+- `tenant_roles:read` and `tenant_permissions:read` or is admin
 
 **Required headers:**
 

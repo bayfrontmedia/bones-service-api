@@ -181,14 +181,21 @@ trait UsesResourceModel
                 $filter = json_decode($query['filter'], true);
 
                 if ($filter) {
-                    $query['filter'] = json_encode(array_merge($filter, $query_filter));
-                } else {
-                    $query['filter'] = json_encode($query_filter);
+
+                    /*
+                     * All user-defined filters need to be wrapped in their own _and condition
+                     * to ensure the system-defined filters ($query_filter) are applied to all results.
+                     */
+
+                    $query_filter[] = [
+                        '_and' => $filter
+                    ];
+
                 }
 
-            } else {
-                $query['filter'] = json_encode($query_filter);
             }
+
+            $query['filter'] = json_encode($query_filter);
 
         }
 

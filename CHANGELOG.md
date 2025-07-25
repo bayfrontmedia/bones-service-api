@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated model meta to not dot arrays
 - Updated permissions to read `TenantPermissions`, `TenantRolePermissions` and to list permissions of `TenantUsers`
+- Updated `Tenants` controller to ensure only the current tenant owner can update the owner if not an admin
 
 ### Fixed
 

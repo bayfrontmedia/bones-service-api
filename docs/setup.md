@@ -64,7 +64,7 @@ return [
         'password' => [ // Authenticate with email + password
             'enabled' => true,
             'tfa' => [
-                'enabled' => !(App::environment() === App::ENV_DEV),
+                'enabled' => App::environment() !== App::ENV_DEV,
                 'wait' => 3, // Wait time (in minutes) to wait before creating a new TFA, or 0 to disable
                 'duration' => 15, // Validity duration (in minutes), 0 for unlimited
                 'length' => 6, // Value length
@@ -72,7 +72,7 @@ return [
             ],
         ],
         'otp' => [ // Authenticate with email + OTP
-            'enabled' => true,
+            'enabled' => App::environment() !== App::ENV_DEV,
             'wait' => 3, // Wait time (in minutes) to wait before creating a new TFA, or 0 to disable
             'duration' => 15, // Validity duration (in minutes), 0 for unlimited
             'length' => 6, // Value length
@@ -114,7 +114,7 @@ return [
             'new_only' => true, // Remove only new unverified users? When false, all unverified users will be eligible for deletion
         ],
         'verification' => [ // User email verification
-            'enabled' => true,
+            'enabled' => App::environment() !== App::ENV_DEV,
             'wait' => 3,
             'duration' => 1440,
             'length' => 36,

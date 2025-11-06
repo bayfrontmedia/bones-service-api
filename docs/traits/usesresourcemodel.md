@@ -12,7 +12,7 @@ Methods include:
 - [readResource](#readresource)
 - [updateResource](#updateresource)
 - [deleteResource](#deleteresource)
-- [filteredResourceExists](#filteredresourceexists)
+- [resourceExists](#resourceexists)
 
 ## getFieldParserRules
 
@@ -183,11 +183,11 @@ Delete [ResourceModel](https://github.com/bayfrontmedia/bones-service-orm/blob/m
 
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 
-## filteredResourceExists
+## resourceExists
 
 **Description:**
 
-Does filtered resource exist?
+Does resource exist?
 
 **Parameters:**
 

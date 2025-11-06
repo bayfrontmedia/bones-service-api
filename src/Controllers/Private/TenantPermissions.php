@@ -71,7 +71,7 @@ class TenantPermissions extends PrivateApiController implements CrudControllerIn
      * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
-     * @throws NotFoundException
+     * @throws ForbiddenException
      */
     public function list(array $params): void
     {
@@ -82,9 +82,19 @@ class TenantPermissions extends PrivateApiController implements CrudControllerIn
 
         $this->validateQuery($this->getQueryParserRules());
 
-        $this->validateTenantExists($params['tenant']);
+        if (!$this->user->isAdmin()) {
+            $this->validateHasPermissions($this->user, $params['tenant'], [
+                'tenant_permissions:read'
+            ]);
+        }
 
-        $query_filter = $this->getReadQueryFilter($params['tenant']);
+        $query_filter = [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ];
 
         $collection = $this->listResources($this->tenantPermissionsModel, $query_filter);
 
@@ -93,56 +103,11 @@ class TenantPermissions extends PrivateApiController implements CrudControllerIn
     }
 
     /**
-     * Get query filter to read permissions.
-     *
-     * @param string $tenant_id
-     * @return array
-     * @throws ApiServiceException
-     */
-    private function getReadQueryFilter(string $tenant_id): array
-    {
-
-        try {
-
-            if ($this->user->canDoAll($tenant_id, [
-                'tenant_permissions:read'
-            ])) {
-
-                return [
-                    [
-                        'tenant' => [
-                            'eq' => $tenant_id
-                        ]
-                    ]
-                ];
-
-            } else {
-
-                return [
-                    [
-                        'tenant' => [
-                            'eq' => $tenant_id
-                        ]
-                    ],
-                    [
-                        'permission' => [
-                            'in' => implode(',', Arr::pluck($this->user->getPermissions($tenant_id), 'id'))
-                        ]
-                    ]
-                ];
-
-            }
-
-        } catch (UnexpectedException $e) {
-            throw new ApiServiceException($e->getMessage());
-        }
-
-    }
-
-    /**
      * @inheritDoc
+     * @param array $params
      * @throws ApiServiceException
      * @throws BadRequestException
+     * @throws ForbiddenException
      * @throws NotFoundException
      */
     public function read(array $params): void
@@ -155,9 +120,19 @@ class TenantPermissions extends PrivateApiController implements CrudControllerIn
 
         $this->validateQuery($this->getFieldParserRules());
 
-        $this->validateTenantResourceExists($this->tenantPermissionsModel, $params['tenant'], $params['id']);
+        if (!$this->user->isAdmin()) {
+            $this->validateHasPermissions($this->user, $params['tenant'], [
+                'tenant_permissions:read'
+            ]);
+        }
 
-        $query_filter = $this->getReadQueryFilter($params['tenant']);
+        $query_filter = [
+            [
+                'tenant' => [
+                    'eq' => $params['tenant']
+                ]
+            ]
+        ];
 
         if (!$this->resourceExists($this->tenantPermissionsModel, $params['id'], $query_filter)) {
             throw new NotFoundException();

@@ -72,7 +72,7 @@ List resources.
 
 **Required permissions:**
 
-- `tenant_permissions:read` or filtered to user permissions
+- `tenant_permissions:read` or is admin
 
 **Required headers:**
 
@@ -95,6 +95,7 @@ List resources.
 
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 
 ## read
 
@@ -113,7 +114,7 @@ Read single resource.
 
 **Required permissions:**
 
-- `tenant_permissions:read` or user has permission
+- `tenant_permissions:read` or is admin
 
 **Required headers:**
 
@@ -138,6 +139,7 @@ Read single resource.
 
 - `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
 - `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 - `Bayfront\BonesService\Api\Exceptions\Http\NotFoundException`
 
 ## update

@@ -48,7 +48,7 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
         /** @noinspection DuplicatedCode */
         if (!empty($meta_rules)) {
 
-            $meta = Arr::dot((array)Arr::get($body, 'meta', []));
+            $meta = (array)Arr::get($body, 'meta', []);
 
             if ($action == 'update') {
 
@@ -238,6 +238,16 @@ class Tenants extends PrivateApiController implements CrudControllerInterface
          */
 
         $body = $this->getResourceBody($this->tenantsModel);
+
+        try {
+
+            if (!$this->user->isAdmin() && isset($body['owner']) && !$this->user->ownsTenant($params['id'])) {
+                throw new BadRequestException('Unable to update resource: Only current owner can update owner field');
+            }
+
+        } catch (UnexpectedException $e) {
+            throw new ApiServiceException($e->getMessage());
+        }
 
         if (!$this->user->isAdmin() &&
             (isset($body['domain']) || isset($body['enabled']))) {

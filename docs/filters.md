@@ -9,6 +9,6 @@ Default meta keys:
 
 - `version`: API version as defined in the [config value](setup.md#configuration)
 - `client_ip`: Client IP address
-- `request_id`: `REQUEST_ID` constant, if defined (see request.id [config value](setup.md#configuration))
+- `request_id`: `REQUEST_ID` constant, if defined (see `request.id` [config value](setup.md#configuration))
 - `elapsed`: Time elapsed (in seconds)
 - `time`: ISO 8601 date

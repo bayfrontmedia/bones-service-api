@@ -41,7 +41,6 @@ class ApiServiceFilters extends FilterSubscriber implements FilterSubscriberInte
      * @param array $arr
      * @return array
      */
-
     public function addApiVersion(array $arr): array
     {
         return array_merge($arr, [

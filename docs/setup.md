@@ -64,7 +64,7 @@ return [
         'password' => [ // Authenticate with email + password
             'enabled' => true,
             'tfa' => [
-                'enabled' => !(App::environment() === App::ENV_DEV),
+                'enabled' => App::environment() !== App::ENV_DEV,
                 'wait' => 3, // Wait time (in minutes) to wait before creating a new TFA, or 0 to disable
                 'duration' => 15, // Validity duration (in minutes), 0 for unlimited
                 'length' => 6, // Value length
@@ -72,7 +72,7 @@ return [
             ],
         ],
         'otp' => [ // Authenticate with email + OTP
-            'enabled' => true,
+            'enabled' => App::environment() !== App::ENV_DEV,
             'wait' => 3, // Wait time (in minutes) to wait before creating a new TFA, or 0 to disable
             'duration' => 15, // Validity duration (in minutes), 0 for unlimited
             'length' => 6, // Value length
@@ -82,17 +82,17 @@ return [
             'enabled' => true,
         ],
     ],
-    'meta' => [ // Meta validation rules in dot notation, or empty for none. Only these keys will be allowed.
+    'meta' => [ // Meta validation rules, or empty for none. Only these keys will be allowed.
         'tenant' => [
-            'address.street' => 'isString|lengthLessThan:255',
-            'address.street2' => 'isString|lengthLessThan:255',
-            'address.city' => 'isString|lengthLessThan:255',
-            'address.state' => 'isString|lengthLessThan:255',
-            'address.zip' => 'isString|lengthLessThan:255',
+            'address_street' => 'isString|lengthLessThan:255',
+            'address_street2' => 'isString|lengthLessThan:255',
+            'address_city' => 'isString|lengthLessThan:255',
+            'address_state' => 'isString|lengthLessThan:255',
+            'address_zip' => 'isString|lengthLessThan:255',
         ],
         'user' => [
-            'name.first' => 'required|isString|lengthLessThan:255',
-            'name.last' => 'required|isString|lengthLessThan:255',
+            'name_first' => 'required|isString|lengthLessThan:255',
+            'name_last' => 'required|isString|lengthLessThan:255',
         ],
     ],
     'user' => [
@@ -114,7 +114,7 @@ return [
             'new_only' => true, // Remove only new unverified users? When false, all unverified users will be eligible for deletion
         ],
         'verification' => [ // User email verification
-            'enabled' => true,
+            'enabled' => App::environment() !== App::ENV_DEV,
             'wait' => 3,
             'duration' => 1440,
             'length' => 36,

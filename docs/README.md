@@ -12,3 +12,4 @@ are available in the [assets directory](assets).
 - [Events](events.md)
 - [Filters](filters.md)
 - [Schemas](schemas.md)
+- [Traits](traits/README.md)

@@ -13,6 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.4.0] - 2025.11.06 
+
+### Changed
+
+- Updated model meta to not dot arrays
+- Updated permissions to read `TenantPermissions`, `TenantRolePermissions` and to list permissions of `TenantUsers`
+- Updated `Tenants` controller to ensure only the current tenant owner can update the owner if not an admin
+- Updated dependencies
+- Updated documentation
+
+### Fixed
+
+- Fixed bug in listing tenant permissions when not in tenant
+- Fixed bug in `UsesResourceModel` where the query filter in the `listResources` method was not applied correctly to
+  queries with user-defined filters
+
 ## [1.3.0] - 2025.06.06
 
 ### Added
@@ -86,7 +102,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bugfix in `listTenants` method
 - Bugfix in `TenantRolePermissions` controller `create` method where `tenant` is not needed by model
 - Bugfix in `Users` controller
-- Bugfix in `TenantUsers` controller `listPermissions` method not checking if tenant or user was enabled or if user was an admin
+- Bugfix in `TenantUsers` controller `listPermissions` method not checking if tenant or user was enabled or if user was
+  an admin
 
 ## [1.0.0] - 2025.01.09
 

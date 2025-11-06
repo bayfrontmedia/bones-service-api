@@ -148,10 +148,7 @@ class ApiRoutes
             ->get($route_prefix . '/users/{*:user}/meta', [UserMeta::class, 'list'])
             ->get($route_prefix . '/users/{*:user}/meta/{*:id}', [UserMeta::class, 'read'])
             ->patch($route_prefix . '/users/{*:user}/meta/{*:id}', [UserMeta::class, 'update'])
-            ->delete($route_prefix . '/users/{*:user}/meta/{*:id}', [UserMeta::class, 'delete'])
-
-
-            ;
+            ->delete($route_prefix . '/users/{*:user}/meta/{*:id}', [UserMeta::class, 'delete']);
 
     }
 

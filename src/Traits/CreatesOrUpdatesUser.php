@@ -25,7 +25,7 @@ trait CreatesOrUpdatesUser
         /** @noinspection DuplicatedCode */
         if (!empty($meta_rules)) {
 
-            $meta = Arr::dot((array)Arr::get($body, 'meta', []));
+            $meta = (array)Arr::get($body, 'meta', []);
 
             if ($action == 'update') {
 

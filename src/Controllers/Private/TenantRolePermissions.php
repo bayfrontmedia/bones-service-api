@@ -14,7 +14,6 @@ use Bayfront\BonesService\Api\Schemas\TenantRolePermissionCollection;
 use Bayfront\BonesService\Api\Schemas\TenantRolePermissionResource;
 use Bayfront\BonesService\Api\Traits\TenantResource;
 use Bayfront\BonesService\Api\Traits\UsesResourceModel;
-use Bayfront\BonesService\Orm\Exceptions\UnexpectedException;
 use Bayfront\BonesService\Rbac\Models\TenantPermissionsModel;
 use Bayfront\BonesService\Rbac\Models\TenantRolePermissionsModel;
 use Bayfront\BonesService\Rbac\Models\TenantRolesModel;
@@ -96,17 +95,11 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
 
         $this->validateTenantResourceExists($this->tenantRolesModel, $params['tenant'], $params['role']);
 
-        try {
-
-            if (!$this->user->canDoAll($params['tenant'], [
-                    'tenant_roles:read',
-                    'tenant_permissions:read'
-                ]) && !$this->user->hasRole($params['tenant'], $params['role'])) {
-                throw new ForbiddenException();
-            }
-
-        } catch (UnexpectedException $e) {
-            throw new ApiServiceException($e->getMessage());
+        if (!$this->user->isAdmin()) {
+            $this->validateHasPermissions($this->user, $params['tenant'], [
+                'tenant_roles:read',
+                'tenant_permissions:read'
+            ]);
         }
 
         $query_filter = [
@@ -153,17 +146,11 @@ class TenantRolePermissions extends PrivateApiController implements CrudControll
             throw new NotFoundException();
         }
 
-        try {
-
-            if (!$this->user->canDoAll($params['tenant'], [
-                    'tenant_roles:read',
-                    'tenant_permissions:read'
-                ]) && !$this->user->hasRole($params['tenant'], $params['role'])) {
-                throw new ForbiddenException();
-            }
-
-        } catch (UnexpectedException $e) {
-            throw new ApiServiceException($e->getMessage());
+        if (!$this->user->isAdmin()) {
+            $this->validateHasPermissions($this->user, $params['tenant'], [
+                'tenant_roles:read',
+                'tenant_permissions:read'
+            ]);
         }
 
         $resource = $this->readResource($this->tenantRolePermissionsModel, $params['id']);

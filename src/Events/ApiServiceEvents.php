@@ -219,7 +219,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
      */
     public function addConsoleCommands(Application $application): void
     {
-        $application->add(new ApiSeed($this->apiService));
+        $application->addCommand(new ApiSeed($this->apiService));
     }
 
     /**

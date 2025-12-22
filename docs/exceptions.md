@@ -10,17 +10,36 @@ which returns a `500` status code.
 
 The following exceptions exist in the `Bayfront\BonesService\Api\Exceptions\Http` namespace:
 
-| Exception                   | Status code |
-|-----------------------------|-------------|
-| `BadRequestException`       | `400`       |
-| `UnauthorizedException`     | `401`       |
-| `PaymentRequiredException`  | `402`       |
-| `ForbiddenException`        | `403`       |
-| `NotFoundException`         | `404`       |
-| `MethodNotAllowedException` | `405`       |
-| `NotAcceptableException`    | `406`       |
-| `ConflictException`         | `409`       |
-| `TooManyRequestsException`  | `429`       |
+| Exception                               | Status code |
+|-----------------------------------------|-------------|
+| `BadRequestException`                   | `400`       |
+| `UnauthorizedException`                 | `401`       |
+| `PaymentRequiredException`              | `402`       |
+| `ForbiddenException`                    | `403`       |
+| `NotFoundException`                     | `404`       |
+| `MethodNotAllowedException`             | `405`       |
+| `NotAcceptableException`                | `406`       |
+| `ProxyAuthenticationRequiredException`  | `407`       |
+| `RequestTimeoutException`               | `408`       |
+| `ConflictException`                     | `409`       |
+| `GoneException`                         | `410`       |
+| `LengthRequiredException`               | `411`       |
+| `PreconditionFailedException`           | `412`       |
+| `RequestEntityTooLargeException`        | `413`       |
+| `RequestUriTooLongException`            | `414`       |
+| `UnsupportedMediaTypeException`         | `415`       |
+| `RequestedRangeNotSatisfiableException` | `416`       |
+| `ExpectationFailedException`            | `417`       |
+| `ImATeapotException`                    | `418`       |
+| `EnhanceYourCalmException`              | `420`       |
+| `UnprocessableEntityException`          | `422`       |
+| `LockedException`                       | `423`       |
+| `FailedDependencyException`             | `424`       |
+| `UpgradeRequiredException`              | `426`       |
+| `PreconditionRequiredException`         | `428`       |
+| `TooManyRequestsException`              | `429`       |
+| `RequestHeaderFilesTooLargeException`   | `431`       |
+| `UnavailableForLegalReasonsException`   | `451`       |
 
 These all extend `Bayfront\Bones\Exceptions\HttpException`, so they can be filtered as necessary.
 

@@ -83,9 +83,9 @@ trait UsesResourceModel
 
     protected abstract function validateFieldsDoNotExist(array $array, array $keys): void;
 
-    protected abstract function getPostData(array $rules = [], bool $allow_other = false): array;
-
     protected abstract function getJsonBody(array $rules = [], bool $allow_other = false): array;
+
+    protected abstract function getPostData(array $rules = [], bool $allow_other = false): array;
 
     /**
      * Get only and validate writable fields from body.

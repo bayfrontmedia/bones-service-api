@@ -83,6 +83,8 @@ trait UsesResourceModel
 
     protected abstract function validateFieldsDoNotExist(array $array, array $keys): void;
 
+    protected abstract function getPostData(array $rules = [], bool $allow_other = false): array;
+
     protected abstract function getJsonBody(array $rules = [], bool $allow_other = false): array;
 
     /**
@@ -105,27 +107,64 @@ trait UsesResourceModel
      */
     protected function getResourceBody(ResourceModel $resourceModel, bool $validate_required_fields = false, array $defined_values = [], array $disallowed_fields = []): array
     {
+        $fields = $this->getJsonBody($resourceModel->getAllowedFieldsWrite());
+        return $this->validateFields($fields, $resourceModel, $validate_required_fields, $defined_values, $disallowed_fields);
+    }
 
-        $body = $this->getJsonBody($resourceModel->getAllowedFieldsWrite());
+    /**
+     * Get only and validate writable fields from body.
+     *
+     * Optionally ensure all required fields exist (on create).
+     *
+     * Optionally ensure predefined values do not exist, then set their value.
+     * Helpful when values are set by path parameters.
+     *
+     * Optionally ensure disallowed fields do not exist (on update).
+     * Helpful for scoped resources whose scoped values are set by path parameters.
+     *
+     * @param ResourceModel $resourceModel
+     * @param bool $validate_required_fields
+     * @param array $defined_values (Predefined values not allowed to be defined in body)
+     * @param array $disallowed_fields
+     * @return array
+     * @throws BadRequestException
+     */
+    protected function getResourcePostData(ResourceModel $resourceModel, bool $validate_required_fields = false, array $defined_values = [], array $disallowed_fields = []): array
+    {
+        $fields = $this->getPostData($resourceModel->getAllowedFieldsWrite());
+        return $this->validateFields($fields, $resourceModel, $validate_required_fields, $defined_values, $disallowed_fields);
+    }
+
+    /**
+     * @param array $fields
+     * @param ResourceModel $resourceModel
+     * @param bool $validate_required_fields
+     * @param array $defined_values
+     * @param array $disallowed_fields
+     * @return array
+     * @throws BadRequestException
+     */
+    private function validateFields(array $fields, ResourceModel $resourceModel, bool $validate_required_fields = false, array $defined_values = [], array $disallowed_fields = []): array
+    {
 
         if (!empty($defined_values)) {
-            $this->validateFieldsDoNotExist($body, array_keys($defined_values));
-            $body = array_merge($body, $defined_values);
+            $this->validateFieldsDoNotExist($fields, array_keys($defined_values));
+            $fields = array_merge($fields, $defined_values);
         }
 
         if ($validate_required_fields === true) {
-            $this->validateFieldsExist($body, $resourceModel->getRequiredFields());
+            $this->validateFieldsExist($fields, $resourceModel->getRequiredFields());
         }
 
         if (!empty($disallowed_fields)) {
             foreach ($disallowed_fields as $field) {
                 if (isset($body[$field])) {
-                    throw new BadRequestException('Unable to get body: Invalid field (' . $field . ')');
+                    throw new BadRequestException('Unable to get fields: Invalid field (' . $field . ')');
                 }
             }
         }
 
-        return $body;
+        return $fields;
 
     }
 

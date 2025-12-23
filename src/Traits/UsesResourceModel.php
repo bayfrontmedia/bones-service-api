@@ -85,7 +85,7 @@ trait UsesResourceModel
 
     protected abstract function getJsonBody(array $rules = [], bool $allow_other = false): array;
 
-    protected abstract function getPostData(array $rules = [], bool $allow_other = false): array;
+    protected abstract function getPostData(array $rules = [], bool $allow_other = false, array $cast_fields = []): array;
 
     /**
      * Get only and validate writable fields from body.
@@ -112,7 +112,7 @@ trait UsesResourceModel
     }
 
     /**
-     * Get only and validate writable fields from body.
+     * Get only and validate writable fields from POST data.
      *
      * Optionally ensure all required fields exist (on create).
      *
@@ -124,14 +124,15 @@ trait UsesResourceModel
      *
      * @param ResourceModel $resourceModel
      * @param bool $validate_required_fields
-     * @param array $defined_values (Predefined values not allowed to be defined in body)
+     * @param array $defined_values (Predefined values not allowed to be defined in POST data)
      * @param array $disallowed_fields
+     * @param array $cast_fields (See ApiController->getPostData)
      * @return array
      * @throws BadRequestException
      */
-    protected function getResourcePostData(ResourceModel $resourceModel, bool $validate_required_fields = false, array $defined_values = [], array $disallowed_fields = []): array
+    protected function getResourcePostData(ResourceModel $resourceModel, bool $validate_required_fields = false, array $defined_values = [], array $disallowed_fields = [], array $cast_fields = []): array
     {
-        $fields = $this->getPostData($resourceModel->getAllowedFieldsWrite());
+        $fields = $this->getPostData($resourceModel->getAllowedFieldsWrite(), false, $cast_fields);
         return $this->validateFields($fields, $resourceModel, $validate_required_fields, $defined_values, $disallowed_fields);
     }
 

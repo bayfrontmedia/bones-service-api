@@ -21,6 +21,7 @@ use Bayfront\HttpResponse\Response;
 use Bayfront\LeakyBucket\AdapterException;
 use Bayfront\LeakyBucket\Bucket;
 use Bayfront\LeakyBucket\BucketException;
+use Bayfront\Sanitize\Sanitize;
 use Bayfront\Validator\Validator;
 use Exception;
 
@@ -314,56 +315,90 @@ abstract class ApiController extends Controller
     /**
      * Process rules and return body.
      *
-     * @param array $body
+     * @param array $fields
      * @param array $rules
      * @param bool $allow_other (Allow other keys not defined in rules)
      * @return array
      * @throws BadRequestException
      */
-    private function processRules(array $body, array $rules, bool $allow_other): array
+    private function processRules(array $fields, array $rules, bool $allow_other): array
     {
 
         if (!empty($rules) && $allow_other === false) {
-            if (!empty(Arr::except($body, array_keys($rules)))) {
-                throw new BadRequestException('Unable to validate body: Invalid field(s)');
+            if (!empty(Arr::except($fields, array_keys($rules)))) {
+                throw new BadRequestException('Unable to validate fields: Invalid field(s)');
             }
         }
 
         if (!empty($rules)) {
 
             $validator = new Validator();
-            $validator->validate($body, $rules, false, true);
+            $validator->validate($fields, $rules, false, true);
 
             if (!$validator->isValid()) {
 
                 $messages = $validator->getMessages();
                 $field = array_key_first($messages);
 
-                throw new BadRequestException('Unable to validate body: Invalid or missing field (' . $field . ')');
+                throw new BadRequestException('Unable to validate fields: Invalid or missing field (' . $field . ')');
 
             }
 
         }
 
-        return $body;
+        return $fields;
 
     }
 
     /**
      * Validate and return POST data.
      *
+     * Since POST data is received as a string, the $cast_fields array
+     * allows fields to be casted to another expected type before
+     * processing rules.
+     *
+     * Types include:
+     * - array (From JSON object)
+     * - boolean
+     * - float
+     * - integer
+     * - null (If empty string)
+     *
      * @param array $rules
      * @param bool $allow_other (Allow other keys not defined in rules)
+     * @param array $cast_fields (Key/value pair of field/type)
      * @return array
      * @throws BadRequestException
      */
-    protected function getPostData(array $rules = [], bool $allow_other = false): array
+    protected function getPostData(array $rules = [], bool $allow_other = false, array $cast_fields = []): array
     {
 
         $data = Request::getPost();
 
-        if (!$data || !is_array($data)) {
+        if (!is_array($data)) {
             throw new BadRequestException('Unable to validate POST data: Invalid or missing data');
+        }
+
+        foreach ($cast_fields as $field => $cast) {
+
+            if (isset($data[$field])) {
+
+                if ($cast === 'array') {
+                    $data[$field] = json_decode($data[$field], true);
+                } else if ($cast === 'boolean') {
+                    $data[$field] = Sanitize::cast($data[$field], Sanitize::CAST_BOOL);
+                } else if ($cast === 'float') {
+                    $data[$field] = Sanitize::cast($data[$field], Sanitize::CAST_FLOAT);
+                } else if ($cast === 'integer') {
+                    $data[$field] = Sanitize::cast($data[$field], Sanitize::CAST_INT);
+                } else if ($cast === 'null' && $data[$field] == '') {
+                    $data[$field] = null;
+                } else {
+                    throw new BadRequestException('Unable to validate POST data: Invalid cast field');
+                }
+
+            }
+
         }
 
         return $this->processRules($data, $rules, $allow_other);

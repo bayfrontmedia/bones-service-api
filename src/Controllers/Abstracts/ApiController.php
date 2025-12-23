@@ -350,6 +350,27 @@ abstract class ApiController extends Controller
     }
 
     /**
+     * Validate and return POST data.
+     *
+     * @param array $rules
+     * @param bool $allow_other (Allow other keys not defined in rules)
+     * @return array
+     * @throws BadRequestException
+     */
+    protected function getPostData(array $rules = [], bool $allow_other = false): array
+    {
+
+        $data = Request::getPost();
+
+        if (!$data || !is_array($data)) {
+            throw new BadRequestException('Unable to validate POST data: Invalid or missing data');
+        }
+
+        return $this->processRules($data, $rules, $allow_other);
+
+    }
+
+    /**
      * Validate and return form URL encoded body.
      *
      * @param array $rules

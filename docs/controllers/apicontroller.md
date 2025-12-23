@@ -31,6 +31,7 @@ Methods include:
 - [validateHasBody](#validatehasbody)
 - [validateFieldsExist](#validatefieldsexist)
 - [validateFieldsDoNotExist](#validatefieldsdonotexist)
+- [getPostData](#getpostdata)
 - [getFormEncodedBody](#getformencodedbody)
 - [getJsonBody](#getjsonbody)
 - [getTextBody](#gettextbody)
@@ -263,6 +264,38 @@ Validate and return form URL encoded body.
 
 - `$rules` (array): [Validator rules](https://github.com/bayfrontmedia/php-validator/blob/master/docs/validator.md)
 - `$allow_other = false` (bool): Allow other keys not defined in rules
+
+**Returns:**
+
+- (array)
+
+**Throws:**
+
+- `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+
+## getPostData
+
+**Description:**
+
+Validate and return `POST` data.
+
+Since `POST` data is received as a string, the `$cast_fields` array
+allows fields to be cast to another expected type before
+processing rules.
+
+Types include:
+
+- `array` (From JSON object)
+- `boolean`
+- `float`
+- `integer`
+- `null` (If empty string)
+
+**Parameters:**
+
+- `$rules` (array): [Validator rules](https://github.com/bayfrontmedia/php-validator/blob/master/docs/validator.md)
+- `$allow_other = false` (bool): Allow other keys not defined in rules
+- `$cast_fields = []` (array): Key/value pair of field/type
 
 **Returns:**
 

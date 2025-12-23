@@ -354,7 +354,7 @@ abstract class ApiController extends Controller
      * Validate and return POST data.
      *
      * Since POST data is received as a string, the $cast_fields array
-     * allows fields to be casted to another expected type before
+     * allows fields to be cast to another expected type before
      * processing rules.
      *
      * Types include:

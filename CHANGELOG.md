@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `getPostMeta` method to `ApiController`
 
+### Fixed
+
+- Bugfix in `getJsonBody` method of `ApiController`
+
 ## [1.5.0] - 2025.12.22
 
 ### Added

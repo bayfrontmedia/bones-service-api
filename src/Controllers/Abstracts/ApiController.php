@@ -447,7 +447,7 @@ abstract class ApiController extends Controller
 
         $body = json_decode(Request::getBody(), true);
 
-        if (!$body || !is_array($body)) {
+        if (!is_array($body)) {
             throw new BadRequestException('Unable to validate body: Invalid or missing JSON');
         }
 

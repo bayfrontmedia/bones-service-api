@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `getPostMeta` method to `ApiController`
 
+### Changed
+
+- Moved `identifyUser` method from `PrivateApiController` to `ApiController`
+
 ### Fixed
 
 - Bugfix in `getJsonBody` method of `ApiController`

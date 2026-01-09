@@ -13,6 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.6.0] - 2026.01.08
+
+### Added
+
+- Added `getPostMeta` method to `ApiController`
+
+### Changed
+
+- Moved `identifyUser` method from `PrivateApiController` to `ApiController`
+- Updated dependencies
+
+### Fixed
+
+- Bugfix in `getJsonBody` method of `ApiController`
+
 ## [1.5.0] - 2025.12.22
 
 ### Added

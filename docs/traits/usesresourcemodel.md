@@ -7,6 +7,7 @@ Methods include:
 - [getFieldParserRules](#getfieldparserrules)
 - [getQueryParserRules](#getqueryparserrules)
 - [getResourceBody](#getresourcebody)
+- [getResourcePostData](#getresourcepostdata)
 - [createResource](#createresource)
 - [listResources](#listresources)
 - [readResource](#readresource)
@@ -62,6 +63,36 @@ Helpful for scoped resources whose scoped values are set by path parameters.
 - `$validate_required_fields = false` (bool)
 - `$defined_values = []` (array): Predefined values not allowed to be defined in body
 - `$disallowed_fields = []` (array)
+
+**Returns:**
+
+- (array)
+
+**Throws:**
+
+- `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+
+## getResourcePostData
+
+**Description:**
+
+Get only and validate writable fields from `POST` data.
+
+Optionally ensure all required fields exist (on create).
+
+Optionally ensure predefined values do not exist, then set their value.
+Helpful when values are set by path parameters.
+
+Optionally ensure disallowed fields do not exist (on update).
+Helpful for scoped resources whose scoped values are set by path parameters.
+
+**Parameters:**
+
+- `$resourceModel` ([ResourceModel](https://github.com/bayfrontmedia/bones-service-orm/blob/master/docs/models/resourcemodel.md))
+- `$validate_required_fields = false` (bool)
+- `$defined_values = []` (array): Predefined values not allowed to be defined in body
+- `$disallowed_fields = []` (array)
+- `$cast_fields = []` (array): See [getPostData](../controllers/apicontroller.md#getpostdata)
 
 **Returns:**
 

@@ -21,6 +21,7 @@ Properties include:
 
 Methods include:
 
+- [identifyUser](#identifyuser)
 - [enforceRateLimit](#enforceratelimit)
 - [validateIsAdmin](#validateisadmin)
 - [validateInEnabledTenant](#validateinenabledtenant)
@@ -31,6 +32,7 @@ Methods include:
 - [validateHasBody](#validatehasbody)
 - [validateFieldsExist](#validatefieldsexist)
 - [validateFieldsDoNotExist](#validatefieldsdonotexist)
+- [getPostData](#getpostdata)
 - [getFormEncodedBody](#getformencodedbody)
 - [getJsonBody](#getjsonbody)
 - [getTextBody](#gettextbody)
@@ -51,6 +53,34 @@ Boolean. Default `true`. When `false`, the IP whitelist [will not be enforced](.
 ## set_required_headers
 
 Boolean. Default `true`. When `false`, the [required response headers](../setup.md#configuration) will not be set.
+
+## identifyUser
+
+**Description:**
+
+Identify user using one of the identification methods allowed in the [API configuration](../setup.md#configuration) `identity` array
+using one of the following headers:
+
+- `Bearer`: Identify with token
+- `X-Api-Key`: Identify with key
+
+User impersonation is made possible by setting the `X-Impersonate-User` header to the user ID to impersonate.
+How this is handled depends on the [API configuration](../setup.md#configuration).
+
+In addition, the `User` instance is placed into the [Bones service container](https://github.com/bayfrontmedia/bones/blob/master/docs/usage/container.md) with alias `user`.
+
+**Parameters:**
+
+- (None)
+
+**Returns:**
+
+- (`\Bayfront\BonesService\Rbac\User`)
+
+**Throws:**
+
+- `Bayfront\BonesService\Api\Exceptions\ApiServiceException`
+- `Bayfront\BonesService\Api\Exceptions\Http\ForbiddenException`
 
 ## enforceRateLimit
 
@@ -263,6 +293,38 @@ Validate and return form URL encoded body.
 
 - `$rules` (array): [Validator rules](https://github.com/bayfrontmedia/php-validator/blob/master/docs/validator.md)
 - `$allow_other = false` (bool): Allow other keys not defined in rules
+
+**Returns:**
+
+- (array)
+
+**Throws:**
+
+- `Bayfront\BonesService\Api\Exceptions\Http\BadRequestException`
+
+## getPostData
+
+**Description:**
+
+Validate and return `POST` data.
+
+Since `POST` data is received as a string, the `$cast_fields` array
+allows fields to be cast to another expected type before
+processing rules.
+
+Types include:
+
+- `array` (From JSON object)
+- `boolean`
+- `float`
+- `integer`
+- `null` (If empty string)
+
+**Parameters:**
+
+- `$rules` (array): [Validator rules](https://github.com/bayfrontmedia/php-validator/blob/master/docs/validator.md)
+- `$allow_other = false` (bool): Allow other keys not defined in rules
+- `$cast_fields = []` (array): Key/value pair of field/type
 
 **Returns:**
 

@@ -61,6 +61,8 @@ class User extends AuthApiController
     /**
      * Register new user.
      *
+     * Executes api.user.register event.
+     *
      * @return void
      * @throws ApiServiceException
      * @throws BadRequestException
@@ -86,6 +88,8 @@ class User extends AuthApiController
         ]);
 
         $this->validateUserMeta($body, 'create');
+
+        $this->events->doEvent('api.user.register', $body);
 
         $resource = $this->createResource($usersModel, $body);
 

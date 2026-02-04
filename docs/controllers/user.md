@@ -17,6 +17,8 @@ Methods:
 
 Register new user.
 
+- Executes `api.user.register` [event](../events.md)
+
 **Route:**
 
 `POST /user/register`

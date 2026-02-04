@@ -33,6 +33,7 @@ used is passed as a parameter.
 A [User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md) and [Totp](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/totp.md) instance are passed as parameters.
 - `api.user.password_request.fail`: Executes when a user fails to request a password reset. This is typically because
 sufficient time has not yet elapsed since the last request was made. The email address used is passed as a parameter.
+- `api.user.register`: Executes when a new user attempts to register. The body of the request is passed as a parameter as an array.
 - `api.user.verification_request`: Executes when a user verification request is created.
 A [User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md) and [Totp](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/totp.md) instance are passed as parameters.
 - `api.user.verification_request.fail`: Executes when a user fails to request a new email verification. 

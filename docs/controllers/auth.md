@@ -44,7 +44,7 @@ Authenticate with email + password.
 
 **Response:**
 
-If [auth.password.tfa.enabled config](../setup.md#configuration) value is `true`:
+If [auth.password.tfa.enabled config](../setup.md#configuration) value is `true` and domain is not excluded by `auth.password.tfa.excluded_domains` array:
 
 - HTTP status code: `204`
 - Schema: (none)
@@ -54,6 +54,7 @@ Else:
 
 - HTTP status code: `201`
 - Schema: [AuthResource](../schemas.md#authresource)
+- Executes `api.auth.success` [event](../events.md)
 
 **Throws:**
 
@@ -68,7 +69,6 @@ Else:
 **Description:**
 
 Initiate authentication by creating OTP.
-Executes `api.auth.otp` [event](../events.md).
 
 **Route:**
 
@@ -96,8 +96,17 @@ Executes `api.auth.otp` [event](../events.md).
 
 **Response:**
 
+If domain is not excluded by `auth.password.tfa.excluded_domains` array:
+
 - HTTP status code: `204`
 - Schema: (none)
+- Executes `api.auth.otp` [event](../events.md)
+
+Else:
+
+- HTTP status code: `201`
+- Schema: [AuthResource](../schemas.md#authresource)
+- Executes `api.auth.success` [event](../events.md)
 
 **Throws:**
 
@@ -143,6 +152,7 @@ or [auth.otp.enabled config](../setup.md#configuration) value is `true`
 
 - HTTP status code: `201`
 - Schema: [AuthResource](../schemas.md#authresource)
+- Executes `api.auth.success` [event](../events.md)
 
 **Throws:**
 
@@ -185,6 +195,7 @@ Authenticate with refresh token.
 
 - HTTP status code: `201`
 - Schema: [AuthResource](../schemas.md#authresource)
+- Executes `api.auth.success` [event](../events.md)
 
 **Throws:**
 

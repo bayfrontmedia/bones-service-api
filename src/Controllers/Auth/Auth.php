@@ -120,7 +120,9 @@ class Auth extends AuthApiController
             throw new ApiServiceException('Unexpected error', 0, $e);
         }
 
-        if ($this->apiService->getConfig('auth.password.tfa.enabled') === true) {
+        $domain = explode('@', $body['email'], 2)[1] ?? '';
+
+        if ($this->apiService->getConfig('auth.password.tfa.enabled') === true && !in_array($domain, $this->apiService->getConfig('auth.password.tfa.excluded_domains', []))) {
 
             $userMetaModel = new UserMetaModel($this->rbacService);
 
@@ -188,28 +190,36 @@ class Auth extends AuthApiController
             throw new ApiServiceException('Unexpected error', 0, $e);
         }
 
-        $userMetaModel = new UserMetaModel($this->rbacService);
+        $domain = explode('@', $body['email'], 2)[1] ?? '';
 
-        try {
+        if (!in_array($domain, $this->apiService->getConfig('auth.otp.excluded_domains', []))) {
 
-            $totp = $userMetaModel->createTotp(
-                $user->getId(),
-                $userMetaModel->totp_meta_key_tfa,
-                $this->apiService->getConfig('auth.otp.wait', 3),
-                $this->apiService->getConfig('auth.otp.duration', 15),
-                $this->apiService->getConfig('auth.otp.length', 6),
-                $this->apiService->getConfig('auth.otp.type', $this->rbacService::TOTP_TYPE_NUMERIC)
-            );
+            $userMetaModel = new UserMetaModel($this->rbacService);
 
-        } catch (AlreadyExistsException) { // OTP exists and wait time has not elapsed
-            $this->events->doEvent('api.auth.otp.fail', $body['email']);
-            throw new TooManyRequestsException();
-        } catch (DoesNotExistException|UnexpectedException $e) {
-            throw new ApiServiceException('Unexpected error', 0, $e);
+            try {
+
+                $totp = $userMetaModel->createTotp(
+                    $user->getId(),
+                    $userMetaModel->totp_meta_key_tfa,
+                    $this->apiService->getConfig('auth.otp.wait', 3),
+                    $this->apiService->getConfig('auth.otp.duration', 15),
+                    $this->apiService->getConfig('auth.otp.length', 6),
+                    $this->apiService->getConfig('auth.otp.type', $this->rbacService::TOTP_TYPE_NUMERIC)
+                );
+
+            } catch (AlreadyExistsException) { // OTP exists and wait time has not elapsed
+                $this->events->doEvent('api.auth.otp.fail', $body['email']);
+                throw new TooManyRequestsException();
+            } catch (DoesNotExistException|UnexpectedException $e) {
+                throw new ApiServiceException('Unexpected error', 0, $e);
+            }
+
+            $this->events->doEvent('api.auth.otp', $user, $totp);
+            $this->respond(204);
+
+        } else {
+            $this->respondWithTokens($user);
         }
-
-        $this->events->doEvent('api.auth.otp', $user, $totp);
-        $this->respond(204);
 
     }
 

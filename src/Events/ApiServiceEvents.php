@@ -239,12 +239,16 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
             $userMetaModel->deleteExpiredTotps($userMetaModel->totp_meta_key_tfa);
             $userMetaModel->deleteExpiredTotps($userMetaModel->totp_meta_key_verification);
 
+            $this->apiService->events->doEvent('api.event.delete_expired_totps');
+
         })->everyMinutes(15);
 
         $this->scheduler->call('delete-expired-tokens', function () {
 
             $userTokensModel = new UserTokensModel($this->apiService->rbacService);
             $userTokensModel->deleteExpiredTokens();
+
+            $this->apiService->events->doEvent('api.event.delete_expired_tokens');
 
         })->everyMinutes(15);
 
@@ -253,12 +257,16 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
             $tenantInvitationsModel = new TenantInvitationsModel($this->apiService->rbacService);
             $tenantInvitationsModel->pruneQuietly(time());
 
+            $this->apiService->events->doEvent('api.event.delete_expired_invitations');
+
         })->everyHours(12);
 
         $this->scheduler->call('delete-expired-keys', function () {
 
             $userKeysModel = new UserKeysModel($this->apiService->rbacService);
             $userKeysModel->pruneQuietly(time());
+
+            $this->apiService->events->doEvent('api.event.delete_expired_keys');
 
         })->everyHours(12);
 
@@ -269,6 +277,8 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
                 $usersModel = new UsersModel($this->apiService->rbacService);
                 $usersModel->deleteUnverified(time() - (int)$this->apiService->getConfig('user.unverified.expiration', 0), (bool)$this->apiService->getConfig('user.unverified.new_only', true));
+
+                $this->apiService->events->doEvent('api.event.delete_unverified_users');
 
             })->daily();
 

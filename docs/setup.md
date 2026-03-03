@@ -65,6 +65,7 @@ return [
             'enabled' => true,
             'tfa' => [
                 'enabled' => App::environment() !== App::ENV_DEV,
+                'excluded_domains' => [], // Domains to exclude from TFA requirement (e.g. "example.com")
                 'wait' => 3, // Wait time (in minutes) to wait before creating a new TFA, or 0 to disable
                 'duration' => 15, // Validity duration (in minutes), 0 for unlimited
                 'length' => 6, // Value length
@@ -73,6 +74,7 @@ return [
         ],
         'otp' => [ // Authenticate with email + OTP
             'enabled' => App::environment() !== App::ENV_DEV,
+            'excluded_domains' => [], // Domains to exclude from OTP requirement (e.g. "example.com")
             'wait' => 3, // Wait time (in minutes) to wait before creating a new TFA, or 0 to disable
             'duration' => 15, // Validity duration (in minutes), 0 for unlimited
             'length' => 6, // Value length

@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.7.0] - 2026.03.03
+
+### Added
+
+- Added `excluded_domains` to `auth.password.tfa` and `auth.otp` config arrays to exclude email domains from TFA and OTP
+  requirements
+
 ## [1.6.1] - 2026.02.04
 
 ### Added
@@ -47,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated dependencies
 - Updated Symfony console depreciated `add` function to `addCommand`
 
-## [1.4.0] - 2025.11.06 
+## [1.4.0] - 2025.11.06
 
 ### Changed
 

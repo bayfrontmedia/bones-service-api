@@ -27,7 +27,7 @@ instance is passed as a parameter.
 - `api.event.delete_expired_invitations': Executes when the `delete-expired-invitations` scheduled job is run.
 - `api.event.delete_expired_tokens': Executes when the `delete-expired-tokens` scheduled job is run.
 - `api.event.delete_expired_totps': Executes when the `delete-expired-totps` scheduled job is run.
-- `api.event.delete_expired_users': Executes when the `delete-expired-users` scheduled job is run.
+- `api.event.delete_unverified_users': Executes when the `delete-unverified-users` scheduled job is run.
 - `api.response`: Executes just before the API response is sent with the `respond` method. 
 The `ApiController` instance is passed as a parameter.
 - `api.user.impersonate`: Executes when a user is being impersonated. Two [User](https://github.com/bayfrontmedia/bones-service-rbac/blob/master/docs/user.md)

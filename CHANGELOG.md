@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `excluded_domains` to `auth.password.tfa` and `auth.otp` config arrays to exclude email domains from TFA and OTP
   requirements
+- Added events for scheduled jobs ([#11](https://github.com/bayfrontmedia/bones-service-api/issues/11))
 
 ## [1.6.1] - 2026.02.04
 

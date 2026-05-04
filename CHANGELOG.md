@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.7.1] - 2026.05.04
+
+### Changed
+
+- Changed frequency of `delete-expired-totps` and `delete-expired-tokens` scheduled jobs
+
 ## [1.7.0] - 2026.03.03
 
 ### Added

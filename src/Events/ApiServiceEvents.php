@@ -241,7 +241,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
             $this->apiService->events->doEvent('api.event.delete_expired_totps');
 
-        })->everyMinutes(15);
+        })->everyMinutes(30);
 
         $this->scheduler->call('delete-expired-tokens', function () {
 
@@ -250,7 +250,7 @@ class ApiServiceEvents extends EventSubscriber implements EventSubscriberInterfa
 
             $this->apiService->events->doEvent('api.event.delete_expired_tokens');
 
-        })->everyMinutes(15);
+        })->everyMinutes(30);
 
         $this->scheduler->call('delete-expired-invitations', function () {
 

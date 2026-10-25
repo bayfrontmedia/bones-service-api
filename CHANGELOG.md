@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.8.0] - 2026.10.25
+
+### Changed
+
+- Updated minimum PHP version to 8.1
+- Updated `listResources` method of `UsesResourceModel` trait to ensure that system-defined filters 
+  are applied to all results, even when user-defined filters are present
+
 ## [1.7.1] - 2026.05.04
 
 ### Changed

@@ -227,9 +227,38 @@ trait UsesResourceModel
                      * to ensure the system-defined filters ($query_filter) are applied to all results.
                      */
 
+                    /*
                     $query_filter[] = [
                         '_and' => $filter
                     ];
+                    */
+
+                    $items = array_is_list($filter) ? $filter : [$filter];
+                    $wrapped = [];
+
+                    foreach ($items as $item) {
+
+                        if (!is_array($item)) {
+                            throw new BadRequestException('Unable to list resource: Invalid filter format');
+                        }
+
+                        foreach ($item as $key => $value) {
+
+                            if (strtoupper(ltrim((string)$key, '_')) === 'AND') {
+                                // Already an AND group: safe to append as-is
+                                $query_filter[] = [$key => $value];
+                            } else {
+                                // _or and plain fields: isolate inside an AND group
+                                $wrapped[] = [$key => $value];
+                            }
+
+                        }
+
+                    }
+
+                    if (!empty($wrapped)) {
+                        $query_filter[] = ['_and' => $wrapped];
+                    }
 
                 }
 
